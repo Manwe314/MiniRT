@@ -54,6 +54,22 @@ static int	init_minirt(void)
 	return (SUCCESS);
 }
 
+t_matrix4x4 init_mat_0(void)
+{
+	t_matrix4x4 mat;
+	int i;
+	int j;
+
+	i = -1;
+	while (++i < 4)
+	{
+		j = -1;
+		while (++j < 4)
+			mat.matrix[i][j] = 0.0f;
+	}
+	return (mat);
+}
+
 int	get_rgba(int r, int g, int b, int a)
 {
 	return (r << 24 | g << 16 | b << 8 | a);

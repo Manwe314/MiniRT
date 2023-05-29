@@ -54,6 +54,27 @@ t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2)
 	return (result);
 }
 
+t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far)
+{
+    t_matrix4x4 matrix;
+	float tanHalfFov ;
+    float zRange;
+	int i;
+	int j;
+
+	tanHalfFov = tanf(fov / 2.0f);
+	zRange = far - near;
+	i = -1;
+	matrix = init_mat_0();
+    matrix.matrix[0][0] = 1.0f / (tanHalfFov * aspect);
+	matrix.matrix[1][1] = 1.0f / tanHalfFov;
+	matrix.matrix[2][2] = -(far + near) / zRange;
+	matrix.matrix[2][3] = -1.0f;
+	matrix.matrix[3][2] = -(2.0f * far * near) / zRange;
+	return (matrix);
+}
+
+
 
 /*void calculate_view_matrix(t_camera *camera)
 {
@@ -80,7 +101,6 @@ float to_radian(float angle)
 {
 	return (angle * (M_PI / 180));
 }
-
 /*
 void sortPoints(Point3D **points, int n)
 {
@@ -120,4 +140,35 @@ void sortPoints(Point3D **points, int n)
 */
 
 
+t_vec3d vec3d_sub(t_vec3d v1, t_vec3d v2)
+{
+    t_vec3d result;
+    result.x = v1.x - v2.x;
+    result.y = v1.y - v2.y;
+    result.z = v1.z - v2.z;
+    return result;
+}
 
+float vec3d_magnitude(t_vec3d v)
+{
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+t_vec3d vec3d_normalize(t_vec3d v)
+{
+    float mag = vec3d_magnitude(v);
+    t_vec3d result;
+    result.x = v.x / mag;
+    result.y = v.y / mag;
+    result.z = v.z / mag;
+    return result;
+}
+
+t_vec3d vec3d_cross(t_vec3d v1, t_vec3d v2)
+{
+    t_vec3d result;
+    result.x = v1.y * v2.z - v1.z * v2.y;
+    result.y = v1.z * v2.x - v1.x * v2.z;
+    result.z = v1.x * v2.y - v1.y * v2.x;
+    return result;
+}

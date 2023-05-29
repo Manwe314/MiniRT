@@ -34,11 +34,6 @@ typedef struct s_vec3d
 	float x, y, z;
 } t_vec3d;
 
-typedef struct s_vec4d
-{
-	float x, y, z, w;
-} t_vec4d;
-
 typedef struct s_triangle
 {
 	t_vec3d p[3];

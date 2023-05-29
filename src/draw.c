@@ -47,6 +47,24 @@ void draw_line(int x1, int y1, int x2, int y2)
 	}
 }
 
+t_matrix4x4 rotation_x(float angle)
+{
+    t_matrix4x4 matrix;
+    float c;
+    float s;
+
+    c = cos(angle);
+    s = sin(angle);
+    matrix = init_mat_0();
+    matrix.matrix[0][0] = 1.0f;
+    matrix.matrix[1][1] = c;
+    matrix.matrix[1][2] = -s;
+    matrix.matrix[2][1] = s;
+    matrix.matrix[2][2] = c;
+    matrix.matrix[3][3] = 1.0f;
+    return (matrix);
+}
+
 
 void draw_triangle(t_triangle triangle)
 {
