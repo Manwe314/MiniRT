@@ -57,9 +57,9 @@ void	hook(void *param)
 	minirt = param;
 	sphere = minirt->input_head->object;
 	x = 0;
-	ray_origin.x = 5;
-	ray_origin.y = -5;
-	ray_origin.z = -10;
+	ray_origin.x = 0;
+	ray_origin.y = 0;
+	ray_origin.z = -100;
 	while (x < minirt->width)
 	{
 		y = 0;
@@ -125,10 +125,10 @@ void get_input_list(t_minirt *minirt)
 	t_input_list *head;
 
 	sphere = malloc(sizeof(t_sphere));
-	sphere->center.x = 5;
-	sphere->center.y = 5;
-	sphere->center.z = 4;
-	sphere->radius = 2.0f;
+	sphere->center.x = 0;
+	sphere->center.y = 0;
+	sphere->center.z = 0;
+	sphere->radius = 50.0f;
 
 	head = malloc(sizeof(t_input_list));
 	head->name = ft_strdup("sphere");
