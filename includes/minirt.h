@@ -27,8 +27,8 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH 256
-# define HEIGHT 256
+# define WIDTH 975
+# define HEIGHT 975
 
 
 typedef struct s_vec3d

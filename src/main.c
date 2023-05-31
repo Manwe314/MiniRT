@@ -22,7 +22,7 @@ static int	init_minirt(t_minirt *minirt)
 
 	if (!minirt->mlx)
 		exit(ERROR);
-	minirt->img = mlx_new_image(minirt->mlx, 256, 256);
+	minirt->img = mlx_new_image(minirt->mlx, WIDTH, HEIGHT);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 
 	// Run the main loop and terminate on quit.
@@ -42,6 +42,64 @@ float	dot(t_vector3 a, t_vector3 b)
 	return (product);
 }
 
+t_vector3 add_vector3(t_vector3 a, t_vector3 b)
+{
+	t_vector3 sum;
+
+	sum.x = a.x + b.x;
+	sum.y = a.y + b.y;
+	sum.z = a.z + b.z;
+	return (sum);
+}
+
+t_vector3 subtract_vector3(t_vector3 a, t_vector3 b)
+{
+	t_vector3 subtraction;
+
+	subtraction.x = a.x - b.x;
+	subtraction.y = a.y - b.y;
+	subtraction.z = a.z - b.z;
+	return (subtraction);
+}
+
+float min(float a, float b)
+{
+	if (a > b)
+		return b;
+	else
+		return a;
+}
+
+float max(float a, float b)
+{
+	if (a < b)
+		return b;
+	else
+		return a;
+}
+
+t_vector3 multiply_vector_scalar(t_vector3 a, float b)
+{
+	t_vector3 product;
+
+	product.x = a.x * b;
+	product.y = a.y * b;
+	product.z = a.z * b;
+	return product;
+}
+
+t_vector3 normalize(t_vector3 a)
+{
+	float length;
+	t_vector3 normal;
+
+	length = (float)sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
+	normal.x = a.x / length;
+	normal.y = a.y / length;
+	normal.z = a.z / length;
+	return (normal);
+}
+
 void	hook(void *param)
 {
 	t_minirt *minirt;
@@ -53,6 +111,11 @@ void	hook(void *param)
 	float discriminant;
 	t_vector2 coordinate;
 	t_sphere *sphere;
+	t_vector2	hit_distance;
+	t_vector3	hit_position;
+	t_vector3	normal;
+	t_vector3 	light_direction;
+	float intensity;
 
 	minirt = param;
 	sphere = minirt->input_head->object;
@@ -60,6 +123,10 @@ void	hook(void *param)
 	ray_origin.x = 0;
 	ray_origin.y = 0;
 	ray_origin.z = -100;
+	light_direction.x = 1;
+	light_direction.y = 1;
+	light_direction.z = 1;
+	light_direction = normalize(light_direction);
 	while (x < minirt->width)
 	{
 		y = 0;
@@ -79,9 +146,18 @@ void	hook(void *param)
 
 			discriminant = (b * b) - (4 * a * c);
 			if (discriminant >= 0)
-				mlx_put_pixel(minirt->img, x, y, get_rgba(255, 0, 0, 255));
+			{
+				hit_distance.x = (-b - sqrt(discriminant)) / (2.0f * a);
+				hit_position = multiply_vector_scalar(ray_direction, hit_distance.x);
+				hit_position = add_vector3(ray_origin, hit_position);
+				//printf("%f | %f | %f\n", hit_position.x, hit_position.y, hit_position.z);
+				normal = subtract_vector3(hit_position, sphere->center);
+				normal = normalize(normal);
+				intensity = max(dot(normal, multiply_vector_scalar(light_direction, -1)), 0.0f);
+				mlx_put_pixel(minirt->img, x, y, get_rgba((int)(255 * intensity),(int)(0 * intensity),(int)(255 * intensity), 255));
+			}
 			else
-				mlx_put_pixel(minirt->img, x, y, get_rgba(0, 0, 0, 255));
+				mlx_put_pixel(minirt->img, x, y, get_rgba(189, 195, 199, 255));
 			//printf("x: %d\ny: %d\n", x, y);
 			y++;
 		}
