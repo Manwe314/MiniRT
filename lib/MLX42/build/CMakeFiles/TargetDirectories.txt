@@ -1,0 +1,3 @@
+/Users/lkukhale/Core/minirt/lib/MLX42/build/CMakeFiles/mlx42.dir
+/Users/lkukhale/Core/minirt/lib/MLX42/build/CMakeFiles/edit_cache.dir
+/Users/lkukhale/Core/minirt/lib/MLX42/build/CMakeFiles/rebuild_cache.dir
