@@ -154,7 +154,7 @@ void	hook(void *param)
 				normal = subtract_vector3(hit_position, sphere->center);
 				normal = normalize(normal);
 				intensity = max(dot(normal, multiply_vector_scalar(light_direction, -1)), 0.0f);
-				mlx_put_pixel(minirt->img, x, y, get_rgba((int)(255 * intensity),(int)(0 * intensity),(int)(255 * intensity), 255));
+				mlx_put_pixel(minirt->img, x, y, get_rgba((int)(3 * intensity),(int)(252 * intensity),(int)(252 * intensity), 255));
 			}
 			else
 				mlx_put_pixel(minirt->img, x, y, get_rgba(189, 195, 199, 255));
@@ -195,37 +195,695 @@ float to_radian(float angle)
 	return (angle * (M_PI / 180));
 }
 
-void get_input_list(t_minirt *minirt)
+int	is_all_space(char *input)
 {
-	t_sphere *sphere;
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (input[i] != '\0')
+	{
+		if (input[i] == ' ' || input[i] == '	')
+			j++;
+		i++;
+	}
+	if (i == j)
+		return (1);
+	return (0);
+}
+
+float ft_atof(const char* str)
+{
+    int i = 0;
+    int sign = 1;
+    float result = 0.0;
+    float fraction = 0.0;
+    float divisor = 10.0;
+
+    while (((str[i] >= 9 && str[i] <= 13) || str[i] == 32) && str[i] != '\0')
+        i++;
+    if (str[i] == '-')
+	{
+        sign = -1;
+        i++;
+    }
+	else if (str[i] == '+')
+        i++;
+    while (str[i] >= '0' && str[i] <= '9' && str[i] != '\0')
+	{
+        result = result * 10 + (str[i] - '0');
+        i++;
+    }
+    if (str[i] == '.')
+	{
+        i++;
+        while (str[i] >= '0' && str[i] <= '9' && str[i] != '\0')
+		{
+            fraction += (str[i] - '0') / divisor;
+            divisor *= 10.0;
+            i++;
+        }
+    }
+    result += fraction;
+	result = roundf(result * 100) / 100;
+    result *= sign;
+    return (result);
+}
+
+char *get_name(const char *line)
+{
+	int i;
+	char *name;
+
+	i = 0;
+	name = 0;
+	while (line[i] == ' ' && line[i] != '\0')
+		i++;
+	if (line[i] == 'A' && line[i + 1] == ' ')
+		name = ft_strdup("Ambient");
+	if (line[i] == 'C' && line[i + 1] == ' ')
+		name = ft_strdup("Camera");
+	if (line[i] == 'L' && line[i + 1] == ' ')
+		name = ft_strdup("Light");
+	if (line[i + 1] == '\0' && name == 0)
+		return (0);
+	if (line[i] == 's' && line[i + 1] == 'p' && line[i + 2] == ' ')
+		name = ft_strdup("Sphere");
+	if (line[i] == 'p' && line[i + 1] == 'l' && line[i + 2] == ' ')
+		name = ft_strdup("Plane");
+	if (line[i] == 'c' && line[i + 1] == 'y' && line[i + 2] == ' ')
+		name = ft_strdup("Cylinder");
+	return (name);
+}
+
+int	jump_spaces(const char *line, int i)
+{
+	while (line[i] == ' ' && line[i] != '\0')
+		i++;
+	if (line[i] == '\0')
+		return (-1);
+	return (i);
+}
+
+int	jump_non_spaces(const char *line, int i)
+{
+	while (line[i] != ' ' && line[i] != '\0')
+		i++;
+	if (line[i] == '\0')
+		return (-1);
+	return (i);
+}
+
+void	free_split(char **split)
+{
+	int	i;
+
+	i = 0;
+	while (split[i] != 0)
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split[i]);
+	free(split);
+}
+
+int split_size(char **split)
+{
+	int	i;
+
+	i = 0;
+	while (split[i] != 0)
+		i++;
+	return (i);
+}
+
+t_vector3 get_vector3(const char *line, int i, t_input_list *input)
+{
+	char **values;
+	char *param;
+	int j;
+	t_vector3 output;
+
+	j = i;
+
+	while (line[j] != ' ' && line[j] != '\0')
+		j++;
+	param = ft_substr(line, i, j - i);
+	values = ft_split(param, ',');
+	if (split_size(values) != 3)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+	else
+	{
+		output.x = ft_atof(values[0]);
+		output.y = ft_atof(values[1]);
+		output.z = ft_atof(values[2]);
+	}
+	free_split(values);
+	free(param);
+	return (output);
+}
+
+int evaluator(t_input_list *input, int i)
+{
+	if (i < 0)
+	{
+		free(input->name);
+		input->name = 0;
+		return (1);
+	}
+	else
+		return (0);
+}
+
+int get_to_next_param(const char *line, int i, t_input_list *input)
+{
+	if (i == 0)
+	{
+		i = jump_spaces(line, i);
+		if (evaluator(input, i) == 1)
+			return (-1);
+	}
+	i = jump_non_spaces(line, i);
+	if (evaluator(input, i) == 1)
+		return (-1);
+	i = jump_spaces(line, i);
+	if (evaluator(input, i) == 1)
+		return (-1);
+	return (i);
+}
+
+t_ambient *init_ambient(const char *line, t_input_list *input)
+{
+	t_ambient *obj;
+	int i;
+
+	obj = (t_ambient *)malloc(sizeof(t_ambient));
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->intensity = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->color = get_vector3(line, i, input);
+	return (obj);
+}
+
+t_camera *init_camera(const char *line, t_input_list *input)
+{
+	t_camera	*obj;
+	int i;
+
+	obj = (t_camera *)malloc(sizeof(t_camera));
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->position = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->orientation = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->fov = ft_atof(line + i);
+	return (obj);
+}
+
+t_light *init_light(const char *line, t_input_list *input)
+{
+	t_light *obj;
+	int i;
+
+	obj = (t_light *)malloc(sizeof(t_light));
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->position = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->brightness = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->color = get_vector3(line, i, input);
+	return (obj);
+}
+
+t_sphere *init_sphere(const char *line, t_input_list *input)
+{
+	t_sphere *obj;
+	int i;
+
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->center = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->radius = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->color = get_vector3(line, i, input);
+	return (obj);
+}
+
+t_plane *init_plane(const char *line, t_input_list *input)
+{
+	t_plane *obj;
+	int i;
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->point_on_plane = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->normal = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->color = get_vector3(line, i, input);
+	return (obj);
+}
+
+t_cylinder *init_cylinder(const char *line, t_input_list *input)
+{
+	t_cylinder *obj;
+	int i;
+
+	i = get_to_next_param(line, 0, input);
+	if (i < 0)
+		return (obj);
+	obj->centre = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->normal_axis = get_vector3(line, i, input);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->diameter = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->height = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	if (i < 0)
+		return (obj);
+	obj->color = get_vector3(line, i, input);
+	return (obj);
+}
+
+void	*get_object(t_input_list *input, const char *line)
+{
+	void *object;
+
+	if (input->name == 0)
+		return (0);
+	if (ft_strncmp(input->name, "Ambient", 7) == 0)
+		object = init_ambient(line, input);
+	if (ft_strncmp(input->name, "Camera", 6) == 0)
+		object = init_camera(line, input);
+	if (ft_strncmp(input->name, "Light", 5) == 0)
+		object = init_light(line, input);
+	if (ft_strncmp(input->name, "Sphere", 6) == 0)
+		object = init_sphere(line, input);
+	if (ft_strncmp(input->name, "Plane", 5) == 0)
+		object = init_plane(line, input);
+	if (ft_strncmp(input->name, "Cylinder", 8) == 0)
+		object = init_cylinder(line, input);
+	return (object);
+}
+
+void get_input_list(t_minirt *minirt, int fd)
+{
 	t_input_list *head;
+	t_input_list *temp;
+	t_input_list *save;
+	char *line;
 
-	sphere = malloc(sizeof(t_sphere));
-	sphere->center.x = 0;
-	sphere->center.y = 0;
-	sphere->center.z = 0;
-	sphere->radius = 50.0f;
-
-	head = malloc(sizeof(t_input_list));
-	head->name = ft_strdup("sphere");
-	head->object = sphere;
-	head->next = 0;
-
+	line = get_next_line(fd);
+	temp = (t_input_list *)malloc(sizeof(t_input_list));
+	head = temp;
+	while (line != 0)
+	{
+		if (ft_strlen(line) > 1 && !is_all_space(line))
+		{
+			temp->name = get_name(line);
+			temp->object = get_object(temp, line);
+			temp->next = (t_input_list *)malloc(sizeof(t_input_list));
+			save = temp;
+			temp = temp->next;
+			free(line);
+		}
+		line = get_next_line(fd);
+	}
+	free(save->next);
+	save->next = 0;
 	minirt->input_head = head;
 }
 
+int check_file(char *file_name)
+{
+	int len;
 
-int main()
+	len = ft_strlen(file_name);
+	len -= 3;
+	if (ft_strncmp((file_name + len), ".rt", 3) != 0)
+		return (1);
+	len = open(file_name, O_RDONLY);
+	if (len < 0)
+	{
+		perror(file_name);
+		return (1);
+	}
+	close(len);
+	return (0);
+}
+int vector3_checker(t_vector3 vector3, float range_min, float range_max)
+{
+	if (vector3.x < range_min || vector3.x > range_max)
+		return (0);
+	if (vector3.y < range_min || vector3.y > range_max)
+		return (0);
+	if (vector3.z < range_min || vector3.z > range_max)
+		return (0);
+	return (1);
+}
+
+void validate_values_ambient(t_input_list *input)
+{
+	t_ambient *obj;
+
+	obj = input->object;
+	if (obj->intensity < 0.0 || obj->intensity > 1.0)
+	{
+		printf("Ambient light intensity out of range\n");
+		free(input->name);
+		input->name = 0;
+		return ;
+	}
+	if (!vector3_checker(obj->color, 0.0, 255.0))
+	{
+		printf("Ambient light color out of range\n");
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+void validate_values_camera(t_input_list *input)
+{
+	int failed;
+	t_camera *obj;
+
+	failed = 0;
+	obj = input->object;
+	if (!vector3_checker(obj->orientation, -1.0, 1.0))
+	{
+		printf("Camera orientation out of range\n");
+		failed = 1;
+	}
+	if (obj->fov < 0 || obj->fov > 180)
+	{
+		printf("Camera FOV out of range\n");
+		failed = 1;
+	}
+	if (failed)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+void validate_values_light(t_input_list *input)
+{
+	int failed;
+	t_light *obj;
+
+	failed = 0;
+	obj = input->object;
+	if (!vector3_checker(obj->color , 0.0, 255.0))
+	{
+		printf("light color out of range\n");
+		failed = 1;
+	}
+	if (obj->brightness < 0 || obj->brightness > 1.0)
+	{
+		printf("Light brightness out of range\n");
+		failed = 1;
+	}
+	if (failed)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+void validate_values_sphere(t_input_list *input)
+{
+	int failed;
+	t_sphere *obj;
+
+	failed = 0;
+	obj = input->object;
+	if (!vector3_checker(obj->color , 0.0, 255.0))
+	{
+		printf("Sphere color out of range\n");
+		failed = 1;
+	}
+	if (failed)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+void validate_values_plane(t_input_list *input)
+{
+	int failed;
+	t_plane *obj;
+
+	failed = 0;
+	obj = input->object;
+	if (!vector3_checker(obj->color , 0.0, 255.0))
+	{
+		printf("plane color out of range\n");
+		failed = 1;
+	}
+	if (!vector3_checker(obj->normal , -1.0, 1.0))
+	{
+		printf("plane normal out of range\n");
+		failed = 1;
+	}
+	if (failed)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+void validate_values_cylinder(t_input_list *input)
+{
+	int failed;
+	t_cylinder *obj;
+
+	failed = 0;
+	obj = input->object;
+	if (!vector3_checker(obj->color , 0.0, 255.0))
+	{
+		printf("Cylinder color out of range\n");
+		failed = 1;
+	}
+	if (!vector3_checker(obj->normal_axis , -1.0, 1.0))
+	{
+		printf("Cylinder normal axis out of range\n");
+		failed = 1;
+	}
+	if (failed)
+	{
+		free(input->name);
+		input->name = 0;
+	}
+}
+
+int has_invalid_input(t_input_list *input)
+{
+	t_input_list *traverse;
+	int is_invalid;
+
+	traverse = input;
+	is_invalid = 0;
+	while (traverse != 0)
+	{
+		if (traverse->name == 0)
+			is_invalid = 1;
+		traverse = traverse->next;
+	}
+	return (is_invalid);
+}
+
+void check_esentials(t_minirt *minirt)
+{
+	t_input_list *traverse;
+	int has_esentials;
+	int has_an_object;
+
+	has_esentials = 0;
+	has_an_object = 0;
+	traverse = minirt->input_head;
+	while (traverse != 0)
+	{
+		if (ft_strncmp(traverse->name, "Ambient", 7))
+			has_esentials++;
+		else if (ft_strncmp(traverse->name, "Camera", 6))
+			has_esentials++;
+		else if (ft_strncmp(traverse->name, "Light", 5))
+			has_esentials++;
+		else
+			has_an_object++;
+	}
+	if (has_esentials != 3 && has_an_object == 0)
+	{
+		printf("Error\nCritical error nothing will be rendered\n");
+		minirt->input_validity = -1;
+	}
+	else
+		minirt->input_validity = 1;
+}
+
+void	final_prepare_input(t_minirt *minirt)
+{
+	t_input_list *traverse;
+	t_input_list *tmpone;
+	t_input_list *tmptwo;
+
+	traverse = minirt->input_head;
+	while (traverse != 0)
+	{
+		if (traverse->name == 0)
+		{
+			tmpone = traverse->next;
+			free(traverse);
+			traverse = tmpone;
+		}
+		else if (traverse != 0 && traverse->name != 0)
+			break;
+	}
+	minirt->input_head = traverse;
+	while (has_invalid_input(minirt->input_head))
+	{
+		if (traverse->next != 0 && traverse->next->name == 0)
+		{
+			tmpone = traverse->next->next;
+			tmptwo = traverse->next;
+			traverse->next = tmpone;
+			free(tmptwo);
+		}
+		if (traverse->next != 0 && traverse->next->name != 0)
+			traverse = traverse->next;
+	}
+	check_esentials(minirt);
+}
+
+void validate_input(t_minirt *minirt)
+{
+	t_input_list *input;
+
+	input = minirt->input_head;
+	while (input != 0)
+	{
+		if (input->name == 0)
+		{
+			printf("Invalid object description, object will not be rendered\n");
+			input = input->next;
+		}
+		if (ft_strncmp(input->name, "Ambient", 7) == 0)
+			validate_values_ambient(input);
+		if (ft_strncmp(input->name, "Camera", 6) == 0)
+			validate_values_camera(input);
+		if (ft_strncmp(input->name, "Light", 5) == 0)
+			validate_values_light(input);
+		if (ft_strncmp(input->name, "Sphere", 6) == 0)
+			validate_values_sphere(input);
+		if (ft_strncmp(input->name, "Plane", 5) == 0)
+			validate_values_plane(input);
+		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
+			validate_values_cylinder(input);
+		input = input->next;
+	}
+	final_prepare_input(minirt);
+}
+
+void print_input(t_minirt *minirt)
+{
+	t_input_list *input;
+
+	input = minirt->input_head;
+	while (input != 0)
+	{
+		printf("name: %s\n", input->name);
+		if (ft_strncmp(input->name, "Ambient", 7) == 0)
+		{
+			t_ambient *amb = input->object;
+			printf("intense: %f\ncolor: %f , %f, %f.\n", amb->intensity, amb->color.x, amb->color.y, amb->color.z);
+		}
+		if (ft_strncmp(input->name, "Camera", 6) == 0)
+		{
+			t_camera *cam = input->object;
+			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f.\n",cam->fov, cam->position.x, cam->position.y, cam->position.z, cam->orientation.x, cam->orientation.y, cam->orientation.z);
+		}
+		if (ft_strncmp(input->name, "Light", 5) == 0)
+		{
+			t_light *cam = input->object;
+			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->brightness, cam->position.x, cam->position.y, cam->position.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Sphere", 6) == 0)
+		{
+			t_sphere *cam = input->object;
+			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->radius, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Plane", 5) == 0)
+		{
+			t_plane *cam = input->object;
+			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->normal.x, cam->normal.y, cam->normal.z, cam->point_on_plane.x, cam->point_on_plane.y, cam->point_on_plane.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
+		{
+			t_cylinder *cam = input->object;
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->diameter,cam->normal_axis.x, cam->normal_axis.y, cam->normal_axis.z, cam->centre.x, cam->centre.y, cam->centre.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		input = input->next;
+	}
+
+}
+
+int main(int argc, char *argv[])
 {
 	t_minirt minirt;
+	int	fd;
 
-	if (init_minirt(&minirt) == ERROR)
-		return (ERROR);
-	get_input_list(&minirt);
-	mlx_loop_hook(minirt.mlx, &hook, &minirt);
-	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
-
-	mlx_loop(minirt.mlx);
-	mlx_terminate(minirt.mlx);
+	if ( argc == 2  && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		return (0);
+	/*if (init_minirt(&minirt) == ERROR)
+		return (ERROR);*/
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
+	//mlx_loop_hook(minirt.mlx, &hook, &minirt);
+	//mlx_key_hook(minirt.mlx, &keyhook, &minirt);
+	//mlx_loop(minirt.mlx);
+	//mlx_terminate(minirt.mlx);
+	print_input(&minirt);
+	close(fd);
 	return (SUCCESS);
 }
