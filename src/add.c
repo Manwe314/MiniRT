@@ -12,30 +12,9 @@
 
 #include "minirt.h"
 
-
-t_vec3d add_center(float x, float y, float z)
+t_vec3 add_point(float x, float y, float z)
 {
-	t_vec3d vec;
-
-	vec.x = x + g_minirt.world.coord_world.x;
-	vec.y = y + g_minirt.world.coord_world.y;
-	vec.z = z + g_minirt.world.coord_world.z;
-	return (vec);
-}
-
-t_vec3d add_angle(float x, float y, float z)
-{
-	t_vec3d vec;
-
-	vec.x = to_radian( x + g_minirt.world.angle_world.x);
-	vec.y = to_radian( y + g_minirt.world.angle_world.y);
-	vec.z = to_radian( z + g_minirt.world.angle_world.z);
-	return (vec);
-}
-
-t_vec3d add_point(float x, float y, float z)
-{
-	t_vec3d vec;
+	t_vec3 vec;
 
 	vec.x = x;
 	vec.y = y;
@@ -43,20 +22,20 @@ t_vec3d add_point(float x, float y, float z)
 	return (vec);
 }
 
-t_triangle add_triangle(t_vec3d pos)
+t_triangle add_triangle(t_vec3 pos, t_vec3 pos1, t_vec3 pos2)
 {
 	t_triangle triangle;
 
-	triangle.p->x = pos.x;
-	triangle.p->y = pos.y;
-	triangle.p->z = pos.z;
+	triangle.p[0] = pos;
+    triangle.p[1] = pos1;
+    triangle.p[2] = pos2;
 	return (triangle);
 }
 
-t_plane add_plane(t_vec3d pos, t_vec3d angle, t_vec3d scale)
+t_plane add_plane(t_vec3 pos, t_vec3 angle, t_vec3 scale)
 {
     // Initialisation des points du rectangle
-    t_vec3d points[4] = {
+    t_vec3 points[4] = {
         add_point(-scale.x / 2, -scale.y / 2, 0),
         add_point(scale.x / 2, -scale.y / 2, 0),
         add_point(scale.x / 2, scale.y / 2, 0),

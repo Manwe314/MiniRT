@@ -11,11 +11,13 @@
 /* ************************************************************************** */
 
 #include "minirt.h"
-
+/*
 void draw_line(int x1, int y1, int x2, int y2)
 {
 	// Calculer les différences entre les coordonnées x et y des deux points
-	int dx = abs(x2 - x1);
+	if (x1 == x2 && y1 == y2)
+        return ;
+    int dx = abs(x2 - x1);
 	int dy = abs(y2 - y1);
 
 	// Déterminer l'incrémentation pour chaque coordonnée
@@ -47,36 +49,30 @@ void draw_line(int x1, int y1, int x2, int y2)
 	}
 }
 
-t_matrix4x4 rotation_x(float angle)
-{
-    t_matrix4x4 matrix;
-    float c;
-    float s;
-
-    c = cos(angle);
-    s = sin(angle);
-    matrix = init_mat_0();
-    matrix.matrix[0][0] = 1.0f;
-    matrix.matrix[1][1] = c;
-    matrix.matrix[1][2] = -s;
-    matrix.matrix[2][1] = s;
-    matrix.matrix[2][2] = c;
-    matrix.matrix[3][3] = 1.0f;
-    return (matrix);
-}
-
 
 void draw_triangle(t_triangle triangle)
 {
     // Définir les sommets du triangle en 3D
+    t_matrix4x4 perspMatrix, viewMatrix;
+    t_vec3d eye = {g_minirt.world.coord_world.x, g_minirt.world.coord_world.y, g_minirt.world.coord_world.z};
+    float yaw = (int)g_minirt.world.angle_world.y;
+    yaw = to_radian(yaw);
+    float pitch = (int)g_minirt.world.angle_world.x;
+    perspMatrix = createperspectivematrix(90.0f, (float)g_minirt.width / (float)g_minirt.height, 0.1f, 1000.0f);
+
+    pitch = to_radian(pitch);
+    viewMatrix = FPSViewRH(eye, pitch, yaw);
+    triangle.p[0] = multiplymatrixvector(triangle.p[0], viewMatrix);
+    triangle.p[1] = multiplymatrixvector(triangle.p[1], viewMatrix);
+    triangle.p[2] = multiplymatrixvector(triangle.p[2], viewMatrix);
+    triangle.p[0] = multiplymatrixvector(triangle.p[0], perspMatrix);
+    triangle.p[1] = multiplymatrixvector(triangle.p[1], perspMatrix);
+    triangle.p[2] = multiplymatrixvector(triangle.p[2], perspMatrix);
     t_vec3d v0 = triangle.p[0];
     t_vec3d v1 = triangle.p[1];
     t_vec3d v2 = triangle.p[2];
+    perspMatrix = mult_mat4x4(perspMatrix, viewMatrix);
 
-    // Définir la matrice de perspective
-    t_matrix4x4 perspMatrix;
-
-    perspMatrix = createperspectivematrix(90.0f, (float)g_minirt.width / (float)g_minirt.height, 1.0f, 100.0f);
     //perspMatrix = mult_mat4x4(perspMatrix, rotation_x(g_minirt.world.angle_world.x));
     // Appliquer la matrice de perspective aux sommets du triangle
     t_vec3d p0 = multiplymatrixvector(v0, perspMatrix);
@@ -84,19 +80,24 @@ void draw_triangle(t_triangle triangle)
     t_vec3d p2 = multiplymatrixvector(v2, perspMatrix);
 
     // Normaliser les sommets projetés par leur coordonnée w
-    if (p0.z != 0.0f) {
+    if (p0.z > 0.001f || p0.z < -0.001f) {
+        if (p0.z < 0.0f)
+            p0.z = -p0.z;
         p0.x /= p0.z;
         p0.y /= p0.z;
     }
-    if (p1.z != 0.0f) {
+    if (p1.z > 0.001f || p1.z < -0.001f) {
+        if (p1.z < 0.0f)
+            p1.z = -p1.z;
         p1.x /= p1.z;
         p1.y /= p1.z;
     }
-    if (p2.z != 0.0f) {
+    if (p2.z > 0.001f || p2.z < -0.001f) {
+        if (p2.z < 0.0f)
+            p2.z = -p2.z;
         p2.x /= p2.z;
         p2.y /= p2.z;
     }
-
     // Convertir les coordonnées normalisées en coordonnées de pixel
     int x0 = (int)((p0.x + 1.0f) * 0.5f * g_minirt.width);
     int y0 = (int)((1.0f - p0.y) * 0.5f * g_minirt.height);
@@ -104,16 +105,46 @@ void draw_triangle(t_triangle triangle)
     int y1 = (int)((1.0f - p1.y) * 0.5f * g_minirt.height);
     int x2 = (int)((p2.x + 1.0f) * 0.5f * g_minirt.width);
     int y2 = (int)((1.0f - p2.y) * 0.5f * g_minirt.height);
-
     // Tracer les côtés du triangle
+    //printf("x0 = %d, x1 = %d, x2 = %d, y0 = %d, y1 = %d, y2 = %d\n", x0, x1, x2, y0, y1, y2);
     draw_line(x0, y0, x1, y1);
     draw_line(x1, y1, x2, y2);
     draw_line(x2, y2, x0, y0);
+}*/
+
+/*
+void draw_triangle(t_triangle triangle)
+{
+    // Appliquer les transformations des matrices de perspective et de vue FPS
+
+    // Appliquer la matrice de vue FPS à chaque point du triangle
+    t_vec3d transformedPoints[3];
+    for (int i = 0; i < 3; i++) {
+        transformedPoints[i] = multiply_matrix_vector(FPSViewMatrix, triangle.points[i]);
+    }
+
+    // Appliquer la matrice de perspective à chaque point du triangle
+    for (int i = 0; i < 3; i++) {
+        transformedPoints[i] = multiply_matrix_vector(PerspectiveMatrix, transformedPoints[i]);
+    }
+
+    // Convertir les coordonnées des points 3D en coordonnées 2D
+    for (int i = 0; i < 3; i++) {
+        transformedPoints[i].x /= transformedPoints[i].z;
+        transformedPoints[i].y /= transformedPoints[i].z;
+    }
+
+    // Dessiner les arêtes du triangle
+    for (int i = 0; i < 3; i++) {
+        int x1 = (int)transformedPoints[i].x;
+        int y1 = (int)transformedPoints[i].y;
+        int x2 = (int)transformedPoints[(i + 1) % 3].x;
+        int y2 = (int)transformedPoints[(i + 1) % 3].y;
+        draw_line(x1, y1, x2, y2);
+    }
 }
 
-
-
-
+*/
 
 
 

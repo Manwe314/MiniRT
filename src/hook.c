@@ -15,30 +15,36 @@
 
 void keyhook(mlx_key_data_t keydata, void *param)
 {
-	(void)param;
-	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.x += 0.1;
-	if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.x -= 0.1;
-	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.y += 0.1;
-	if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.y -= 0.1;
-	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.z += 0.1;
-	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		g_minirt.world.coord_world.z -= 0.1;
+	t_minirt *minirt;
 
-	if (keydata.key == MLX_KEY_KP_5 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.x += 10;
-	if (keydata.key == MLX_KEY_KP_8 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.x -= 10;
-	if (keydata.key == MLX_KEY_KP_6 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.y += 10;
-	if (keydata.key == MLX_KEY_KP_4 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.y -= 10;
-	if (keydata.key == MLX_KEY_KP_7 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.z += 10;
-	if (keydata.key == MLX_KEY_KP_9 && keydata.action != MLX_RELEASE)
-		g_minirt.world.angle_world.z -= 10;
+	minirt = (t_minirt *)param;
+	float speed = 0.01f;
+	t_vec3 updirection;
+	t_vec3 rightdirection;
+
+	updirection = vec3(0.0f, 1.0f, 0.0f);
+	rightdirection = vec3_cross(minirt->camera.forward, updirection);
+	printf("pos: %f %f %f\n", minirt->camera.pos.x, minirt->camera.pos.y, minirt->camera.pos.z);
+	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(rightdirection, speed));
+	if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(rightdirection, speed));
+	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(updirection, speed));
+	if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(updirection, speed));
+	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(minirt->camera.forward, speed));
+	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
+		minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(minirt->camera.forward, speed));
+
+	if (keydata.key == MLX_KEY_D || keydata.key == MLX_KEY_A \
+	|| keydata.key == MLX_KEY_SPACE || keydata.key == MLX_KEY_LEFT_CONTROL \
+	|| keydata.key == MLX_KEY_W || keydata.key == MLX_KEY_S)
+	{
+		minirt->moved = true;
+		// calculateraydirections(minirt);
+		// calculateview(minirt);
+	}
+
 }
