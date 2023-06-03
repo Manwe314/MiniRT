@@ -335,7 +335,7 @@ t_vector3 get_vector3(const char *line, int i, t_input_list *input)
 	if (split_size(values) != 3)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 	else
 	{
@@ -353,7 +353,7 @@ int evaluator(t_input_list *input, int i)
 	if (i < 0)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 		return (1);
 	}
 	else
@@ -441,6 +441,7 @@ t_sphere *init_sphere(const char *line, t_input_list *input)
 	t_sphere *obj;
 	int i;
 
+	obj = (t_sphere *)malloc(sizeof(t_sphere));
 	i = get_to_next_param(line, 0, input);
 	if (i < 0)
 		return (obj);
@@ -460,6 +461,8 @@ t_plane *init_plane(const char *line, t_input_list *input)
 {
 	t_plane *obj;
 	int i;
+
+	obj = (t_plane *)malloc(sizeof(t_plane));
 	i = get_to_next_param(line, 0, input);
 	if (i < 0)
 		return (obj);
@@ -480,6 +483,7 @@ t_cylinder *init_cylinder(const char *line, t_input_list *input)
 	t_cylinder *obj;
 	int i;
 
+	obj = (t_cylinder *)malloc(sizeof(t_cylinder));
 	i = get_to_next_param(line, 0, input);
 	if (i < 0)
 		return (obj);
@@ -505,6 +509,7 @@ t_cylinder *init_cylinder(const char *line, t_input_list *input)
 
 void	*get_object(t_input_list *input, const char *line)
 {
+	//for each function here, add a new function that will first check the line acording to the object and then do the initilizing if valid, or skip if invalid.
 	void *object;
 
 	if (input->name == 0)
@@ -524,6 +529,9 @@ void	*get_object(t_input_list *input, const char *line)
 	return (object);
 }
 
+void print_input(t_minirt *minirt);
+
+
 void get_input_list(t_minirt *minirt, int fd)
 {
 	t_input_list *head;
@@ -539,17 +547,18 @@ void get_input_list(t_minirt *minirt, int fd)
 		if (ft_strlen(line) > 1 && !is_all_space(line))
 		{
 			temp->name = get_name(line);
-			temp->object = get_object(temp, line);
+			temp->object = get_object(temp, line); // need to fix errored edge casees
 			temp->next = (t_input_list *)malloc(sizeof(t_input_list));
 			save = temp;
 			temp = temp->next;
-			free(line);
 		}
+		free(line);
 		line = get_next_line(fd);
 	}
 	free(save->next);
 	save->next = 0;
 	minirt->input_head = head;
+	//print_input(minirt);
 }
 
 int check_file(char *file_name)
@@ -589,14 +598,14 @@ void validate_values_ambient(t_input_list *input)
 	{
 		printf("Ambient light intensity out of range\n");
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 		return ;
 	}
 	if (!vector3_checker(obj->color, 0.0, 255.0))
 	{
 		printf("Ambient light color out of range\n");
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -620,7 +629,7 @@ void validate_values_camera(t_input_list *input)
 	if (failed)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -644,7 +653,7 @@ void validate_values_light(t_input_list *input)
 	if (failed)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -663,7 +672,7 @@ void validate_values_sphere(t_input_list *input)
 	if (failed)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -687,7 +696,7 @@ void validate_values_plane(t_input_list *input)
 	if (failed)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -711,7 +720,7 @@ void validate_values_cylinder(t_input_list *input)
 	if (failed)
 	{
 		free(input->name);
-		input->name = 0;
+		input->name = ft_strdup("inv");
 	}
 }
 
@@ -742,14 +751,15 @@ void check_esentials(t_minirt *minirt)
 	traverse = minirt->input_head;
 	while (traverse != 0)
 	{
-		if (ft_strncmp(traverse->name, "Ambient", 7))
+		if (ft_strncmp(traverse->name, "Ambient", 7) == 0)
 			has_esentials++;
-		else if (ft_strncmp(traverse->name, "Camera", 6))
+		else if (ft_strncmp(traverse->name, "Camera", 6) == 0)
 			has_esentials++;
-		else if (ft_strncmp(traverse->name, "Light", 5))
+		else if (ft_strncmp(traverse->name, "Light", 5) == 0)
 			has_esentials++;
 		else
 			has_an_object++;
+		traverse = traverse->next;
 	}
 	if (has_esentials != 3 && has_an_object == 0)
 	{
@@ -760,37 +770,63 @@ void check_esentials(t_minirt *minirt)
 		minirt->input_validity = 1;
 }
 
+t_input_list *get_first_valid_node(t_input_list *lst)
+{
+	while (lst != 0)
+	{
+		if (lst != 0 && (lst->name == 0 || ft_strncmp(lst->name, "inv", 3) == 0))
+			lst = lst->next;
+		else
+			return(lst);
+	}
+	return (0);
+}
+
 void	final_prepare_input(t_minirt *minirt)
 {
 	t_input_list *traverse;
-	t_input_list *tmpone;
-	t_input_list *tmptwo;
+	t_input_list *temp;
+	t_input_list *last_valid;
+	t_input_list *first_valid;
 
 	traverse = minirt->input_head;
+	last_valid = traverse;
+	first_valid = get_first_valid_node(minirt->input_head);
 	while (traverse != 0)
 	{
-		if (traverse->name == 0)
+		if (traverse != 0 && traverse->name == 0)
 		{
-			tmpone = traverse->next;
+			temp = traverse->next;
+			if (last_valid != 0 && (last_valid->name == 0 || ft_strncmp(last_valid->name, "inv", 3) == 0))
+				last_valid = last_valid->next;
+			else
+				last_valid->next = temp;
 			free(traverse);
-			traverse = tmpone;
+			traverse = temp;
 		}
-		else if (traverse != 0 && traverse->name != 0)
-			break;
-	}
-	minirt->input_head = traverse;
-	while (has_invalid_input(minirt->input_head))
-	{
-		if (traverse->next != 0 && traverse->next->name == 0)
+		else if (traverse != 0 && ft_strncmp(traverse->name, "inv", 3) == 0)
 		{
-			tmpone = traverse->next->next;
-			tmptwo = traverse->next;
-			traverse->next = tmpone;
-			free(tmptwo);
+			temp = traverse->next;
+			if (last_valid != 0 && (last_valid->name == 0 || ft_strncmp(last_valid->name, "inv", 3) == 0))
+				last_valid = last_valid->next;
+			else
+				last_valid->next = temp;
+			free(traverse->name);
+			free(traverse->object);
+			free(traverse);
+			traverse = temp;
 		}
-		if (traverse->next != 0 && traverse->next->name != 0)
+		else
+		{
+			if (traverse->next != 0 && traverse->next->name != 0 && ft_strncmp(traverse->next->name, "inv", 3 != 0))
+				last_valid = traverse->next;
+			else
+				last_valid = traverse;
 			traverse = traverse->next;
+		}
 	}
+	print_input(minirt);
+	minirt->input_head = first_valid;
 	check_esentials(minirt);
 }
 
@@ -801,7 +837,7 @@ void validate_input(t_minirt *minirt)
 	input = minirt->input_head;
 	while (input != 0)
 	{
-		if (input->name == 0)
+		if (input->name == 0 || ft_strncmp(input->name, "inv", 3) == 0)
 		{
 			printf("Invalid object description, object will not be rendered\n");
 			input = input->next;
@@ -830,6 +866,7 @@ void print_input(t_minirt *minirt)
 	input = minirt->input_head;
 	while (input != 0)
 	{
+		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		printf("name: %s\n", input->name);
 		if (ft_strncmp(input->name, "Ambient", 7) == 0)
 		{
@@ -861,6 +898,7 @@ void print_input(t_minirt *minirt)
 			t_cylinder *cam = input->object;
 			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->diameter,cam->normal_axis.x, cam->normal_axis.y, cam->normal_axis.z, cam->centre.x, cam->centre.y, cam->centre.z, cam->color.x, cam->color.y, cam->color.z);
 		}
+		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		input = input->next;
 	}
 
@@ -883,7 +921,7 @@ int main(int argc, char *argv[])
 	//mlx_key_hook(minirt.mlx, &keyhook, &minirt);
 	//mlx_loop(minirt.mlx);
 	//mlx_terminate(minirt.mlx);
-	print_input(&minirt);
+	//print_input(&minirt);
 	close(fd);
 	return (SUCCESS);
 }
