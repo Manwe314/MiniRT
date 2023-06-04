@@ -165,15 +165,15 @@ t_matrix4x4 init_mat_0(void);
 t_matrix4x4 rotation_x(float angle);
 t_matrix4x4 rotation_y(float angle);
 t_matrix4x4 rotation_z(float angle);
-t_matrix4x4 translation(float x, float y, float z);
-t_matrix4x4 scale(float x, float y, float z);
+t_matrix4x4 translation(t_vec3 vec);
+t_matrix4x4 scale(t_vec3 vec);
 
 
 t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up);
-t_matrix4x4 inverse_lookat_matrix(t_matrix4x4 m);
+t_matrix4x4 inverse_lookat_matrix(t_vec3 eye, t_vec3 target, t_vec3 up);
 t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
 t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far);
-t_matrix4x4 inverse_perspective_matrix(t_matrix4x4 matrice);
+t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far);
 
 t_matrix4x4 FPSViewRH( t_vec3 eye, float pitch, float yaw );
 

@@ -35,28 +35,7 @@ t_vec4	clamp(t_vec4 color, float min, float max)
 
 }
 
-/*void	hook(void *param)
-{
-	t_minirt *minirt;
-	int x;
-	int y;
-	t_vec2 coord;
-	t_vec4 color;
 
-	minirt = (t_minirt *)param;
-	x = -1;
-	while (++x < minirt->width)
-	{
-		y = -1;
-		while (++y < minirt->height)
-		{
-			coord = vec2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
-			coord = vec2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
-			color = clamp(renderer(coord, minirt), 0.0f, 255.0f);
-			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
-		}
-	}
-}*/
 
 void print_mat(t_matrix4x4 mat)
 {
@@ -151,7 +130,7 @@ t_vec4 renderer(t_ray ray, t_minirt *minirt, int x, int y)
 	// t_vec2 coord = vec2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
 	// coord = vec2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
 	// ray.origin = vec3(minirt->camera.pos.x, minirt->camera.pos.y, minirt->camera.pos.z - 2);
-	// ray.direction = vec3(coord.x, coord.y, 1);
+	// ray.direction = vec3(x, y, 1);
 
 	radius = 0.5f;
 	float a = dot_product(ray.direction, ray.direction);
@@ -185,6 +164,9 @@ void hook(void *param)
 		return ;
 	calculateraydirections(minirt);
 	calculateview(minirt);
+	ray.origin = minirt->camera.pos;
+	// printf("forward: %2f %2f %2f\n", minirt->camera.forward.x, minirt->camera.forward.y, minirt->camera.forward.z);
+	printf("pos: %2f %2f %2f\n", minirt->camera.pos.x, minirt->camera.pos.y, minirt->camera.pos.z);
 	minirt->moved = false;
 	int x = -1;
 	while (++x < minirt->width)
@@ -193,26 +175,69 @@ void hook(void *param)
 		while (--y > 0)
 		{
 			ray.direction = minirt->camera.ray_dir[x + y * minirt->width];
-
 			t_vec4 color = clamp(renderer(ray, minirt, x, y), 0.0f, 255.0f);
 			mlx_put_pixel(minirt->img, x, minirt->height - y, get_rgba(color));
 		}
 	}
 }
 
+/*void	hook(void *param)
+{
+	t_minirt *minirt;
+	int x;
+	int y;
+	t_vec2 coord;
+	t_vec4 color;
+
+	if (minirt->moved == false)
+		return ;
+	minirt = (t_minirt *)param;
+	x = -1;
+	while (++x < minirt->width)
+	{
+		y = -1;
+		while (++y < minirt->height)
+		{
+			coord = vec2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
+			coord = vec2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
+			ray.direction
+			color = clamp(renderer(0, minirt), 0.0f, 255.0f);
+			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
+		}
+	}
+}*/
+
 
 void	cursor(double xpos, double ypos, void *param)
 {
 	t_minirt *minirt;
 	minirt = (t_minirt *)param;
+	// static double lastx;
+	// static double lasty;
+//
+	// if (lastx == 0 && lasty == 0)
+	// {
+		// lastx = xpos;
+		// lasty = ypos;
+	// }
+	// if (xpos > lastx)
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(0.1)));
+	// else
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(-0.1)));
+	// if (ypos < lasty)
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(0.1)));
+	// else
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(-0.1)));
+	// lastx = xpos;
+	// lasty = ypos;
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
 
 	minirt->camera.forward = vec3(-xpos / 2, -ypos / 2, 1.0f);
-	//minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(xpos)));
-	//minirt->camera.forward = vec3_normalize(minirt->camera.forward);
-	//minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(ypos)));
-	//minirt->camera.forward = vec3_normalize(minirt->camera.forward);
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(xpos)));
+	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(ypos)));
+	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
 	// calculateraydirections(minirt);
 	// calculateview(minirt);
 	minirt->moved = true;
