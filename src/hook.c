@@ -18,7 +18,7 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	t_minirt *minirt;
 
 	minirt = (t_minirt *)param;
-	float speed = 0.01f;
+	float speed = 0.05f;
 	t_vec3 updirection;
 	t_vec3 rightdirection;
 
@@ -38,17 +38,17 @@ void keyhook(mlx_key_data_t keydata, void *param)
 		// minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(minirt->camera.forward, speed));
 
 	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.x -= 0.01f;
+		minirt->camera.pos.x += speed;
 	if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.x += 0.01f;
+		minirt->camera.pos.x -= speed;
 	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.y += 0.01f;
+		minirt->camera.pos.y += speed;
 	if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.y -= 0.01f;
+		minirt->camera.pos.y -= speed;
 	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.z += 0.01f;
+		minirt->camera.pos.z += speed;
 	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.z -= 0.01f;
+		minirt->camera.pos.z -= speed;
 
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
 		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(rightdirection));

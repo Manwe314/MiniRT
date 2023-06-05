@@ -64,7 +64,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vec3(0.0f, 0.0f, -0.8f);
+	minirt->camera.pos = vec3(0.0f, 0.0f, 1.0f);
 	minirt->camera.forward = vec3(0.0f, 0.0f, 1.0f);
 
 	// Init mlx with a canvas size of 256x256 and the ability to resize the window.
@@ -123,62 +123,108 @@ float	max(float a, float b)
 	return (b);
 }
 
-t_vec4 renderer(t_ray ray, t_minirt *minirt, int x, int y)
+
+
+/*
+(x-a)^2 + (y-b)^2 - r^2 = 0
+x = a + bt;
+y = c + dt;
+(a + bt - a)^2 + (c + dt - b)^2 - r^2 = 0
+bt^2 + dt^2 + 2abt - 2bt^2 + c^2 + d^2 + 2cdt - 2bdt - r^2 = 0
+t^2(b - d) + t(2ab - 2bd) + (a^2 + b^2 - r^2) = 0
+det = (2ab - 2bd)^2 - 4(b - d)(a^2 + b^2 - r^2)
+t = (-b + sqrt(det)) / 2(b - d)
+t = (-b - sqrt(det)) / 2(b - d)
+
+*/
+
+t_vec4 renderer(t_vec2 coord, t_minirt *minirt)
 {
-	float discriminant;
-	float radius;
-	// t_vec2 coord = vec2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
-	// coord = vec2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
-	// ray.origin = vec3(minirt->camera.pos.x, minirt->camera.pos.y, minirt->camera.pos.z - 2);
-	// ray.direction = vec3(x, y, 1);
+	t_vec4 color;
+	t_ray ray;
 
-	radius = 0.5f;
+
+	//ray.origin = minirt->camera.pos;
+	ray.origin = minirt->camera.pos;
+
+	//ray.direction = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+	ray.direction = vec3_normalize(vec3(coord.x, coord.y, 1));
+
+	t_sphere sphere;
+	sphere.center = vec3(0.0f, 0.0f, 10.0f);
+	sphere.radius = 0.5f;
+	t_vec3 oc = vec3_sub(ray.origin, sphere.center);
+
 	float a = dot_product(ray.direction, ray.direction);
-	float b = 2.0f * dot_product(ray.origin, ray.direction);
-	float c = dot_product(ray.origin, ray.origin) - radius * radius;
+	float b = 2.0f * dot_product(oc, ray.direction);
+	float c = dot_product(oc, oc) - sphere.radius * sphere.radius;
 
-	discriminant = b * b - 4.0f * a * c;
-	if (discriminant < 0.0f)
-		return (vec4(0, 0, 0, 1));
+	float discriminant = b * b - 4 * a * c;
+	if (discriminant < 0)
+		return (vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	float t = (-b + sqrtf(discriminant)) / (2.0f * a);
+	if (t < 0)
+		t = (-b - sqrtf(discriminant)) / (2.0f * a);
+	if (t < 0)
+		return (vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	t_vec3 hit_point = vec3_add(ray.origin, vec3_multf(ray.direction, t));
+	t_vec3 normal = vec3_normalize(vec3_sub(hit_point, sphere.center));
+	color = vec4(normal.x, normal.y, normal.z, 1.0f);
 
-	float t0 = (-b - sqrtf(discriminant)) / (2.0f * a);
-	float closest = (-b + sqrtf(discriminant)) / (2.0f * a);
-	t_vec3 hitpoint = vec3_add( vec3_multf(ray.direction, closest), ray.origin);
-	hitpoint = vec3_normalize(hitpoint);
-	hitpoint = vec3_addf( vec3_multf(hitpoint, 0.5f), 0.5f);
 
-	t_vec3 light_dir = vec3_normalize(vec3(-1.0f, -1.0f, 1.0f));
-	float d = max(0.0f, dot_product(hitpoint, vec3_multf(light_dir, -1.0f)));
-	t_vec4 sphere_color = vec4(d,0,d, 1.0f);
-	//sphere_color = vec4_multf(sphere_color, d);
+	return (color);
+}
 
-	return (sphere_color);
+#include <time.h>
+
+void print_fps(t_minirt *minirt)
+{
+	static int frames;
+	static int last_time;
+	int current_time = time(NULL);
+	char *str;
+	frames++;
+	if (current_time - last_time >= 1)
+	{
+		str = ft_itoa(frames);
+		printf("FPS: %s\n", str);
+		free(str);
+
+		frames = 0;
+		last_time = current_time;
+	}
 }
 
 void hook(void *param)
 {
 	t_minirt *minirt = (t_minirt *)param;
 	t_ray ray;
+	int x;
+	int y;
 
-	if (minirt->moved == false)
+	if (minirt->moved != true)
 		return ;
-	calculateraydirections(minirt);
-	calculateview(minirt);
-	ray.origin = minirt->camera.pos;
-	// printf("forward: %2f %2f %2f\n", minirt->camera.forward.x, minirt->camera.forward.y, minirt->camera.forward.z);
-	printf("pos: %2f %2f %2f\n", minirt->camera.pos.x, minirt->camera.pos.y, minirt->camera.pos.z);
 	minirt->moved = false;
-	int x = -1;
+
+	calculateprojection(minirt);
+	calculatelookat(minirt);
+	minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
+	x = -1;
 	while (++x < minirt->width)
 	{
-		int y = minirt->height;
-		while (--y > 0)
+		y = -1;
+		while (++y < minirt->height)
 		{
-			ray.direction = minirt->camera.ray_dir[x + y * minirt->width];
-			t_vec4 color = clamp(renderer(ray, minirt, x, y), 0.0f, 255.0f);
-			mlx_put_pixel(minirt->img, x, minirt->height - y, get_rgba(color));
+			t_vec3 coord = vec3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
+			coord = vec3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
+			//coord = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
+			coord = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vec2(coord.x, coord.y), minirt)));
 		}
 	}
+	print_fps(minirt);
+
+
 }
 
 /*void	hook(void *param)
@@ -214,7 +260,7 @@ void	cursor(double xpos, double ypos, void *param)
 	minirt = (t_minirt *)param;
 	// static double lastx;
 	// static double lasty;
-//
+
 	// if (lastx == 0 && lasty == 0)
 	// {
 		// lastx = xpos;
@@ -233,22 +279,22 @@ void	cursor(double xpos, double ypos, void *param)
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
 
-	minirt->camera.forward = vec3(-xpos / 2, -ypos / 2, 1.0f);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(xpos)));
+	minirt->camera.forward = vec3(-xpos / 2, ypos / 2, 1.0f);
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(6.0f * xpos)));
 	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(ypos)));
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(6.0f * ypos)));
 	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
-	// calculateraydirections(minirt);
-	// calculateview(minirt);
+
 	minirt->moved = true;
 }
 
 
 int main()
 {
-	t_minirt minirt;
+	// get_obj();
+	 t_minirt minirt;
 
-	if (init_minirt(&minirt) == ERROR)
+	 if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
 
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
@@ -261,6 +307,6 @@ int main()
 	mlx_terminate(minirt.mlx);
 	if (minirt.camera.ray_dir)
 		free(minirt.camera.ray_dir);
-	//system("leaks minirt");
+	system("leaks minirt");
 	return (SUCCESS);
 }

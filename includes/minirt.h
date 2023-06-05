@@ -13,9 +13,10 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-//# include "libft.h"
+# include "../lib/libft/includes/libft.h"
 
 # include "../lib/MLX42/include/MLX42/MLX42.h"
+# include "get_next_line.h"
 # include <math.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -30,21 +31,7 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-typedef struct inverse
-{
-	float a;
-	float p;
-	float q;
-	float r;
-	float s;
-	float t;
-	float u;
-	float v;
-	float w;
-	float x;
-	float y;
-	float z;
-} t_inverse;
+
 
 typedef struct s_vec2
 {
@@ -65,12 +52,13 @@ typedef struct s_vec4d
 typedef struct s_triangle
 {
 	t_vec3 p[3];
+	t_vec3 normal;
 } t_triangle;
 
 typedef struct s_plane
 {
-	t_triangle triangle[2];
-
+	t_vec3 p[4];
+	t_vec3 normal;
 } t_plane;
 
 typedef struct s_cuboid
@@ -89,6 +77,14 @@ typedef struct s_sphere
     double radius;
 } t_sphere;
 
+typedef struct s_obj
+{
+	t_vec3 *vertex;
+	t_vec3 *normal;
+	int index;
+} t_obj;
+
+
 typedef struct s_ray
 {
 	t_vec3 origin;
@@ -106,6 +102,25 @@ typedef struct s_camera
 	t_matrix4x4 inv_lookat;
 }	t_camera;
 
+typedef struct s_scene
+{
+	t_sphere *sphere;
+	t_plane planes[100];
+	t_triangle triangles[100];
+	t_cuboid *cuboid;
+	t_obj *obj;
+}	t_scene;
+
+typedef struct s_model
+{
+	t_sphere sphere;
+	t_plane plane;
+	t_triangle triangle;
+	t_cuboid cuboid;
+	t_obj *obj;
+	int nb_obj;
+}	t_model;
+
 
 typedef struct s_minirt
 {
@@ -113,7 +128,9 @@ typedef struct s_minirt
 	mlx_image_t	*img;
 	int32_t		width;
 	int32_t		height;
+	t_scene		scene;
 	t_camera	camera;
+	t_model		model;
 	int			error;
 	int			moved;
 }	t_minirt;
@@ -129,8 +146,9 @@ float dot_product(t_vec3 v1, t_vec3 v2);
 t_vec3 vec3_normalize(t_vec3 v);
 float vec3d_magnitude(t_vec3 v);
 
-t_vec3 vec3(float x, float y, float z);
+
 t_vec2 vec2(float x, float y);
+t_vec3 vec3(float x, float y, float z);
 t_vec4 vec4(float x, float y, float z, float w);
 
 t_vec2 vec2_sub(t_vec2 v1, t_vec2 v2);
@@ -149,11 +167,11 @@ void calculateraydirections(t_minirt *minirt);
 void calculateview(t_minirt *minirt);
 void calculateprojection(t_minirt *minirt);
 
-t_plane add_plane(t_vec3 pos, t_vec3 angle, t_vec3 scale);
+t_plane add_plane(t_vec3 pos, t_vec3 pos2, t_vec3 pos3, t_vec3 pos4);
 t_vec3 add_point(float x, float y, float z);
 t_vec3 add_center(float x, float y, float z);
 t_triangle add_triangle(t_vec3 pos, t_vec3 pos1, t_vec3 pos2);
-t_vec3 add_angle(float x, float y, float z);
+
 
 void keyhook(mlx_key_data_t keydata, void *param);
 
@@ -168,7 +186,7 @@ t_matrix4x4 rotation_z(float angle);
 t_matrix4x4 translation(t_vec3 vec);
 t_matrix4x4 scale(t_vec3 vec);
 
-
+void calculatelookat(t_minirt *minirt);
 t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up);
 t_matrix4x4 inverse_lookat_matrix(t_vec3 eye, t_vec3 target, t_vec3 up);
 t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
@@ -182,6 +200,11 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
+t_scene get_obj(void);
+
+
+char	*ft_itoa(int n);
+char	*ft_strdup(const char *s);
 
 
 #endif

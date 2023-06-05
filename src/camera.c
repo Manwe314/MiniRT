@@ -14,16 +14,20 @@
 
 void calculateprojection(t_minirt *minirt)
 {
-	minirt->camera.inv_perspective = matrixInverse( \
-	createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,\
+	minirt->camera.inv_perspective = matrixInverse(
+	createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,
 	0.1f, 100.0f), 4);
+	// minirt->camera.inv_perspective = inverse_perspective_matrix( \
+	// minirt->camera.fov, minirt->width / minirt->height, 0.1f, 100.0f);
 }
 
-void calculateview(t_minirt *minirt)
+void calculatelookat(t_minirt *minirt)
 {
-	minirt->camera.inv_lookat = matrixInverse( \
-	lookat(minirt->camera.pos, vec3_add(minirt->camera.pos, minirt->camera.forward), \
+	minirt->camera.inv_lookat = matrixInverse(
+	lookat(minirt->camera.pos, vec3_add(minirt->camera.pos, minirt->camera.forward),
 	vec3(0, 1, 0)), 4);
+	// minirt->camera.inv_lookat = inverse_lookat_matrix(minirt->camera.pos, \
+	// vec3_add(minirt->camera.pos, minirt->camera.forward), vec3(0, 1, 0));
 }
 
 void calculateraydirections(t_minirt *minirt)
