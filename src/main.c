@@ -3,17 +3,94 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/05/04 17:16:05 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/05 20:58:13 by lkukhale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+#include "../lib/libft/includes/libft.h"
 
+float min(float a, float b)
+{
+	if (a > b)
+		return b;
+	else
+		return a;
+}
 
-t_vec4	clamp(t_vec4 color, float min, float max)
+float max(float a, float b)
+{
+	if (a < b)
+		return b;
+	else
+		return a;
+}
+
+void close_function(void *param)
+{
+	t_minirt *minirt;
+
+	minirt = param;
+
+	mlx_delete_image(minirt->mlx, minirt->img);
+	free(minirt->input_head->name);
+	free(minirt->input_head->object);
+}
+
+float to_radian(float angle)
+{
+	return (angle * (M_PI / 180));
+}
+
+void print_input(t_minirt *minirt)
+{
+	t_input_list *input;
+
+	input = minirt->input_head;
+	while (input != 0)
+	{
+		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		printf("name: %s\n", input->name);
+		if (ft_strncmp(input->name, "Ambient", 7) == 0)
+		{
+			t_ambient *amb = input->object;
+			printf("intense: %f\ncolor: %f , %f, %f.\n", amb->intensity, amb->color.x, amb->color.y, amb->color.z);
+		}
+		if (ft_strncmp(input->name, "Camera", 6) == 0)
+		{
+			t_camera *cam = input->object;
+			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f.\n",cam->fov, cam->position.x, cam->position.y, cam->position.z, cam->orientation.x, cam->orientation.y, cam->orientation.z);
+		}
+		if (ft_strncmp(input->name, "Light", 5) == 0)
+		{
+			t_light *cam = input->object;
+			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->brightness, cam->position.x, cam->position.y, cam->position.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Sphere", 6) == 0)
+		{
+			t_sphere *cam = input->object;
+			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->radius, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Plane", 5) == 0)
+		{
+			t_plane *cam = input->object;
+			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->normal.x, cam->normal.y, cam->normal.z, cam->point_on_plane.x, cam->point_on_plane.y, cam->point_on_plane.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
+		{
+			t_cylinder *cam = input->object;
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->diameter,cam->normal_axis.x, cam->normal_axis.y, cam->normal_axis.z, cam->centre.x, cam->centre.y, cam->centre.z, cam->color.x, cam->color.y, cam->color.z);
+		}
+		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		input = input->next;
+	}
+
+}
+
+t_vector4	clamp(t_vector4 color, float min, float max)
 {
 	if (color.x < min)
 		color.x = min;
@@ -34,8 +111,6 @@ t_vec4	clamp(t_vec4 color, float min, float max)
 	return (color);
 
 }
-
-
 
 void print_mat(t_matrix4x4 mat)
 {
@@ -64,14 +139,14 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vec3(0.0f, 0.0f, 1.0f);
-	minirt->camera.forward = vec3(0.0f, 0.0f, 1.0f);
+	minirt->camera.pos = vector3(0.0f, 0.0f, 1.0f);
+	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	// Init mlx with a canvas size of 256x256 and the ability to resize the window.
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		exit(ERROR);
-	minirt->camera.ray_dir = malloc(sizeof(t_vec3) * minirt->width * minirt->height);
+	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width * minirt->height);
 	if (!minirt->camera.ray_dir)
 		exit(ERROR);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
@@ -82,7 +157,7 @@ static int	init_minirt(t_minirt *minirt)
 	return (SUCCESS);
 }
 
-int	get_rgba(t_vec4 color)
+int	get_rgba(t_vector4 color)
 {
 	color.x = color.x * 255.0f;
 	color.y = color.y * 255.0f;
@@ -103,7 +178,7 @@ void	resize(int32_t width, int32_t height, void *param)
 	minirt->width = width;
 	minirt->height = height;
 	free(minirt->camera.ray_dir);
-	minirt->camera.ray_dir = malloc(sizeof(t_vec3) * minirt->width * minirt->height);
+	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width * minirt->height);
 	if (!minirt->camera.ray_dir)
 	{
 		minirt->error = ERROR;
@@ -115,16 +190,6 @@ void	resize(int32_t width, int32_t height, void *param)
 	minirt->moved = true;
 	mlx_image_to_window( minirt->mlx,  minirt->img, 0, 0);
 }
-
-float	max(float a, float b)
-{
-	if (a > b)
-		return (a);
-	return (b);
-}
-
-
-
 /*
 (x-a)^2 + (y-b)^2 - r^2 = 0
 x = a + bt;
@@ -135,25 +200,23 @@ t^2(b - d) + t(2ab - 2bd) + (a^2 + b^2 - r^2) = 0
 det = (2ab - 2bd)^2 - 4(b - d)(a^2 + b^2 - r^2)
 t = (-b + sqrt(det)) / 2(b - d)
 t = (-b - sqrt(det)) / 2(b - d)
-
 */
-
-t_vec4 renderer(t_vec2 coord, t_minirt *minirt)
+t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
 {
-	t_vec4 color;
+	t_vector4 color;
 	t_ray ray;
 
 
-	//ray.origin = minirt->camera.pos;
+	ray.origin = minirt->camera.pos;
 	ray.origin = minirt->camera.pos;
 
-	//ray.direction = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-	ray.direction = vec3_normalize(vec3(coord.x, coord.y, 1));
+	ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+	ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
 
 	t_sphere sphere;
-	sphere.center = vec3(0.0f, 0.0f, 10.0f);
+	sphere.center = vector3(0.0f, 0.0f, 10.0f);
 	sphere.radius = 0.5f;
-	t_vec3 oc = vec3_sub(ray.origin, sphere.center);
+	t_vector3 oc = vector3_subtract(ray.origin, sphere.center);
 
 	float a = dot_product(ray.direction, ray.direction);
 	float b = 2.0f * dot_product(oc, ray.direction);
@@ -161,21 +224,19 @@ t_vec4 renderer(t_vec2 coord, t_minirt *minirt)
 
 	float discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
-		return (vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
 	float t = (-b + sqrtf(discriminant)) / (2.0f * a);
 	if (t < 0)
 		t = (-b - sqrtf(discriminant)) / (2.0f * a);
 	if (t < 0)
-		return (vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	t_vec3 hit_point = vec3_add(ray.origin, vec3_multf(ray.direction, t));
-	t_vec3 normal = vec3_normalize(vec3_sub(hit_point, sphere.center));
-	color = vec4(normal.x, normal.y, normal.z, 1.0f);
+		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
+	t_vector3 hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
+	t_vector3 normal = vector3_normalize(vector3_subtract(hit_point, sphere.center));
+	color = vector4(normal.x, normal.y, normal.z, 1.0f);
 
 
 	return (color);
 }
-
-#include <time.h>
 
 void print_fps(t_minirt *minirt)
 {
@@ -215,11 +276,11 @@ void hook(void *param)
 		y = -1;
 		while (++y < minirt->height)
 		{
-			t_vec3 coord = vec3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
-			coord = vec3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			//coord = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
-			coord = multiplymatrixvector(vec3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vec2(coord.x, coord.y), minirt)));
+			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
+			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
+			//coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
+			coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vector2(coord.x, coord.y), minirt)));
 		}
 	}
 	print_fps(minirt);
@@ -232,8 +293,8 @@ void hook(void *param)
 	t_minirt *minirt;
 	int x;
 	int y;
-	t_vec2 coord;
-	t_vec4 color;
+	t_vector2 coord;
+	t_vector4 color;
 
 	if (minirt->moved == false)
 		return ;
@@ -244,15 +305,14 @@ void hook(void *param)
 		y = -1;
 		while (++y < minirt->height)
 		{
-			coord = vec2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
-			coord = vec2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
+			coord = vector2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
+			coord = vector2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
 			ray.direction
 			color = clamp(renderer(0, minirt), 0.0f, 255.0f);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
 		}
 	}
 }*/
-
 
 void	cursor(double xpos, double ypos, void *param)
 {
@@ -279,24 +339,28 @@ void	cursor(double xpos, double ypos, void *param)
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
 
-	minirt->camera.forward = vec3(-xpos / 2, ypos / 2, 1.0f);
+	minirt->camera.forward = vector3(-xpos / 2, ypos / 2, 1.0f);
 	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(6.0f * xpos)));
-	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
+	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
 	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(6.0f * ypos)));
-	minirt->camera.forward = vec3_normalize(minirt->camera.forward);
+	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
 
 	minirt->moved = true;
 }
 
-
-int main()
+int main(int argc, char *argv[])
 {
-	// get_obj();
-	 t_minirt minirt;
+	t_minirt minirt;
+	int	fd;
 
-	 if (init_minirt(&minirt) == ERROR)
+	if (argc == 2  && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		return (0);
+	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
-
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
@@ -308,5 +372,7 @@ int main()
 	if (minirt.camera.ray_dir)
 		free(minirt.camera.ray_dir);
 	system("leaks minirt");
+	close(fd);
 	return (SUCCESS);
 }
+

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt.h"
+/*#include "minirt.h"
 #include <fcntl.h>
 
 float ft_atof(const char* str)
@@ -56,18 +56,18 @@ t_scene get_obj(void)
 	t_scene scene;
 	char *line;
 	char **split;
-	t_vec3 *coord;
-	t_vec4 *ordre;
+	t_vector3 *coord;
+	t_vector4 *ordre;
 	int i;
 	int j;
 
 	i = -1;
 	j = -1;
-	coord = malloc(sizeof(t_vec3) * 100);
-	if (!vec3)
+	coord = malloc(sizeof(t_vector3) * 100);
+	if (!vector3)
 		return (scene);
-	ordre = malloc(sizeof(t_vec4) * 100);
-	if (!vec3)
+	ordre = malloc(sizeof(t_vector4) * 100);
+	if (!vector3)
 	{
 		free(coord);
 		return (scene);
@@ -134,7 +134,7 @@ t_scene get_obj(void)
 	// while (split[++i])
 		// free(split[i]);
 	k = -1;
-	/*while (++k <= j)
+	while (++k <= j)
 	{
 		l = -1;
 		while (++l <=3)
@@ -144,9 +144,10 @@ t_scene get_obj(void)
 			else if (ordre[k].w != -1 && l <= 3)
 				printf("planes[%d].p[%d] = %f %f %f \n",k, l, scene.planes[j].p[l].x, scene.planes[j].p[l].y, scene.planes[j].p[l].z);
 		}
-	}*/
+	}
 	free(split);
 	free(coord);
 	free(ordre);
 	return (scene);
 }
+*/

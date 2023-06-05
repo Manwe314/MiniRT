@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
+/*   plane.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:05:23 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 21:07:35 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/05 18:07:48 by lkukhale          #+#    #+#             */
+/*   Updated: 2023/06/05 18:08:30 by lkukhale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_camera(const char *line)
+int validate_line_plane(const char *line)
 {
 	char **inputs;
 	int i;
@@ -41,41 +41,42 @@ int validate_line_camera(const char *line)
 	return (1);
 }
 
-t_camera *init_camera(const char *line, t_input_list *input)
+t_plane *init_plane(const char *line, t_input_list *input)
 {
-	t_camera	*obj;
+	t_plane *obj;
 	int i;
 
-	obj = (t_camera *)malloc(sizeof(t_camera));
-	if (!validate_line_camera(line))
+	obj = (t_plane *)malloc(sizeof(t_plane));
+	if (!validate_line_plane(line))
 	{
 		free(input->name);
 		input->name = ft_strdup("inv");
 		return (obj);
 	}
 	i = get_to_next_param(line, 0, input);
-	obj->position = get_vector3(line, i, input);
+	obj->point_on_plane = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->orientation = get_vector3(line, i, input);
+	obj->normal = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->fov = ft_atof(line + i);
+	obj->color = get_vector3(line, i, input);
 	return (obj);
 }
 
-void validate_values_camera(t_input_list *input)
+void validate_values_plane(t_input_list *input)
 {
 	int failed;
-	t_camera *obj;
+	t_plane *obj;
+
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->orientation, -1.0, 1.0))
+	if (!vector3_checker(obj->color , 0.0, 255.0))
 	{
-		printf("Camera orientation out of range\n");
+		printf("plane color out of range\n");
 		failed = 1;
 	}
-	if (obj->fov < 0 || obj->fov > 180)
+	if (!vector3_checker(obj->normal , -1.0, 1.0))
 	{
-		printf("Camera FOV out of range\n");
+		printf("plane normal out of range\n");
 		failed = 1;
 	}
 	if (failed)

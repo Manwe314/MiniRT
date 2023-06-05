@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
+/*   cylinder.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:05:23 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 21:07:35 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/05 18:08:42 by lkukhale          #+#    #+#             */
+/*   Updated: 2023/06/05 18:09:31 by lkukhale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_camera(const char *line)
+int validate_line_cylinder(const char *line)
 {
 	char **inputs;
 	int i;
 	int j;
 
 	inputs = ft_split(line, ' ');
-	if (split_size(inputs) != 4)
+	if (split_size(inputs) != 6)
 		return (0);
 	i = 1;
 	while (inputs[i] != 0)
@@ -41,41 +41,46 @@ int validate_line_camera(const char *line)
 	return (1);
 }
 
-t_camera *init_camera(const char *line, t_input_list *input)
+t_cylinder *init_cylinder(const char *line, t_input_list *input)
 {
-	t_camera	*obj;
+	t_cylinder *obj;
 	int i;
 
-	obj = (t_camera *)malloc(sizeof(t_camera));
-	if (!validate_line_camera(line))
+	obj = (t_cylinder *)malloc(sizeof(t_cylinder));
+	if (!validate_line_cylinder(line))
 	{
 		free(input->name);
 		input->name = ft_strdup("inv");
 		return (obj);
 	}
 	i = get_to_next_param(line, 0, input);
-	obj->position = get_vector3(line, i, input);
+	obj->centre = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->orientation = get_vector3(line, i, input);
+	obj->normal_axis = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->fov = ft_atof(line + i);
+	obj->diameter = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	obj->height = ft_atof(line + i);
+	i = get_to_next_param(line, i, input);
+	obj->color = get_vector3(line, i, input);
 	return (obj);
 }
 
-void validate_values_camera(t_input_list *input)
+void validate_values_cylinder(t_input_list *input)
 {
 	int failed;
-	t_camera *obj;
+	t_cylinder *obj;
+
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->orientation, -1.0, 1.0))
+	if (!vector3_checker(obj->color , 0.0, 255.0))
 	{
-		printf("Camera orientation out of range\n");
+		printf("Cylinder color out of range\n");
 		failed = 1;
 	}
-	if (obj->fov < 0 || obj->fov > 180)
+	if (!vector3_checker(obj->normal_axis , -1.0, 1.0))
 	{
-		printf("Camera FOV out of range\n");
+		printf("Cylinder normal axis out of range\n");
 		failed = 1;
 	}
 	if (failed)

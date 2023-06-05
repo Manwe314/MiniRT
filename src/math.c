@@ -17,9 +17,9 @@ float mult(float a, float b, float c)
 	return (a * b * c);
 }
 
-t_vec3 multiplymatrixvector(t_vec3 i, t_matrix4x4 m)
+t_vector3 multiplymatrixvector(t_vector3 i, t_matrix4x4 m)
 {
-	t_vec3 o;
+	t_vector3 o;
 	float w;
 	o.x = i.x * m.matrix[0][0] + i.y * m.matrix[1][0] + i.z * m.matrix[2][0] + m.matrix[3][0];
 	o.y = i.x * m.matrix[0][1] + i.y * m.matrix[1][1] + i.z * m.matrix[2][1] + m.matrix[3][1];
@@ -61,10 +61,3 @@ float to_degree(float angle)
 {
     return (angle * (180 / M_PI));
 }
-
-float to_radian(float angle)
-{
-	return (angle * (M_PI / 180));
-}
-
-

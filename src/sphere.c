@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
+/*   sphere.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:05:23 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 21:07:35 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/05 18:06:32 by lkukhale          #+#    #+#             */
+/*   Updated: 2023/06/05 18:07:34 by lkukhale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_camera(const char *line)
+int validate_line_sphere(const char *line)
 {
 	char **inputs;
 	int i;
@@ -41,41 +41,37 @@ int validate_line_camera(const char *line)
 	return (1);
 }
 
-t_camera *init_camera(const char *line, t_input_list *input)
+t_sphere *init_sphere(const char *line, t_input_list *input)
 {
-	t_camera	*obj;
+	t_sphere *obj;
 	int i;
 
-	obj = (t_camera *)malloc(sizeof(t_camera));
-	if (!validate_line_camera(line))
+	obj = (t_sphere *)malloc(sizeof(t_sphere));
+	if (!validate_line_sphere(line))
 	{
 		free(input->name);
 		input->name = ft_strdup("inv");
 		return (obj);
 	}
 	i = get_to_next_param(line, 0, input);
-	obj->position = get_vector3(line, i, input);
+	obj->center = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->orientation = get_vector3(line, i, input);
+	obj->radius = ft_atof(line + i);
 	i = get_to_next_param(line, i, input);
-	obj->fov = ft_atof(line + i);
+	obj->color = get_vector3(line, i, input);
 	return (obj);
 }
 
-void validate_values_camera(t_input_list *input)
+void validate_values_sphere(t_input_list *input)
 {
 	int failed;
-	t_camera *obj;
+	t_sphere *obj;
+
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->orientation, -1.0, 1.0))
+	if (!vector3_checker(obj->color , 0.0, 255.0))
 	{
-		printf("Camera orientation out of range\n");
-		failed = 1;
-	}
-	if (obj->fov < 0 || obj->fov > 180)
-	{
-		printf("Camera FOV out of range\n");
+		printf("Sphere color out of range\n");
 		failed = 1;
 	}
 	if (failed)

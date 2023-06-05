@@ -19,23 +19,23 @@ void keyhook(mlx_key_data_t keydata, void *param)
 
 	minirt = (t_minirt *)param;
 	float speed = 0.05f;
-	t_vec3 updirection;
-	t_vec3 rightdirection;
+	t_vector3 updirection;
+	t_vector3 rightdirection;
 
-	// updirection = vec3(0.0f, 1.0f, 0.0f);
-	// rightdirection = vec3_cross(minirt->camera.forward, vec3(0.0f, 1.0f, 0.0f));
+	// updirection = vector3(0.0f, 1.0f, 0.0f);
+	// rightdirection = vector3_cross(minirt->camera.forward, vector3(0.0f, 1.0f, 0.0f));
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(rightdirection, speed));
+		// minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
 	// if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(rightdirection, speed));
+		// minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
 	// if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(updirection, speed));
+		// minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(updirection, speed));
 	// if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(updirection, speed));
+		// minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(updirection, speed));
 	// if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_add(minirt->camera.pos, vec3_multf(minirt->camera.forward, speed));
+		// minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
 	// if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = vec3_sub(minirt->camera.pos, vec3_multf(minirt->camera.forward, speed));
+		// minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
 
 	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
 		minirt->camera.pos.x += speed;
@@ -69,6 +69,11 @@ void keyhook(mlx_key_data_t keydata, void *param)
 		minirt->moved = true;
 		// calculateraydirections(minirt);
 		// calculateview(minirt);
+	}
+	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
+	{
+		mlx_close_hook(minirt->mlx, &close_function, minirt);
+		mlx_close_window(minirt->mlx);
 	}
 
 }

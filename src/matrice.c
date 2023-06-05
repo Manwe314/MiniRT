@@ -82,7 +82,7 @@ t_matrix4x4 rotation_z(float angle)
 	return (matrix);
 }
 
-t_matrix4x4 translation(t_vec3 vec)
+t_matrix4x4 translation(t_vector3 vec)
 {
 	t_matrix4x4 matrix;
 
@@ -97,7 +97,7 @@ t_matrix4x4 translation(t_vec3 vec)
 	return (matrix);
 }
 
-t_matrix4x4 scale(t_vec3 vec)
+t_matrix4x4 scale(t_vector3 vec)
 {
 	t_matrix4x4 matrix;
 
@@ -162,16 +162,16 @@ t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, floa
 }
 
 /*
-t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up)
+t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 {
-	t_vec3 forward;
-	t_vec3 right;
-	t_vec3 newUp;
+	t_vector3 forward;
+	t_vector3 right;
+	t_vector3 newUp;
 	t_matrix4x4 viewMatrix;
 
-	forward = vec3_normalize(vec3_sub(target, eye));
-	right = vec3_normalize(vec3_cross(forward, up));
-	newUp = vec3_cross(right, forward);
+	forward = vector3_normalize(vector3_subtract(target, eye));
+	right = vector3_normalize(vector3_cross(forward, up));
+	newUp = vector3_cross(right, forward);
 	viewMatrix.matrix[0][0] = right.x;
 	viewMatrix.matrix[0][1] = newUp.x;
 	viewMatrix.matrix[0][2] = -forward.x;
@@ -192,16 +192,16 @@ t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up)
 }*/
 
 
-t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up)
+t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 {
-	t_vec3 forward;
-	t_vec3 right;
-	t_vec3 newUp;
+	t_vector3 forward;
+	t_vector3 right;
+	t_vector3 newUp;
 	t_matrix4x4 viewMatrix;
 
-	forward = vec3_normalize(vec3_sub(target, eye));
-	right = vec3_normalize(vec3_cross(forward, up));
-	newUp = vec3_cross(right, forward);
+	forward = vector3_normalize(vector3_subtract(target, eye));
+	right = vector3_normalize(vector3_cross(forward, up));
+	newUp = vector3_cross(right, forward);
 	viewMatrix = init_mat_0();
 	viewMatrix.matrix[0][0] = right.x;
 	viewMatrix.matrix[0][1] = newUp.x;
@@ -238,17 +238,17 @@ t_matrix4x4 lookat(t_vec3 eye, t_vec3 target, t_vec3 up)
   (-dotforward newUpx righty + dotforward newUpy rightx + dotnewUp forwardx righty - dotnewUp forwardy rightx - dotright forwardx newUpy + dotright forwardy newUpx)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
    1)
 */
-t_matrix4x4 inverse_lookat_matrix(t_vec3 eye, t_vec3 target, t_vec3 up)
+t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up)
 {
-	t_vec3 forward;
-	t_vec3 right;
-	t_vec3 newUp;
+	t_vector3 forward;
+	t_vector3 right;
+	t_vector3 newUp;
 	t_matrix4x4 viewMatrix;
 	float det;
 
-	forward = vec3_normalize(vec3_sub(target, eye));
-	right = vec3_normalize(vec3_cross(forward, up));
-	newUp = vec3_cross(right, forward);
+	forward = vector3_normalize(vector3_subtract(target, eye));
+	right = vector3_normalize(vector3_cross(forward, up));
+	newUp = vector3_cross(right, forward);
 	det = forward.x * newUp.y * right.z - forward.x * newUp.z * right.y - \
 	forward.y * newUp.x * right.z + forward.y * newUp.z * right.x + \
 	forward.z * newUp.x * right.y - forward.z * newUp.y * right.x;
@@ -288,7 +288,7 @@ t_matrix4x4 inverse_lookat_matrix(t_vec3 eye, t_vec3 target, t_vec3 up)
 }
 
 
-t_matrix4x4 FPSViewRH( t_vec3 eye, float pitch, float yaw )
+t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw )
 {
     // I assume the values are already converted to radians.
     float cosPitch = cos(pitch);
@@ -296,9 +296,9 @@ t_matrix4x4 FPSViewRH( t_vec3 eye, float pitch, float yaw )
     float cosYaw = cos(yaw);
     float sinYaw = sin(yaw);
 
-    t_vec3 xaxis = { cosYaw, 0, -sinYaw };
-    t_vec3 yaxis = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
-    t_vec3 zaxis = { -sinYaw * cosPitch, sinPitch, -cosPitch * cosYaw };
+    t_vector3 xaxis = { cosYaw, 0, -sinYaw };
+    t_vector3 yaxis = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
+    t_vector3 zaxis = { -sinYaw * cosPitch, sinPitch, -cosPitch * cosYaw };
 
     // Create a 4x4 view matrix from the right, up, forward and eye position vectors
     t_matrix4x4 viewMatrix;

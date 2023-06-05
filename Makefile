@@ -1,11 +1,13 @@
 NAME	:= minirt
+USER	= lkukhale
 CFLAGS	:=# -Wextra -Wall -Werror -Wunreachable-code -Ofast
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 HEADERS	:= -I ../include -I $(LIBMLX)/include
-LIBS	:= $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm
+LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm -L /Users/${USER}/.brew/lib/
 SRCS	:= $(shell find ./src -iname "*.c")
 OBJS	:= ${SRCS:.c=.o}
+LIBFT	= ./lib/libft
 
 all: libmlx $(NAME)
 
@@ -16,6 +18,7 @@ libmlx:
 	@$(CC) $(CFLAGS) -o $@ -c $< -I$(INCDIR) && printf "Compiling: $(notdir $<)"
 
 $(NAME): $(OBJS)
+	make -C ${LIBFT}
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
 clean:
