@@ -77,3 +77,113 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	}
 
 }
+
+void print_fps(t_minirt *minirt)
+{
+	static int frames;
+	static int last_time;
+	int current_time = time(NULL);
+	char *str;
+	frames++;
+	if (current_time - last_time >= 1)
+	{
+		str = ft_itoa(frames);
+		printf("FPS: %s\n", str);
+		free(str);
+
+		frames = 0;
+		last_time = current_time;
+	}
+}
+
+
+void hook(void *param)
+{
+	t_minirt *minirt = (t_minirt *)param;
+	t_ray ray;
+	int x;
+	int y;
+
+	// if (minirt->moved != true)
+		// return ;
+	// minirt->moved = false;
+
+	calculatelookat(minirt);
+	//minirt->model = get_model();
+	minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
+	x = -1;
+	while (++x < minirt->width)
+	{
+		y = -1;
+		while (++y < minirt->height)
+		{
+			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
+			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
+			//coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
+			coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vector2(coord.x, coord.y), minirt)));
+		}
+	}
+	print_fps(minirt);
+
+
+}
+
+
+void	resize(int32_t width, int32_t height, void *param)
+{
+	t_minirt *minirt;
+
+	minirt = (t_minirt *)param;
+	mlx_delete_image( minirt->mlx,  minirt->img);
+	 minirt->img = mlx_new_image( minirt->mlx, width, height);
+	if (!minirt->img)
+		exit(EXIT_FAILURE);
+	minirt->width = width;
+	minirt->height = height;
+	free(minirt->camera.ray_dir);
+	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width * minirt->height);
+	if (!minirt->camera.ray_dir)
+	{
+		minirt->error = ERROR;
+		minirt->camera.ray_dir = NULL;
+		exit(ERROR);
+	}
+	calculateprojection(minirt);
+	minirt->moved = true;
+	mlx_image_to_window( minirt->mlx,  minirt->img, 0, 0);
+}
+
+void	cursor(double xpos, double ypos, void *param)
+{
+	t_minirt *minirt;
+	minirt = (t_minirt *)param;
+	// static double lastx;
+	// static double lasty;
+
+	// if (lastx == 0 && lasty == 0)
+	// {
+		// lastx = xpos;
+		// lasty = ypos;
+	// }
+	// if (xpos > lastx)
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(0.1)));
+	// else
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(-0.1)));
+	// if (ypos < lasty)
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(0.1)));
+	// else
+		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(-0.1)));
+	// lastx = xpos;
+	// lasty = ypos;
+	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
+	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
+
+	minirt->camera.forward = vector3(-xpos / 2, ypos / 2, 1.0f);
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(6.0f * xpos)));
+	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(6.0f * ypos)));
+	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
+
+	minirt->moved = true;
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/05 21:23:50 by lkukhale         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:01:10 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH 975
-# define HEIGHT 975
+# define WIDTH  500
+# define HEIGHT 500
 
 
 
@@ -59,6 +59,7 @@ typedef struct s_matrix4x4
 {
 	float matrix[4][4];
 } t_matrix4x4;
+
 typedef struct s_world
 {
 	t_vector3		coord_world;
@@ -78,10 +79,12 @@ typedef struct s_cylinder
 
 typedef struct s_plane
 {
+	t_vector3 plane[4];
 	t_vector3 point_on_plane;
 	t_vector3 normal;
 	t_vector3 color;
 } t_plane;
+
 typedef struct s_light
 {
     t_vector3 position;
@@ -136,11 +139,36 @@ typedef struct s_camera_eye
 	t_matrix4x4 inv_lookat;
 }	t_camera_eye;
 
+typedef struct s_cuboid
+{
+	t_plane plane[6];
+} t_cuboid;
+
+
 typedef struct s_ray
 {
 	t_vector3 origin;
 	t_vector3 direction;
 } t_ray;
+
+typedef struct s_scene
+{
+	t_sphere *sphere;
+	t_plane planes[100];
+	t_triangle triangles[100];
+	t_cuboid *cuboid;
+	t_obj *obj;
+}	t_scene;
+
+typedef struct s_model
+{
+	t_sphere sphere;
+	t_plane *planes;
+	t_triangle *triangles;
+	t_cuboid cuboid;
+	t_obj *obj;
+	int nb_obj;
+}	t_model;
 
 typedef struct s_minirt
 {
@@ -153,8 +181,8 @@ typedef struct s_minirt
 	int			error;
 	int			moved;
 	int			input_validity;
-	//t_model		model;
-	//t_scene		scene;
+	t_model		model;
+	t_scene		scene;
 }	t_minirt;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -282,8 +310,13 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-char	*ft_itoa(int n);
-char	*ft_strdup(const char *s);
+t_vector4 renderer(t_vector2 coord, t_minirt *minirt);
+
+void hook(void *param);
+void	resize(int32_t width, int32_t height, void *param);
+void	cursor(double xpos, double ypos, void *param);
+t_model get_model(void);
+int	get_rgba(t_vector4 color);
 #endif
 
 

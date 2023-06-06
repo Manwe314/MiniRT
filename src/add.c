@@ -32,13 +32,13 @@ t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2)
 	return (triangle);
 }
 
-/*t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
+t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
 {
 	t_plane plane;
 
-	plane.p[0] = pos;
-	plane.p[1] = pos2;
-	plane.p[2] = pos3;
-	plane.p[3] = pos4;
+	plane.plane[0] = pos;
+	plane.plane[1] = pos2;
+	plane.plane[2] = pos3;
+	plane.plane[3] = pos4;
 	return (plane);
-}*/
+}

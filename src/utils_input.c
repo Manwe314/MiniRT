@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 18:16:56 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:17:51 by lkukhale         ###   ########.fr       */
+/*   Updated: 2023/06/06 14:58:22 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,42 +30,39 @@ int	is_all_space(char *input)
 	return (0);
 }
 
-float ft_atof(const char* str)
+float ft_atof(const char *str)
 {
-    int i = 0;
-    int sign = 1;
-    float result = 0.0;
-    float fraction = 0.0;
-    float divisor = 10.0;
+	float	result;
+	float	fractionFactor;
+	int		sign;
 
-    while (((str[i] >= 9 && str[i] <= 13) || str[i] == 32) && str[i] != '\0')
-        i++;
-    if (str[i] == '-')
+	result = 0.0;
+	fractionFactor = 0.1;
+	sign = 1;
+	while (ft_isspace(*str))
+		str++;
+	if (*str == '-' && *str++)
+		sign = -1;
+	while (ft_isdigit(*str))
+		result = result * 10 + (*str++ - '0');
+	if (*str == '.')
 	{
-        sign = -1;
-        i++;
-    }
-	else if (str[i] == '+')
-        i++;
-    while (str[i] >= '0' && str[i] <= '9' && str[i] != '\0')
-	{
-        result = result * 10 + (str[i] - '0');
-        i++;
-    }
-    if (str[i] == '.')
-	{
-        i++;
-        while (str[i] >= '0' && str[i] <= '9' && str[i] != '\0')
-		{
-            fraction += (str[i] - '0') / divisor;
-            divisor *= 10.0;
-            i++;
-        }
-    }
-    result += fraction;
-	result = roundf(result * 100) / 100;
-    result *= sign;
-    return (result);
+		str++;
+		while (ft_isdigit(*str)) {
+			result += (*str++ - '0') * fractionFactor;
+			fractionFactor *= 0.1;
+		}
+	}
+	return (result * sign);
+}
+
+int	get_rgba(t_vector4 color)
+{
+	color.x = color.x * 255.0f;
+	color.y = color.y * 255.0f;
+	color.z = color.z * 255.0f;
+	color.w = color.w * 255.0f;
+	return ((int) color.x << 24 | (int) color.y << 16 | (int) color.z << 8 |(int)  color.w);
 }
 
 void	free_split(char **split)

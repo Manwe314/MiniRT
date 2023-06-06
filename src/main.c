@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/05 20:58:13 by lkukhale         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:40:04 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,10 +139,9 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(0.0f, 0.0f, 1.0f);
+	minirt->camera.pos = vector3(0.0f, 0.0f, -10.0f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
-	// Init mlx with a canvas size of 256x256 and the ability to resize the window.
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		exit(ERROR);
@@ -152,44 +151,11 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 	calculateprojection(minirt);
-	// Run the main loop and terminate on quit.
 	minirt->moved = true;
 	return (SUCCESS);
 }
 
-int	get_rgba(t_vector4 color)
-{
-	color.x = color.x * 255.0f;
-	color.y = color.y * 255.0f;
-	color.z = color.z * 255.0f;
-	color.w = color.w * 255.0f;
-	return ((int) color.x << 24 | (int) color.y << 16 | (int) color.z << 8 |(int)  color.w);
-}
 
-void	resize(int32_t width, int32_t height, void *param)
-{
-	t_minirt *minirt;
-
-	minirt = (t_minirt *)param;
-	mlx_delete_image( minirt->mlx,  minirt->img);
-	 minirt->img = mlx_new_image( minirt->mlx, width, height);
-	if (!minirt->img)
-		exit(EXIT_FAILURE);
-	minirt->width = width;
-	minirt->height = height;
-	free(minirt->camera.ray_dir);
-	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width * minirt->height);
-	if (!minirt->camera.ray_dir)
-	{
-		minirt->error = ERROR;
-		minirt->camera.ray_dir = NULL;
-		exit(ERROR);
-	}
-	//calculateprojection(minirt);
-	//calculateraydirections(minirt);
-	minirt->moved = true;
-	mlx_image_to_window( minirt->mlx,  minirt->img, 0, 0);
-}
 /*
 (x-a)^2 + (y-b)^2 - r^2 = 0
 x = a + bt;
@@ -201,166 +167,23 @@ det = (2ab - 2bd)^2 - 4(b - d)(a^2 + b^2 - r^2)
 t = (-b + sqrt(det)) / 2(b - d)
 t = (-b - sqrt(det)) / 2(b - d)
 */
-t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
-{
-	t_vector4 color;
-	t_ray ray;
 
 
-	ray.origin = minirt->camera.pos;
-	ray.origin = minirt->camera.pos;
-
-	ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-	ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
-
-	t_sphere sphere;
-	sphere.center = vector3(0.0f, 0.0f, 10.0f);
-	sphere.radius = 0.5f;
-	t_vector3 oc = vector3_subtract(ray.origin, sphere.center);
-
-	float a = dot_product(ray.direction, ray.direction);
-	float b = 2.0f * dot_product(oc, ray.direction);
-	float c = dot_product(oc, oc) - sphere.radius * sphere.radius;
-
-	float discriminant = b * b - 4 * a * c;
-	if (discriminant < 0)
-		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
-	float t = (-b + sqrtf(discriminant)) / (2.0f * a);
-	if (t < 0)
-		t = (-b - sqrtf(discriminant)) / (2.0f * a);
-	if (t < 0)
-		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
-	t_vector3 hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
-	t_vector3 normal = vector3_normalize(vector3_subtract(hit_point, sphere.center));
-	color = vector4(normal.x, normal.y, normal.z, 1.0f);
-
-
-	return (color);
-}
-
-void print_fps(t_minirt *minirt)
-{
-	static int frames;
-	static int last_time;
-	int current_time = time(NULL);
-	char *str;
-	frames++;
-	if (current_time - last_time >= 1)
-	{
-		str = ft_itoa(frames);
-		printf("FPS: %s\n", str);
-		free(str);
-
-		frames = 0;
-		last_time = current_time;
-	}
-}
-
-void hook(void *param)
-{
-	t_minirt *minirt = (t_minirt *)param;
-	t_ray ray;
-	int x;
-	int y;
-
-	if (minirt->moved != true)
-		return ;
-	minirt->moved = false;
-
-	calculateprojection(minirt);
-	calculatelookat(minirt);
-	minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
-	x = -1;
-	while (++x < minirt->width)
-	{
-		y = -1;
-		while (++y < minirt->height)
-		{
-			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
-			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			//coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
-			coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vector2(coord.x, coord.y), minirt)));
-		}
-	}
-	print_fps(minirt);
-
-
-}
-
-/*void	hook(void *param)
-{
-	t_minirt *minirt;
-	int x;
-	int y;
-	t_vector2 coord;
-	t_vector4 color;
-
-	if (minirt->moved == false)
-		return ;
-	minirt = (t_minirt *)param;
-	x = -1;
-	while (++x < minirt->width)
-	{
-		y = -1;
-		while (++y < minirt->height)
-		{
-			coord = vector2((float) x / (float) minirt->width, (float) (minirt->height - y) / (float) minirt->height);
-			coord = vector2(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f);
-			ray.direction
-			color = clamp(renderer(0, minirt), 0.0f, 255.0f);
-			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
-		}
-	}
-}*/
-
-void	cursor(double xpos, double ypos, void *param)
-{
-	t_minirt *minirt;
-	minirt = (t_minirt *)param;
-	// static double lastx;
-	// static double lasty;
-
-	// if (lastx == 0 && lasty == 0)
-	// {
-		// lastx = xpos;
-		// lasty = ypos;
-	// }
-	// if (xpos > lastx)
-		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(0.1)));
-	// else
-		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(-0.1)));
-	// if (ypos < lasty)
-		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(0.1)));
-	// else
-		// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(-0.1)));
-	// lastx = xpos;
-	// lasty = ypos;
-	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
-	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
-
-	minirt->camera.forward = vector3(-xpos / 2, ypos / 2, 1.0f);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(6.0f * xpos)));
-	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(6.0f * ypos)));
-	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
-
-	minirt->moved = true;
-}
 
 int main(int argc, char *argv[])
 {
 	t_minirt minirt;
+	minirt.model = get_model();
 	int	fd;
 
-	if (argc == 2  && !check_file(argv[1]))
-		fd = open(argv[1], O_RDONLY);
-	else
-		return (0);
+	// if (argc == 2  && !check_file(argv[1]))
+		// fd = open(argv[1], O_RDONLY);
+	// else
+		// return (0);
 	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
-	get_input_list(&minirt, fd);
-	validate_input(&minirt);
+	//get_input_list(&minirt, fd);
+	//validate_input(&minirt);
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
@@ -371,7 +194,7 @@ int main(int argc, char *argv[])
 	mlx_terminate(minirt.mlx);
 	if (minirt.camera.ray_dir)
 		free(minirt.camera.ray_dir);
-	system("leaks minirt");
+	//system("leaks minirt");
 	close(fd);
 	return (SUCCESS);
 }
