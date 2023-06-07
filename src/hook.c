@@ -106,8 +106,8 @@ void hook(void *param)
 	int y;
 
 	print_fps(minirt);
-	if (minirt->moved != true)
-		return ;
+	// if (minirt->moved != true)
+		// return ;
 	minirt->moved = false;
 	ray.origin = minirt->camera.pos;
 	calculatelookat(minirt);
@@ -125,7 +125,7 @@ void hook(void *param)
 			// coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
 			coord = multiplymatrixvector(vector3(coord.x, coord.y, -1), minirt->camera.inv_lookat);
 			ray.direction = vector3(coord.x, coord.y, -1.0f);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(ray, minirt)));
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(PerPixel(ray, minirt->scene)));
 		}
 	}
 

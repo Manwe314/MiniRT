@@ -184,9 +184,9 @@ t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 	viewMatrix.matrix[2][1] = newUp.z;
 	viewMatrix.matrix[2][2] = forward.z;
 
-	viewMatrix.matrix[3][0] = -dot_product(right, eye);
-	viewMatrix.matrix[3][1] = -dot_product(newUp, eye);
-	viewMatrix.matrix[3][2] = dot_product(forward, eye);
+	viewMatrix.matrix[3][0] = -vector3_dot(right, eye);
+	viewMatrix.matrix[3][1] = -vector3_dot(newUp, eye);
+	viewMatrix.matrix[3][2] = vector3_dot(forward, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
 	return viewMatrix;
 }*/
@@ -212,9 +212,9 @@ t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 	viewMatrix.matrix[2][0] = right.z;
 	viewMatrix.matrix[2][1] = newUp.z;
 	viewMatrix.matrix[2][2] = forward.z;
-	viewMatrix.matrix[3][0] = -dot_product(right, eye);
-	viewMatrix.matrix[3][1] = -dot_product(newUp, eye);
-	viewMatrix.matrix[3][2] = -dot_product(forward, eye);
+	viewMatrix.matrix[3][0] = -vector3_dot(right, eye);
+	viewMatrix.matrix[3][1] = -vector3_dot(newUp, eye);
+	viewMatrix.matrix[3][2] = -vector3_dot(forward, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
 	return viewMatrix;
 }
@@ -280,9 +280,9 @@ t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up)
 	viewMatrix.matrix[2][0] = (newUp.z * right.y - newUp.y * right.z) / (-det);
 	viewMatrix.matrix[2][1] = (newUp.z * right.x - newUp.x * right.z) / (det);
 	viewMatrix.matrix[2][2] = (newUp.y * right.x - newUp.x * right.y) / (-det);
-	viewMatrix.matrix[3][0] = (-dot_product(forward, eye) * newUp.y * right.z + dot_product(forward, eye) * newUp.z * right.y + dot_product(newUp, eye) * forward.y * right.z - dot_product(newUp, eye) * forward.z * right.y - dot_product(right, eye) * forward.y * newUp.z + dot_product(right, eye) * forward.z * newUp.y) / (-det);
-	viewMatrix.matrix[3][1] = (-dot_product(forward, eye) * newUp.x * right.z + dot_product(forward, eye) * newUp.z * right.x + dot_product(newUp, eye) * forward.x * right.z - dot_product(newUp, eye) * forward.z * right.x - dot_product(right, eye) * forward.x * newUp.z + dot_product(right, eye) * forward.z * newUp.x) / (det);
-	viewMatrix.matrix[3][2] = (-dot_product(forward, eye) * newUp.x * right.y + dot_product(forward, eye) * newUp.y * right.x + dot_product(newUp, eye) * forward.x * right.y - dot_product(newUp, eye) * forward.y * right.x - dot_product(right, eye) * forward.x * newUp.y + dot_product(right, eye) * forward.y * newUp.x) / (-det);
+	viewMatrix.matrix[3][0] = (-vector3_dot(forward, eye) * newUp.y * right.z + vector3_dot(forward, eye) * newUp.z * right.y + vector3_dot(newUp, eye) * forward.y * right.z - vector3_dot(newUp, eye) * forward.z * right.y - vector3_dot(right, eye) * forward.y * newUp.z + vector3_dot(right, eye) * forward.z * newUp.y) / (-det);
+	viewMatrix.matrix[3][1] = (-vector3_dot(forward, eye) * newUp.x * right.z + vector3_dot(forward, eye) * newUp.z * right.x + vector3_dot(newUp, eye) * forward.x * right.z - vector3_dot(newUp, eye) * forward.z * right.x - vector3_dot(right, eye) * forward.x * newUp.z + vector3_dot(right, eye) * forward.z * newUp.x) / (det);
+	viewMatrix.matrix[3][2] = (-vector3_dot(forward, eye) * newUp.x * right.y + vector3_dot(forward, eye) * newUp.y * right.x + vector3_dot(newUp, eye) * forward.x * right.y - vector3_dot(newUp, eye) * forward.y * right.x - vector3_dot(right, eye) * forward.x * newUp.y + vector3_dot(right, eye) * forward.y * newUp.x) / (-det);
 	viewMatrix.matrix[3][3] = 1.0f;
 	return viewMatrix;
 }
@@ -314,9 +314,9 @@ t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw )
 	viewMatrix.matrix[2][1] = yaxis.z;
 	viewMatrix.matrix[2][2] = -zaxis.z;
 	viewMatrix.matrix[2][3] = 0.0f;
-	viewMatrix.matrix[3][0] = dot_product(xaxis, eye);
-	viewMatrix.matrix[3][1] = dot_product(yaxis, eye);
-	viewMatrix.matrix[3][2] = dot_product(zaxis, eye);
+	viewMatrix.matrix[3][0] = vector3_dot(xaxis, eye);
+	viewMatrix.matrix[3][1] = vector3_dot(yaxis, eye);
+	viewMatrix.matrix[3][2] = vector3_dot(zaxis, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
     return viewMatrix;
 }

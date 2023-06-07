@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/07 09:37:21 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 13:29:12 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,9 @@ static int	init_minirt(t_minirt *minirt)
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 	calculateprojection(minirt);
 	minirt->moved = true;
+	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 1.0f, 0.0f), 1.0f, vector3(1.0f, 0.0f, 0.0f));
+	minirt->scene.sphere[1] = add_sphere(vector3(0.0f, -9.0f, 0.0f),9.0f, vector3(0.0f, 1.0f, 0.0f));
+	minirt->scene.nb_sphere = 2;
 	return (SUCCESS);
 }
 

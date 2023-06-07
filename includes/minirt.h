@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/07 11:46:56 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 13:21:46 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,10 +171,11 @@ typedef struct s_scene
 
 typedef struct s_hitpayload
 {
-	float hitdistance;
-	t_vector3 worldposition;
-	t_vector3 worldnormal;
-	int objectindex;
+	float HitDistance;
+	t_vector3 WorldPosition;
+	t_vector3 WorldNormal;
+
+	int ObjectIndex;
 } t_hitpayload;
 
 typedef struct s_model
@@ -269,7 +270,7 @@ t_vector3 multiplymatrixvector(t_vector3 i, t_matrix4x4 m);
 t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2);
 
 t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2);
-float dot_product(t_vector3 v1, t_vector3 v2);
+float vector3_dot(t_vector3 vec1, t_vector3 vector2);
 t_vector3 vector3_normalize(t_vector3 v);
 float vec3d_magnitude(t_vector3 v);
 
@@ -331,6 +332,7 @@ t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 t_vector4 renderer(t_ray ray, t_minirt *minirt);
 
 void hook(void *param);
+t_vector4 PerPixel(t_ray ray, t_scene scene);
 void	resize(int32_t width, int32_t height, void *param);
 void	cursor(double xpos, double ypos, void *param);
 t_model get_model(void);
