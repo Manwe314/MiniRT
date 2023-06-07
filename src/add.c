@@ -42,3 +42,13 @@ t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
 	plane.plane[3] = pos4;
 	return (plane);
 }
+
+t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color)
+{
+	t_sphere sphere;
+
+	sphere.center = pos;
+	sphere.radius = radius;
+	sphere.color = color;
+	return (sphere);
+}

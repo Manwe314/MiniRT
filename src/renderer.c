@@ -12,9 +12,8 @@
 
 #include "minirt.h"
 
-
-
-t_vector3 vector3_normal(t_vector3 a,t_vector3 b) {
+t_vector3 vector3_normal(t_vector3 a,t_vector3 b)
+{
     t_vector3 normal;
     normal.x = a.y * b.z - a.z * b.y;
     normal.y = a.z * b.x - a.x * b.z;
@@ -35,18 +34,14 @@ t_vector4 pointintriangle(t_vector2 A, t_vector2 B, t_vector2 C, t_vector2 P)
 		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
-t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
+/*t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
 {
-	t_ray ray;
-	ray.origin = minirt->camera.pos;
-	ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-	ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
-	t_vector3 u,v,normal, t[3],c;
+	t_vector3 u,v,normal, t[3];
 	t_vector2 x, y, z, a,b;
 	t_vector4 color;
 	//float x,y,z;
 	int i = -1;
-	c = minirt->camera.pos;
+
 	while (++i < 3)
 	{
 		t[0] = minirt->model.triangles[i].p[0];
@@ -56,31 +51,20 @@ t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
 		// v = vector3_subtract(minirt->model.triangles[i].p[0], minirt->model.triangles[i].p[2]);
 		// normal = vector3_normal(u,v);
 		// c = vector3_subtract(minirt->model.triangles[i].pos1, minirt->camera.pos);
-		x = vector2((t[0].x -ray.origin.x) * (t[0].z -ray.origin.z) + ray.origin.x, (t[0].y -ray.origin.y) * (t[0].z -ray.origin.z) + ray.origin.y);
-		y = vector2((t[1].x -ray.origin.x) * (t[1].z -ray.origin.z) + ray.origin.x, (t[1].y -ray.origin.y) * (t[1].z -ray.origin.z) + ray.origin.y);
-		z = vector2((t[2].x -ray.origin.x) * (t[2].z -ray.origin.z) + ray.origin.x, (t[2].y -ray.origin.y) * (t[2].z -ray.origin.z) + ray.origin.y);
-
+		x = vector2(t[0].x / t[0].z, t[0].y / t[0].z);
+		y = vector2(t[1].x / t[1].z, t[1].y / t[1].z);
+		z = vector2(t[2].x / t[2].z, t[2].y / t[2].z);
 		color = pointintriangle(y, x, z, coord);
 		if (color.x != 0.0f || color.y != 0.0f || color.z != 0.0f)
 			return (color);
 	}
 	return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
-}
+}*/
 
 
-/*
-t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
+
+int	touch_sphere(t_ray ray, t_sphere sphere)
 {
-	t_vector4 color;
-	t_ray ray;
-
-	ray.origin = minirt->camera.pos;
-	ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
-	ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
-
-	t_sphere sphere;
-	sphere.center = vector3(0.0f, 0.0f, 10.0f);
-	sphere.radius = 0.5f;
 	t_vector3 oc = vector3_subtract(ray.origin, sphere.center);
 
 	float a = dot_product(ray.direction, ray.direction);
@@ -89,14 +73,67 @@ t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
 
 	float discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
-		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		return (0);
 	float t = (-b + sqrtf(discriminant)) / (2.0f * a);
 	if (t < 0)
 		t = (-b - sqrtf(discriminant)) / (2.0f * a);
 	if (t < 0)
-		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
-	t_vector3 hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
-	t_vector3 normal = vector3_normalize(vector3_subtract(hit_point, sphere.center));
-	color = vector4(normal.x, normal.y, normal.z, 1.0f);
+		return (0);
+	return (t);
+}
+
+t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
+{
+	t_vector4 color;
+	t_ray ray;
+
+
+	ray.origin = minirt->camera.pos;
+	ray.direction = vector3(coord.x, coord.y, -1.0f);
+	// ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1.0), minirt->camera.inv_lookat);
+	// ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
+
+	color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	t_sphere sphere[2];
+	int nb_sphere = 1;
+	int i = 0;
+	sphere[0] = add_sphere(vector3(0.0f, -1.0f, 3.0f), 0.5f, vector3(1.0f, 0.0f, .0f));
+	//sphere[1] = add_sphere(vector3(0.0f, 1.0f, 0.0f), 1.0f, vector3(0.0f, 1.0f, 0.0f));
+	//t_vector3 oc = vector3_subtract(ray.origin, sphere->center);
+	t_vector3 oc = ray.origin;
+
+	float a = dot_product(ray.direction, ray.direction);
+	float b = 2.0f * dot_product(oc, ray.direction);
+	float c = dot_product(oc, oc) - sphere->radius * sphere->radius;
+
+	float det = b * b - 4 * a * c;
+	if (det < 0)
+		return (color);
+	float t = (-b - sqrtf(det)) / (2.0f * a);
+	if (t < 0)
+		return (color);
+		//t = (-b - sqrtf(det)) / (2.0f * a);
+	//if (t < 0)
+	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, t));
+	t_vector3 normal = vector3_normalize(hit);
+	t_vector3 light_dir = vector3_normalize(vector3(1.0f, 1.0f, 1.0f));
+	float diffuse = dot_product(light_dir, normal);
+	diffuse = max(diffuse, 0.0f);
+	sphere->color = normal;
+	sphere->color = vector3_multiply_float(sphere->color, 0.5f);
+	sphere->color = vector3_add_float(sphere->color, 0.5f);
+	sphere->color = vector3_multiply_float(sphere->color, diffuse);
+	color = vector4(sphere->color.x, sphere->color.y, sphere->color.z, 1.0f);
 	return (color);
-}*/
+}
+
+
+
+
+
+
+
+
+
+
+

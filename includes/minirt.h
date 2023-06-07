@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/06 15:01:10 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 07:39:57 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,9 +155,17 @@ typedef struct s_scene
 {
 	t_sphere *sphere;
 	t_plane planes[100];
+	//t_cone *cones;
 	t_triangle triangles[100];
 	t_cuboid *cuboid;
 	t_obj *obj;
+	int nb_sphere;
+	int nb_plane;
+	int nb_triangle;
+	int nb_cuboid;
+	int nb_obj;
+	//t_light *light;
+
 }	t_scene;
 
 typedef struct s_model
@@ -281,7 +289,7 @@ t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
 t_vector3 add_point(float x, float y, float z);
 t_vector3 add_center(float x, float y, float z);
 t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
-
+t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color);
 
 void keyhook(mlx_key_data_t keydata, void *param);
 

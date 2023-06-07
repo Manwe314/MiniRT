@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/06 15:40:04 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 08:53:39 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(0.0f, 0.0f, -10.0f);
+	minirt->camera.pos = vector3(0.0f, 0.0f, 5.0f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
@@ -173,7 +173,7 @@ t = (-b - sqrt(det)) / 2(b - d)
 int main(int argc, char *argv[])
 {
 	t_minirt minirt;
-	minirt.model = get_model();
+	//minirt.model = get_model();
 	int	fd;
 
 	// if (argc == 2  && !check_file(argv[1]))
@@ -184,6 +184,8 @@ int main(int argc, char *argv[])
 		return (ERROR);
 	//get_input_list(&minirt, fd);
 	//validate_input(&minirt);
+	//minirt.scene = create the 3d world
+
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);

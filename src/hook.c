@@ -46,9 +46,9 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
 		minirt->camera.pos.y -= speed;
 	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		minirt->camera.pos.z += speed;
-	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
 		minirt->camera.pos.z -= speed;
+	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.z += speed;
 
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
 		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(rightdirection));
@@ -109,6 +109,7 @@ void hook(void *param)
 	// minirt->moved = false;
 
 	calculatelookat(minirt);
+	calculateprojection(minirt);
 	//minirt->model = get_model();
 	minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
 	x = -1;
@@ -119,12 +120,12 @@ void hook(void *param)
 		{
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			//coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
-			coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_lookat);
+			// coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
+			coord = multiplymatrixvector(vector3(coord.x, coord.y, -1), minirt->camera.inv_lookat);
 			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vector2(coord.x, coord.y), minirt)));
 		}
 	}
-	print_fps(minirt);
+	//print_fps(minirt);
 
 
 }
@@ -178,11 +179,11 @@ void	cursor(double xpos, double ypos, void *param)
 	// lasty = ypos;
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
-
+	//printf("forward = %f %f %f\n", minirt->camera.forward.x, minirt->camera.forward.y, minirt->camera.forward.z);
 	minirt->camera.forward = vector3(-xpos / 2, ypos / 2, 1.0f);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(6.0f * xpos)));
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(1.0f * xpos)));
 	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(6.0f * ypos)));
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(1.0f * ypos)));
 	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
 
 	minirt->moved = true;
