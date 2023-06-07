@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 19:56:22 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/07 08:52:52 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 10:06:37 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,20 @@
 
 void calculateprojection(t_minirt *minirt)
 {
-	minirt->camera.inv_perspective = matrixInverse(
-	createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,
-	0.1f, 100.0f), 4);
-	// minirt->camera.inv_perspective = inverse_perspective_matrix( \
-	// minirt->camera.fov, minirt->width / minirt->height, 0.1f, 100.0f);
+	// minirt->camera.inv_perspective = matrixInverse(
+	// createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,
+	// 0.1f, 100.0f), 4);
+	minirt->camera.inv_perspective = inverse_perspective_matrix( \
+	minirt->camera.fov, minirt->width / minirt->height, 0.1f, 100.0f);
 }
 
 void calculatelookat(t_minirt *minirt)
 {
-	minirt->camera.inv_lookat = matrixInverse(
-	lookat(minirt->camera.pos, vector3_add(minirt->camera.pos, minirt->camera.forward),
-	vector3(0, 1, 0)), 4);
-	// minirt->camera.inv_lookat = inverse_lookat_matrix(minirt->camera.pos, \
-	// vector3_add(minirt->camera.pos, minirt->camera.forward), vector3(0, 1, 0));
+	// minirt->camera.inv_lookat = matrixInverse(
+	// lookat(minirt->camera.pos, vector3_add(minirt->camera.pos, minirt->camera.forward),
+	// vector3(0, 1, 0)), 4);
+	minirt->camera.inv_lookat = inverse_lookat_matrix(minirt->camera.pos, \
+	vector3_add(minirt->camera.pos, minirt->camera.forward), vector3(0, 1, 0));
 }
 
 void calculateraydirections(t_minirt *minirt)

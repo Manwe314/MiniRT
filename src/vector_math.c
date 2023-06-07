@@ -120,6 +120,11 @@ t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2)
     return result;
 }
 
+t_vector3 vector3_reflect(t_vector3 a, t_vector3 n)
+{
+    return vector3_subtract(a, vector3_multiply_float(n, 2 * dot_product(a, n)));
+}
+
 float dot_product(t_vector3 vec1, t_vector3 vector2)
 {
 	return (vec1.x * vector2.x + vec1.y * vector2.y + vec1.z * vector2.z);

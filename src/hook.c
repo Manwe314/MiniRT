@@ -101,13 +101,15 @@ void hook(void *param)
 {
 	t_minirt *minirt = (t_minirt *)param;
 	t_ray ray;
+	t_scene scene;
 	int x;
 	int y;
 
-	// if (minirt->moved != true)
-		// return ;
-	// minirt->moved = false;
-
+	print_fps(minirt);
+	if (minirt->moved != true)
+		return ;
+	minirt->moved = false;
+	ray.origin = minirt->camera.pos;
 	calculatelookat(minirt);
 	calculateprojection(minirt);
 	//minirt->model = get_model();
@@ -122,10 +124,10 @@ void hook(void *param)
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
 			// coord = multiplymatrixvector(vector3(coord.x, coord.y, 1), minirt->camera.inv_perspective);
 			coord = multiplymatrixvector(vector3(coord.x, coord.y, -1), minirt->camera.inv_lookat);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(vector2(coord.x, coord.y), minirt)));
+			ray.direction = vector3(coord.x, coord.y, -1.0f);
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(renderer(ray, minirt)));
 		}
 	}
-	//print_fps(minirt);
 
 
 }

@@ -82,48 +82,60 @@ int	touch_sphere(t_ray ray, t_sphere sphere)
 	return (t);
 }
 
-t_vector4 renderer(t_vector2 coord, t_minirt *minirt)
+t_vector4 renderer(t_ray ray, t_minirt *minirt)
 {
 	t_vector4 color;
-	t_ray ray;
+	t_sphere* closestsphere = 0;
+	float closest = FLT_MAX;
 
-
-	ray.origin = minirt->camera.pos;
-	ray.direction = vector3(coord.x, coord.y, -1.0f);
-	// ray.direction = multiplymatrixvector(vector3(coord.x, coord.y, 1.0), minirt->camera.inv_lookat);
-	// ray.direction = vector3_normalize(vector3(coord.x, coord.y, 1));
 
 	color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
 	t_sphere sphere[2];
-	int nb_sphere = 1;
-	int i = 0;
-	sphere[0] = add_sphere(vector3(0.0f, -1.0f, 3.0f), 0.5f, vector3(1.0f, 0.0f, .0f));
-	//sphere[1] = add_sphere(vector3(0.0f, 1.0f, 0.0f), 1.0f, vector3(0.0f, 1.0f, 0.0f));
-	//t_vector3 oc = vector3_subtract(ray.origin, sphere->center);
-	t_vector3 oc = ray.origin;
+	int nb_sphere = 2;
+	int i = -1;
+	sphere[0] = add_sphere(vector3(0.5f, 0.5f, 0.0f), 1.0f, vector3(1.0f, 0.0f, 0.0f));
+	sphere[1] = add_sphere(vector3(0.0f, 0.0f, 0.0f), 1.0f, vector3(0.0f, 1.0f, 0.0f));
+	//t_vector3 oc = ray.origin;
 
-	float a = dot_product(ray.direction, ray.direction);
-	float b = 2.0f * dot_product(oc, ray.direction);
-	float c = dot_product(oc, oc) - sphere->radius * sphere->radius;
+	while (++i < nb_sphere)
+	{
+		t_vector3 oc = vector3_subtract(ray.origin, sphere[i].center);
 
-	float det = b * b - 4 * a * c;
-	if (det < 0)
+		float a = dot_product(ray.direction, ray.direction);
+		float b = 2.0f * dot_product(oc, ray.direction);
+		float c = dot_product(oc, oc) - sphere[i].radius * sphere[i].radius;
+
+		float det = b * b - 4 * a * c;
+		if (det < 0)
+			continue;
+		float t = (-b - sqrtf(det)) / (2.0f * a);
+		if (t < 0)
+			continue;
+			//t = (-b - sqrtf(det)) / (2.0f * a);
+		if (closest > t)
+		{
+			closest = t;
+			closestsphere = &sphere[i];
+		}
+	}
+	if (closestsphere == 0)
 		return (color);
-	float t = (-b - sqrtf(det)) / (2.0f * a);
-	if (t < 0)
-		return (color);
-		//t = (-b - sqrtf(det)) / (2.0f * a);
-	//if (t < 0)
-	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, t));
+
+	t_vector3 oc = vector3_subtract(ray.origin, closestsphere->center);
+	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, closest));
 	t_vector3 normal = vector3_normalize(hit);
 	t_vector3 light_dir = vector3_normalize(vector3(1.0f, 1.0f, 1.0f));
 	float diffuse = dot_product(light_dir, normal);
 	diffuse = max(diffuse, 0.0f);
-	sphere->color = normal;
-	sphere->color = vector3_multiply_float(sphere->color, 0.5f);
-	sphere->color = vector3_add_float(sphere->color, 0.5f);
-	sphere->color = vector3_multiply_float(sphere->color, diffuse);
-	color = vector4(sphere->color.x, sphere->color.y, sphere->color.z, 1.0f);
+
+	// sphere[i].color = normal;
+	// sphere[i].color = vector3_multiply(sphere[i].color, normal);
+	// sphere[i].color = vector3_normalize(sphere[i].color);
+	// sphere[i].color = vector3_multiply_float(sphere[i].color, 0.5f);
+	// sphere[i].color = vector3_add_float(sphere[i].color, 0.5f);
+
+	closestsphere->color = vector3_multiply_float(closestsphere->color, diffuse);
+	color = vector4(closestsphere->color.x, closestsphere->color.y, closestsphere->color.z, 1.0f);
 	return (color);
 }
 

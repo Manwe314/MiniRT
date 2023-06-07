@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/07 07:39:57 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/07 11:46:56 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <string.h>
 # include <math.h>
 #include <time.h>
+#include <float.h>
 
 # define PI 3.14159265358979323846
 # define ERROR 0
@@ -153,7 +154,7 @@ typedef struct s_ray
 
 typedef struct s_scene
 {
-	t_sphere *sphere;
+	t_sphere sphere[100];
 	t_plane planes[100];
 	//t_cone *cones;
 	t_triangle triangles[100];
@@ -168,6 +169,14 @@ typedef struct s_scene
 
 }	t_scene;
 
+typedef struct s_hitpayload
+{
+	float hitdistance;
+	t_vector3 worldposition;
+	t_vector3 worldnormal;
+	int objectindex;
+} t_hitpayload;
+
 typedef struct s_model
 {
 	t_sphere sphere;
@@ -180,17 +189,17 @@ typedef struct s_model
 
 typedef struct s_minirt
 {
-	mlx_t		*mlx;
-	mlx_image_t	*img;
-	int32_t		width;
-	int32_t		height;
+	mlx_t			*mlx;
+	mlx_image_t		*img;
+	int32_t			width;
+	int32_t			height;
 	t_camera_eye	camera;
-	t_input_list *input_head;
-	int			error;
-	int			moved;
-	int			input_validity;
-	t_model		model;
-	t_scene		scene;
+	t_input_list	*input_head;
+	int				error;
+	int				moved;
+	int				input_validity;
+	t_model			model;
+	t_scene			scene;
 }	t_minirt;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -279,6 +288,7 @@ t_vector3 vector3_add(t_vector3 a, t_vector3 b);
 t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
 t_vector3 vector3_multiply_float(t_vector3 a, float b);
 t_vector3 vector3_add_float(t_vector3 a, float b);
+t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
 
 
 void calculateraydirections(t_minirt *minirt);
@@ -318,7 +328,7 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-t_vector4 renderer(t_vector2 coord, t_minirt *minirt);
+t_vector4 renderer(t_ray ray, t_minirt *minirt);
 
 void hook(void *param);
 void	resize(int32_t width, int32_t height, void *param);
