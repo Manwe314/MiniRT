@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/07 13:29:12 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/08 16:54:40 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,27 +90,7 @@ void print_input(t_minirt *minirt)
 
 }
 
-t_vector4	clamp(t_vector4 color, float min, float max)
-{
-	if (color.x < min)
-		color.x = min;
-	else if (color.x > max)
-		color.x = max;
-	if (color.y < min)
-		color.y = min;
-	else if (color.y > max)
-		color.y = max;
-	if (color.z < min)
-		color.z = min;
-	else if (color.z > max)
-		color.z = max;
-	if (color.w < min)
-		color.w = min;
-	else if (color.w > max)
-		color.w = max;
-	return (color);
 
-}
 
 void print_mat(t_matrix4x4 mat)
 {
@@ -139,7 +119,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(0.0f, 0.0f, 5.0f);
+	minirt->camera.pos = vector3(-0.0f, 0.0f, 1.5f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
@@ -150,11 +130,20 @@ static int	init_minirt(t_minirt *minirt)
 		exit(ERROR);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
+	minirt->camera.pitch = 0.0f;
+	minirt->camera.yaw = 0.0f;
 	calculateprojection(minirt);
 	minirt->moved = true;
-	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 1.0f, 0.0f), 1.0f, vector3(1.0f, 0.0f, 0.0f));
-	minirt->scene.sphere[1] = add_sphere(vector3(0.0f, -9.0f, 0.0f),9.0f, vector3(0.0f, 1.0f, 0.0f));
-	minirt->scene.nb_sphere = 2;
+	minirt->camera.is_clicked = false;
+	minirt->scene.material[0] = add_material(vector3(0.0f, 0.0f, 0.0f), 1.0f, 0.1f);
+	minirt->scene.material[1] = add_material(vector3(0.0f, 0.0f, 0.0f), 0.1f, 0.1f);
+	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 0.6f, 0.0f),  0.6f, vector3(1.0f, 0.0f, 0.0f), 0);
+	minirt->scene.sphere[1] = add_sphere(vector3(0.0f, -10.0f, 0.0f),  10.0f, vector3(0.0f, 1.0f, 0.0f), 1);
+	minirt->scene.sphere[2] = add_sphere(vector3(0.0f, 0.0f, 0.5f),  0.6f, vector3(0.0f, 0.0f, 1.0f), 0);
+	minirt->scene.sphere[3] = add_sphere(vector3(-0.5f, 0.0f, 0.0f), 0.6f, vector3(1.0f, 1.0f, 0.0f), 0);
+	minirt->scene.sphere[4] = add_sphere(vector3(0.0f, -0.5f, 0.0f), 0.6f, vector3(1.0f, 0.0f, 1.0f), 0);
+	minirt->scene.sphere[5] = add_sphere(vector3(0.0f, 0.0f, -0.5f), 0.6f, vector3(1.0f, 1.0f, 1.0f), 0);
+	minirt->scene.nb_sphere =2;
 	return (SUCCESS);
 }
 
@@ -171,8 +160,6 @@ t = (-b + sqrt(det)) / 2(b - d)
 t = (-b - sqrt(det)) / 2(b - d)
 */
 
-
-
 int main(int argc, char *argv[])
 {
 	t_minirt minirt;
@@ -183,24 +170,53 @@ int main(int argc, char *argv[])
 		// fd = open(argv[1], O_RDONLY);
 	// else
 		// return (0);
-	if (init_minirt(&minirt) == ERROR)
-		return (ERROR);
 	//get_input_list(&minirt, fd);
 	//validate_input(&minirt);
 	//minirt.scene = create the 3d world
+
+
+	if (init_minirt(&minirt) == ERROR)
+		return (ERROR);
 
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
 	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
-
+	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
 	if (minirt.error != ERROR)
 		mlx_loop(minirt.mlx);
 	mlx_terminate(minirt.mlx);
 	if (minirt.camera.ray_dir)
 		free(minirt.camera.ray_dir);
-	//system("leaks minirt");
 	close(fd);
+	// int i = -100;
+	// while (++i < 100)
+		// printf("%f\n", ((random_float()) ));
+
+
+
+	//system("leaks minirt");
 	return (SUCCESS);
 }
+/*
 
+float	random_float(float min, float max)
+{
+	float	random;
+
+	min = -0.5f;
+	max = 0.5f;
+	random = (float)rand() / (float)RAND_MAX;
+	return (min + (max - min) * random);
+}
+
+t_vector3 vector3_random(float min, float max)
+{
+	t_vector3 vec;
+
+	vec.x = random_float(min, max);
+	vec.y = random_float(min, max);
+	vec.z = random_float(min, max);
+	return (vec);
+}
+*/

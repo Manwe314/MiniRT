@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/07 13:21:46 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/08 16:48:57 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ typedef struct s_cylinder
 	t_vector3 color;
 	float height;
 	float diameter;
+	int	material_index;
 } t_cylinder;
 
 typedef struct s_plane
@@ -84,6 +85,7 @@ typedef struct s_plane
 	t_vector3 point_on_plane;
 	t_vector3 normal;
 	t_vector3 color;
+	int	material_index;
 } t_plane;
 
 typedef struct s_light
@@ -103,6 +105,7 @@ typedef struct s_sphere
     t_vector3 center;
 	t_vector3 color;
     double radius;
+	int	material_index;
 } t_sphere;
 
 typedef struct s_camera
@@ -125,6 +128,7 @@ typedef struct s_obj
 {
 	t_vector3 *vertex;
 	t_vector3 *normal;
+	int	material_index;
 	int index;
 } t_obj;
 
@@ -135,9 +139,12 @@ typedef struct s_camera_eye
 	t_vector3 *ray_dir;
 	t_vector3 angle;
 	float fov;
+	bool is_clicked;
 	t_vector3 forward;
 	t_matrix4x4 inv_perspective;
 	t_matrix4x4 inv_lookat;
+	float pitch;
+	float yaw;
 }	t_camera_eye;
 
 typedef struct s_cuboid
@@ -152,6 +159,13 @@ typedef struct s_ray
 	t_vector3 direction;
 } t_ray;
 
+typedef struct s_material
+{
+	float roughness;
+	float mettalic;
+	t_vector3 color;
+} t_material;
+
 typedef struct s_scene
 {
 	t_sphere sphere[100];
@@ -165,6 +179,7 @@ typedef struct s_scene
 	int nb_triangle;
 	int nb_cuboid;
 	int nb_obj;
+	t_material material[4];
 	//t_light *light;
 
 }	t_scene;
@@ -202,6 +217,94 @@ typedef struct s_minirt
 	t_model			model;
 	t_scene			scene;
 }	t_minirt;
+
+void close_function(void *param);
+float to_radian(float angle);
+float to_degree(float angle);
+t_vector3 multiplymatrixvector(t_vector3 i, t_matrix4x4 m);
+t_vector4 multiplymatrixvector4(t_vector4 i, t_matrix4x4 m);
+t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2);
+
+t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2);
+float vector3_dot(t_vector3 vec1, t_vector3 vector2);
+t_vector3 vector3_normalize(t_vector3 v);
+float vec3d_magnitude(t_vector3 v);
+
+
+t_vector2 vector2(float x, float y);
+t_vector3 vector3(float x, float y, float z);
+t_vector4 vector4(float x, float y, float z, float w);
+
+t_vector2 vector2_subtract(t_vector2 v1, t_vector2 v2);
+t_vector2 vector2_add(t_vector2 a, t_vector2 b);
+t_vector2 vector2_multiply(t_vector2 a, t_vector2 b);
+t_vector2 vector2_multiply_float(t_vector2 a, float b);
+
+t_vector3 vector3_subtract(t_vector3 v1, t_vector3 v2);
+t_vector3 vector3_add(t_vector3 a, t_vector3 b);
+t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
+t_vector3 vector3_multiply_float(t_vector3 a, float b);
+t_vector3 vector3_add_float(t_vector3 a, float b);
+t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
+t_vector3 vector3_random(float x, float y);
+t_vector4	vector4_clamp(t_vector4 color, float min, float max);
+t_vector4 vector4_multiply_float(t_vector4 a, float b);
+t_vector4 vector4_add(t_vector4 a, t_vector4 b);
+float	random_float(void);
+
+
+void calculateraydirections(t_minirt *minirt);
+void calculateview(t_minirt *minirt);
+void calculateprojection(t_minirt *minirt);
+
+t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4);
+t_vector3 add_point(float x, float y, float z);
+t_vector3 add_center(float x, float y, float z);
+t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
+t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color, int index);
+t_material add_material(t_vector3 color, float roughness, float mettalic);
+
+
+void keyhook(mlx_key_data_t keydata, void *param);
+void mousehook(mouse_key_t button, action_t action, modifier_key_t mods, void *param);
+
+void draw_line(int x1, int y1, int x2, int y2);
+void draw_triangle(t_triangle triangle);
+void draw_sphere(t_sphere sphere, int nbLong, int nbLat);
+
+t_matrix4x4 init_mat_0(void);
+t_matrix4x4 rotation_x(float angle);
+t_matrix4x4 rotation_y(float angle);
+t_matrix4x4 rotation_z(float angle);
+t_matrix4x4 translation(t_vector3 vec);
+t_matrix4x4 scale(t_vector3 vec);
+
+void calculatelookat(t_minirt *minirt);
+t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up);
+t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up);
+t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
+t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far);
+t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far);
+
+t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw );
+
+float	max(float a, float b);
+float mult(float a, float b, float c);
+void print_mat(t_matrix4x4 mat);
+t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
+
+t_vector4 PerPixel(t_ray ray, t_scene scene);
+
+void hook(void *param);
+t_vector4 PerPixel(t_ray ray, t_scene scene);
+void	resize(int32_t width, int32_t height, void *param);
+void	cursor(double xpos, double ypos, void *param);
+t_model get_model(void);
+int	get_rgba(t_vector4 color);
+
+
+t_ray create_ray(float x, float y, t_minirt *minirt);
+
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -262,81 +365,6 @@ void validate_values_light(t_input_list *input);
 
 
 
-
-void close_function(void *param);
-float to_radian(float angle);
-float to_degree(float angle);
-t_vector3 multiplymatrixvector(t_vector3 i, t_matrix4x4 m);
-t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2);
-
-t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2);
-float vector3_dot(t_vector3 vec1, t_vector3 vector2);
-t_vector3 vector3_normalize(t_vector3 v);
-float vec3d_magnitude(t_vector3 v);
-
-
-t_vector2 vector2(float x, float y);
-t_vector3 vector3(float x, float y, float z);
-t_vector4 vector4(float x, float y, float z, float w);
-
-t_vector2 vector2_subtract(t_vector2 v1, t_vector2 v2);
-t_vector2 vector2_add(t_vector2 a, t_vector2 b);
-t_vector2 vector2_multiply(t_vector2 a, t_vector2 b);
-t_vector2 vector2_multiply_float(t_vector2 a, float b);
-
-t_vector3 vector3_subtract(t_vector3 v1, t_vector3 v2);
-t_vector3 vector3_add(t_vector3 a, t_vector3 b);
-t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
-t_vector3 vector3_multiply_float(t_vector3 a, float b);
-t_vector3 vector3_add_float(t_vector3 a, float b);
-t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
-
-
-void calculateraydirections(t_minirt *minirt);
-void calculateview(t_minirt *minirt);
-void calculateprojection(t_minirt *minirt);
-
-t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4);
-t_vector3 add_point(float x, float y, float z);
-t_vector3 add_center(float x, float y, float z);
-t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
-t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color);
-
-void keyhook(mlx_key_data_t keydata, void *param);
-
-void draw_line(int x1, int y1, int x2, int y2);
-void draw_triangle(t_triangle triangle);
-void draw_sphere(t_sphere sphere, int nbLong, int nbLat);
-
-t_matrix4x4 init_mat_0(void);
-t_matrix4x4 rotation_x(float angle);
-t_matrix4x4 rotation_y(float angle);
-t_matrix4x4 rotation_z(float angle);
-t_matrix4x4 translation(t_vector3 vec);
-t_matrix4x4 scale(t_vector3 vec);
-
-void calculatelookat(t_minirt *minirt);
-t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up);
-t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up);
-t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
-t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far);
-t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far);
-
-t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw );
-
-float	max(float a, float b);
-float mult(float a, float b, float c);
-void print_mat(t_matrix4x4 mat);
-t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
-
-t_vector4 renderer(t_ray ray, t_minirt *minirt);
-
-void hook(void *param);
-t_vector4 PerPixel(t_ray ray, t_scene scene);
-void	resize(int32_t width, int32_t height, void *param);
-void	cursor(double xpos, double ypos, void *param);
-t_model get_model(void);
-int	get_rgba(t_vector4 color);
 #endif
 
 

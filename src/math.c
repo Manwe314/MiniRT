@@ -34,6 +34,16 @@ t_vector3 multiplymatrixvector(t_vector3 i, t_matrix4x4 m)
 	return (o);
 }
 
+t_vector4 multiplymatrixvector4(t_vector4 i, t_matrix4x4 m)
+{
+	t_vector4 o;
+	o.x = i.x * m.matrix[0][0] + i.y * m.matrix[1][0] + i.z * m.matrix[2][0] + i.w * m.matrix[3][0];
+	o.y = i.x * m.matrix[0][1] + i.y * m.matrix[1][1] + i.z * m.matrix[2][1] + i.w * m.matrix[3][1];
+	o.z = i.x * m.matrix[0][2] + i.y * m.matrix[1][2] + i.z * m.matrix[2][2] + i.w * m.matrix[3][2];
+	o.w = i.x * m.matrix[0][3] + i.y * m.matrix[1][3] + i.z * m.matrix[2][3] + i.w * m.matrix[3][3];
+	return (o);
+}
+
 
 t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2)
 {

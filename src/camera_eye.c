@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 19:56:22 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/07 10:06:37 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/08 13:33:09 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,15 @@ void calculateprojection(t_minirt *minirt)
 
 void calculatelookat(t_minirt *minirt)
 {
-	// minirt->camera.inv_lookat = matrixInverse(
-	// lookat(minirt->camera.pos, vector3_add(minirt->camera.pos, minirt->camera.forward),
-	// vector3(0, 1, 0)), 4);
+	t_vector3 target;
+
+	target = vector3_multiply_float(minirt->camera.forward, 100.0f);
+	target = vector3_add(minirt->camera.pos, target);
 	minirt->camera.inv_lookat = inverse_lookat_matrix(minirt->camera.pos, \
-	vector3_add(minirt->camera.pos, minirt->camera.forward), vector3(0, 1, 0));
+	target, vector3(0, 1, 0));
+	//minirt->camera.inv_lookat = FPSViewRH(minirt->camera.pos, minirt->camera.pitch, minirt->camera.yaw);
+	// minirt->camera.inv_lookat = matrixInverse(
+	// lookat(minirt->camera.pos, target, vector3(0, 1, 0)), 4);
 }
 
 void calculateraydirections(t_minirt *minirt)

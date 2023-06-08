@@ -346,17 +346,17 @@ t_hitpayload TraceRay(t_ray ray, t_scene scene)
 t_vector4 PerPixel(t_ray ray, t_scene scene)
 {
 	t_vector3 color;
-	float multiplier = 1.0f;
+	float multiplier =1.0f;
 
 	color = vector3(0.0f, 0.0f, 0.0f);
-	int bounces = 2;
-	for (int i = 0; i < bounces; i++)
+	int bounces = 3;
+	while(bounces--)
 	{
 		t_hitpayload payload = TraceRay(ray, scene);
 		if (payload.HitDistance < 0.0f)
 		{
-			t_vector3 skyColor = vector3(0.0f, 0.0f, 0.0f);
-			//color += skyColor * multiplier;
+			t_vector3 skyColor = vector3(0.6f, 0.7f, 0.9f);
+			// t_vector3 skyColor = vector3(0.0f, 0.0f , 0.0f);
 			color = vector3_add(color, vector3_multiply_float(skyColor, multiplier));
 			break;
 		}
@@ -365,22 +365,85 @@ t_vector4 PerPixel(t_ray ray, t_scene scene)
 		float lightIntensity = max(vector3_dot(payload.WorldNormal, lightDir), 0.0f); // == cos(angle)
 
 		const t_sphere sphere = scene.sphere[payload.ObjectIndex];
+		const t_material material = scene.material[sphere.material_index];
 		t_vector3 sphereColor = sphere.color;
 		sphereColor = vector3_multiply_float(sphereColor, lightIntensity);
 		sphereColor = vector3_multiply_float(sphereColor, multiplier);
 
 		color = vector3_add(color, sphereColor);
 
-		multiplier *= 0.7f;
+		multiplier *= 0.5f;
 
 		//ray.origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
 		ray.origin = vector3_add(payload.WorldPosition, vector3_multiply_float(payload.WorldNormal, 0.0001f));
-		ray.direction = vector3_reflect(ray.direction, payload.WorldNormal);
+		t_vector3 diffuse =vector3_multiply_float(vector3_random(ray.direction.x, ray.direction.y), scene.material[sphere.material_index].roughness);
+		diffuse = vector3_add(diffuse, payload.WorldNormal);
+		ray.direction = vector3_reflect(ray.direction, diffuse);
 	}
 
 	return (vector4(color.x, color.y, color.z, 1.0f));
 }
 
 
+/*t_vector4 PerPixel(t_ray ray, t_scene scene)
+{
+	t_vector4 color;
+	t_sphere* closestsphere = 0;
+	float closest = FLT_MAX;
 
 
+	color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	t_sphere sphere[10];
+	int nb_sphere = 6;
+	int i = -1;
+	sphere[0] = add_sphere(vector3(1.0f, 0.0f, 0.0f),  0.3f, vector3(1.0f, 0.0f, 0.0f));
+	sphere[1] = add_sphere(vector3(0.0f, 1.0f, 0.0f),  0.3f, vector3(0.0f, 1.0f, 0.0f));
+	sphere[2] = add_sphere(vector3(0.0f, 0.0f, 1.0f),  0.3f, vector3(0.0f, 0.0f, 1.0f));
+	sphere[3] = add_sphere(vector3(-1.0f, 0.0f, 0.0f), 0.3f, vector3(1.0f, 1.0f, 0.0f));
+	sphere[4] = add_sphere(vector3(0.0f, -1.0f, 0.0f), 0.3f, vector3(1.0f, 0.0f, 1.0f));
+	sphere[5] = add_sphere(vector3(0.0f, 0.0f, -1.0f), 0.3f, vector3(1.0f, 1.0f, 1.0f));
+
+	//t_vector3 oc = ray.origin;
+
+	while (++i < nb_sphere)
+	{
+		t_vector3 oc = vector3_subtract(ray.origin, sphere[i].center);
+
+		float a = vector3_dot(ray.direction, ray.direction);
+		float b = 2.0f * vector3_dot(oc, ray.direction);
+		float c = vector3_dot(oc, oc) - sphere[i].radius * sphere[i].radius;
+
+		float det = b * b - 4 * a * c;
+		if (det < 0)
+			continue;
+		float t = (-b - sqrtf(det)) / (2.0f * a);
+		if (t < 0)
+			continue;
+			//t = (-b - sqrtf(det)) / (2.0f * a);
+		if (closest > t)
+		{
+			closest = t;
+			closestsphere = &sphere[i];
+		}
+	}
+	if (closestsphere == 0)
+		return (color);
+
+	t_vector3 oc = vector3_subtract(ray.origin, closestsphere->center);
+	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, closest));
+	t_vector3 normal = vector3_normalize(hit);
+	t_vector3 light_dir = vector3_normalize(vector3(1.0f, 1.0f, 1.0f));
+	float diffuse = vector3_dot(light_dir, normal);
+	diffuse = max(diffuse, 0.0f);
+
+	// sphere[i].color = normal;
+	// sphere[i].color = vector3_multiply(sphere[i].color, normal);
+	// sphere[i].color = vector3_normalize(sphere[i].color);
+	// sphere[i].color = vector3_multiply_float(sphere[i].color, 0.5f);
+	// sphere[i].color = vector3_add_float(sphere[i].color, 0.5f);
+
+	closestsphere->color = vector3_multiply_float(closestsphere->color, diffuse);
+	color = vector4(closestsphere->color.x, closestsphere->color.y, closestsphere->color.z, 1.0f);
+	return (color);
+}
+*/
