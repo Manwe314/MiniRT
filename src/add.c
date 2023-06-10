@@ -54,12 +54,15 @@ t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color, int index)
 	return (sphere);
 }
 
-t_material add_material(t_vector3 color, float roughness, float mettalic)
+t_material add_material(t_vector3 color, float roughness, float mettalic,t_vector3 emission_color, float emission_intensity)
 {
 	t_material material;
 
 	material.color = color;
 	material.roughness = roughness;
 	material.mettalic = mettalic;
+	material.emission_color = emission_color;
+	material.emission_intensity = emission_intensity;
+	material.emission = vector3_multiply_float(emission_color, emission_intensity);
 	return (material);
 }

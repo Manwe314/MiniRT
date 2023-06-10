@@ -1,0 +1,68 @@
+t_info touch_sphere(t_ray ray, t_scene scene)
+{
+	int i;
+	float det;
+	t_info info;
+	int index_closest;
+	float closest_yet;
+
+	i = -1;
+	info.did_hit = FALSE;
+	closest_yet = FLT_MAX;
+	while (++i < scene.nb_sphere)
+	{
+		t_vector3 offset_origin = vector3_substract(ray.origin, scene.sphere[i].position);
+
+		float a = vector3_dot(ray.direction, ray.direction);
+		float b = 2 * vector3_dot(ray.direction, offset_origin);
+		float c = vector3_dot(offset_origin, offset_origin) - scene.sphere[i].radius * scene.sphere[i].radius;
+
+		det = b * b - 4 * a * c;
+		if (det < 0)
+			continue;
+		float t = (-b - sqrt(det)) / (2 * a);
+		if (t >= 0 && t < closest_yet)
+		{
+			closest_yet = t;
+			info.index_sphere = i;
+			info.did_hit = TRUE;
+		}
+	}
+	if (info.did_hit == TRUE)
+	{
+		info.hitdistance = closest_yet;
+		info.hitpoint = vector3_add(ray.origin, vector3_multiply_float(ray.direction, closest_yet));
+		info.normal = vector3_normalize(vector3_substract(info.hitpoint, scene.sphere[index_closest].position));
+		info.index_material = scene.sphere[index_closest].material_index;
+	}
+	return (info);
+
+
+}
+
+t_vector4 PerPixel(t_ray ray, t_scene scene)
+{
+	t_vector3 light;
+	t_vector3 color = vector3(1.0f, 1.0f, 1.0f);
+	t_payload info;
+	light = vector3(0.0f, 0.0f, 0.0f);
+	int bounces = 3;
+	while(bounces--)
+	{
+		info = TraceRay(ray, scene);
+		if (info.did_hit == FALSE)
+		{
+			// has miss
+			//add_sky_color(light, contribution);
+			break;
+		}
+		ray.origin = vector3_add(info.hitpoint, vector3_multiply_float(info.normal, 1.001f));
+		ray.direction = randomspheredirection(info.normal);
+
+		t_vector3 emitted_light = scene.sphere[info.index_sphere].emission;
+		light =	vector3_add(light, vector3_multiply_vector3(color, emitted_light));
+		color = vector3_multiply_vector3(color, scene.material[info.index_material].color);
+	}
+	return (vector4(light.x, light.y, light.z, 1.0f));
+
+}

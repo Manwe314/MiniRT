@@ -13,27 +13,63 @@
 #include "minirt.h"
 
 #include <time.h>
-float	random_float()
-{
-	uint result;
-	static int seed;
 
-	seed++;
-	int state = seed;
-	state = state * 747796405 + 2891336453;
-	result = (state >> ((state >> 28) + 4)) ^ state * 277803737;
-	result = (result >> 22) ^ result;
-	return ((result / 4294967295.0) - 0.5f);
+// float	random_float()
+// {
+	// uint result;
+	// static int seed;
+// 
+	// if (seed == 0)
+		// seed = 541345;
+	// seed += 7;
+	// int state = seed;
+	// state = state * 747796405 + 2891336453;
+	// result = (state >> ((state >> 28) + 4)) ^ state * 277803737;
+	// result = (result >> 22) ^ result;
+	// return ((result / 4294967295.0) - 0.5f);
+// }
+// 
+float	random_float(void)
+{
+	float	random;
+	float min = -0.5f;
+	float max = 0.5f;
+	random = (float)rand() / (float)RAND_MAX;
+	return (min + (max - min) * random);
 }
 
-// float	random_float(void)
-// {
-// 	float	random;
-// 	float min = -0.5f;
-// 	float max = 0.5f;
-// 	random = (float)rand() / (float)RAND_MAX;
-// 	return (min + (max - min) * random);
-// }
+float randomvaluenormaldistribution(void)
+{
+	float theta = 2 * M_PI * random_float();
+	float r = sqrt(-2 * log(1 - random_float()));
+	return (r * cos(theta));
+}
+
+t_vector3 randomdirection(void)
+{
+	float x = randomvaluenormaldistribution();
+	float y = randomvaluenormaldistribution();
+	float z = randomvaluenormaldistribution();
+	return (vector3_normalize(vector3(x, y, z)));
+}
+
+float sign(float a)
+{
+	if (a < 0)
+		return (-a);
+	else
+		return (a);
+}
+
+
+t_vector3 randomspheredirection(t_vector3 normal)
+{
+	t_vector3 dir = randomdirection();
+	return (vector3_multiply_float(dir, sign(vector3_dot(normal, dir))));
+}
+
+
+
 
 t_vector3 vector3_random(float x, float y)
 {

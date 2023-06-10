@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/08 16:48:57 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/10 22:01:34 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,11 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH  500
-# define HEIGHT 500
+# define WIDTH  300
+# define HEIGHT 300
 
+# define TRUE 1
+# define FALSE 0
 
 
 typedef struct s_vec2d
@@ -164,6 +166,9 @@ typedef struct s_material
 	float roughness;
 	float mettalic;
 	t_vector3 color;
+	t_vector3 emission_color;
+	float emission_intensity;
+	t_vector3 emission;
 } t_material;
 
 typedef struct s_scene
@@ -184,12 +189,22 @@ typedef struct s_scene
 
 }	t_scene;
 
+typedef struct s_info
+{
+	bool did_hit;
+	float dst;
+	t_vector3 hitpoint;
+	t_vector3 normal;
+	int index_sphere;
+	int index_material;
+} t_info;
+
 typedef struct s_hitpayload
 {
 	float HitDistance;
 	t_vector3 WorldPosition;
 	t_vector3 WorldNormal;
-
+	t_vector3 normal;
 	int ObjectIndex;
 } t_hitpayload;
 
@@ -212,7 +227,8 @@ typedef struct s_minirt
 	t_camera_eye	camera;
 	t_input_list	*input_head;
 	int				error;
-	int				moved;
+	bool			moved;
+	bool			resized;
 	int				input_validity;
 	t_model			model;
 	t_scene			scene;
@@ -246,10 +262,12 @@ t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
 t_vector3 vector3_multiply_float(t_vector3 a, float b);
 t_vector3 vector3_add_float(t_vector3 a, float b);
 t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
-t_vector3 vector3_random(float x, float y);
 t_vector4	vector4_clamp(t_vector4 color, float min, float max);
 t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
+
+t_vector3 randomspheredirection(t_vector3 normal);
+t_vector3 vector3_random(float x, float y);
 float	random_float(void);
 
 
@@ -262,7 +280,7 @@ t_vector3 add_point(float x, float y, float z);
 t_vector3 add_center(float x, float y, float z);
 t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
 t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color, int index);
-t_material add_material(t_vector3 color, float roughness, float mettalic);
+t_material add_material(t_vector3 color, float roughness, float mettalic, t_vector3 emission_color, float emission_intensity);
 
 
 void keyhook(mlx_key_data_t keydata, void *param);
@@ -283,7 +301,9 @@ void calculatelookat(t_minirt *minirt);
 t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up);
 t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up);
 t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
+
 t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far);
+
 t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far);
 
 t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw );

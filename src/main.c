@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/08 16:54:40 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/10 22:06:32 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(-0.0f, 0.0f, 1.5f);
+	minirt->camera.pos = vector3(0.0f, 0.0f, 1.5f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
@@ -135,15 +135,19 @@ static int	init_minirt(t_minirt *minirt)
 	calculateprojection(minirt);
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
-	minirt->scene.material[0] = add_material(vector3(0.0f, 0.0f, 0.0f), 1.0f, 0.1f);
-	minirt->scene.material[1] = add_material(vector3(0.0f, 0.0f, 0.0f), 0.1f, 0.1f);
-	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 0.6f, 0.0f),  0.6f, vector3(1.0f, 0.0f, 0.0f), 0);
+	calculateprojection(minirt);
+	calculatelookat(minirt);
+	minirt->scene.material[0] = add_material(vector3(1.0f, 0.0f, 0.0f), 1.0f, 0.1f, vector3(1,0,0),0);
+	minirt->scene.material[1] = add_material(vector3(0.0f, 1.0f, 0.0f), 1.0f, 1.0f, vector3(0,1,0),0);
+	minirt->scene.material[2] = add_material(vector3(0.0f, 0.0f, 1.0f), 1.0f, 1.0f, vector3(0.7,.5,0.5),5.0);
+
+	minirt->scene.sphere[0] = add_sphere(vector3(3.0f, 5.5f, -10.0f),  10.0f, vector3(1.0f, 0.0f, 0.0f), 2);
 	minirt->scene.sphere[1] = add_sphere(vector3(0.0f, -10.0f, 0.0f),  10.0f, vector3(0.0f, 1.0f, 0.0f), 1);
-	minirt->scene.sphere[2] = add_sphere(vector3(0.0f, 0.0f, 0.5f),  0.6f, vector3(0.0f, 0.0f, 1.0f), 0);
-	minirt->scene.sphere[3] = add_sphere(vector3(-0.5f, 0.0f, 0.0f), 0.6f, vector3(1.0f, 1.0f, 0.0f), 0);
+	minirt->scene.sphere[2] = add_sphere(vector3(-0.5f, 0.0f, 0.7f),  0.5f, vector3(0.0f, 0.0f, 1.0f), 0);
+	minirt->scene.sphere[3] = add_sphere(vector3(0.0f, -0.5f, 0.0f), 0.5f, vector3(1.0f, 1.0f, 0.0f), 0);
 	minirt->scene.sphere[4] = add_sphere(vector3(0.0f, -0.5f, 0.0f), 0.6f, vector3(1.0f, 0.0f, 1.0f), 0);
 	minirt->scene.sphere[5] = add_sphere(vector3(0.0f, 0.0f, -0.5f), 0.6f, vector3(1.0f, 1.0f, 1.0f), 0);
-	minirt->scene.nb_sphere =2;
+	minirt->scene.nb_sphere = 3;
 	return (SUCCESS);
 }
 

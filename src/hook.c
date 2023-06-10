@@ -85,6 +85,7 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	|| keydata.key == MLX_KEY_W || keydata.key == MLX_KEY_S)
 	{
 		minirt->moved = true;
+		//calculateprojection(minirt);
 		// calculateraydirections(minirt);
 		// calculateview(minirt);
 	}
@@ -157,6 +158,16 @@ t_vector4 **set_0(t_vector4 **color, t_minirt *minirt)
 	return (color);
 }
 
+void free_color(t_vector4 **color, t_minirt *minirt)
+{
+	int i;
+
+	i = -1;
+	while (++i < minirt->width)
+		free(color[i]);
+	free(color);
+}
+
 void hook(void *param)
 {
 	t_minirt *minirt = (t_minirt *)param;
@@ -169,8 +180,11 @@ void hook(void *param)
 
 
 	print_fps(minirt);
-	if (i == 0)
+	if (i == 0 || minirt->resized == true)
 	{
+		if (minirt->resized == true)
+			free(color);
+		minirt->resized = false;
 		color = init_0(minirt);
 		if (!color)
 			exit(EXIT_FAILURE);
@@ -198,6 +212,7 @@ void hook(void *param)
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
 			ray = create_ray(coord.x, coord.y, minirt);
+
 			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene));
 			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i) ;
 			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
@@ -226,8 +241,9 @@ void	resize(int32_t width, int32_t height, void *param)
 		minirt->camera.ray_dir = NULL;
 		exit(ERROR);
 	}
-	calculateprojection(minirt);
+	//calculateprojection(minirt);
 	minirt->moved = true;
+	minirt->resized = true;
 	mlx_image_to_window( minirt->mlx,  minirt->img, 0, 0);
 }
 
@@ -236,28 +252,40 @@ void	cursor(double xpos, double ypos, void *param)
 	t_minirt *minirt;
 	minirt = (t_minirt *)param;
 	t_matrix4x4 mat[2];
-	static int i;
+	static int i, x, y;
 
 	if (minirt->camera.is_clicked == false)
 	{
 		i = 0;
+
 		return;
 	}
 	if (i == 0)
 	{
 		mlx_set_mouse_pos(minirt->mlx, minirt->width / 2, minirt->height / 2);
-		i++;
+		i = 1;
 		return;
 	}
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
+	if (xpos > 0)
+	{
+		minirt->camera.yaw += 0.1f;
+	}
+	else if (xpos < 0)
+	{
+		minirt->camera.yaw -= 0.1f;
+	}
+	if (ypos > 0)
+	{
+		minirt->camera.pitch += 0.1f;
+	}
+	else if (ypos < 0)
+	{
+		minirt->camera.pitch -= 0.1f;
+	}
 	xpos = asin(xpos);
 	ypos = atan2(-ypos, 1.0f);
-	// if (lastx == 0 && lasty == 0)
-	// {
-		// lastx = xpos;
-		// lasty = ypos;
-	// }
 	xpos /= 20;
 	ypos /= -20;
 	mat[0] = rotation_y(xpos);
@@ -276,7 +304,7 @@ void	cursor(double xpos, double ypos, void *param)
 	// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(1.0f * ypos)));
 	// minirt->camera.forward = vector3_normalize(minirt->camera.forward);
 	mlx_set_mouse_pos(minirt->mlx, minirt->width / 2, minirt->height / 2);
-
+	//calculatelookat(minirt);
 	minirt->moved = true;
 }
 // 0 1 0 y bas
