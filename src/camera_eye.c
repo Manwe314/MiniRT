@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 19:56:22 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/08 13:33:09 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/13 17:01:10 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void calculateprojection(t_minirt *minirt)
 	// createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,
 	// 0.1f, 100.0f), 4);
 	minirt->camera.inv_perspective = inverse_perspective_matrix( \
-	minirt->camera.fov, minirt->width / minirt->height, 0.1f, 100.0f);
+	minirt->camera.fov, minirt->width / minirt->height, 0.1, 100);
 }
 
 void calculatelookat(t_minirt *minirt)

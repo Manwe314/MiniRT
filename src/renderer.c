@@ -343,7 +343,7 @@ t_hitpayload TraceRay(t_ray ray, t_scene scene)
 	return ClosestHit(ray, hitDistance, closestSphere, scene);
 }
 
-t_vector4 PerPixel(t_ray ray, t_scene scene)
+/*t_vector4 PerPixel(t_ray ray, t_scene scene)
 {
 	t_vector3 color;
 	float multiplier =1.0f;
@@ -383,7 +383,7 @@ t_vector4 PerPixel(t_ray ray, t_scene scene)
 
 	return (vector4(color.x, color.y, color.z, 1.0f));
 }
-
+*/
 
 /*t_vector4 PerPixel(t_ray ray, t_scene scene)
 {

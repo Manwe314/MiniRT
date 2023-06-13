@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/08 16:48:57 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:29:52 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 # include "../lib/libft/includes/libft.h"
-# include <math.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <stdint.h>
@@ -30,8 +29,8 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH  500
-# define HEIGHT 500
+# define WIDTH  150
+# define HEIGHT 150
 
 
 
@@ -49,6 +48,19 @@ typedef struct s_vec4d
 	float x, y, z, w;
 } t_vector4;
 
+typedef struct s_material
+{
+	float roughness;
+	float mettalic;
+	t_vector3 emission_color;
+	t_vector3 color;
+	t_vector3 specular_color;
+	float emission_strength;
+	t_vector3 emission;
+	float smoothness;
+	float specular_probability;
+	int flag;
+} t_material;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 typedef struct s_triangle
@@ -106,6 +118,7 @@ typedef struct s_sphere
 	t_vector3 color;
     double radius;
 	int	material_index;
+	t_material material;
 } t_sphere;
 
 typedef struct s_camera
@@ -131,6 +144,8 @@ typedef struct s_obj
 	int	material_index;
 	int index;
 } t_obj;
+
+
 
 
 typedef struct s_camera_eye
@@ -159,12 +174,16 @@ typedef struct s_ray
 	t_vector3 direction;
 } t_ray;
 
-typedef struct s_material
+
+
+typedef struct s_info
 {
-	float roughness;
-	float mettalic;
-	t_vector3 color;
-} t_material;
+	t_vector3 hit_point;
+	t_vector3 normal;
+	t_material material;
+	float hit_distance;
+	t_sphere sphere;
+} t_info;
 
 typedef struct s_scene
 {
@@ -214,6 +233,10 @@ typedef struct s_minirt
 	int				error;
 	int				moved;
 	int				input_validity;
+	float x;
+	float y;
+	float z;
+	float radius;
 	t_model			model;
 	t_scene			scene;
 }	t_minirt;
@@ -252,6 +275,7 @@ t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
 float	random_float(void);
 
+t_vector3 random_direction(uint state);
 
 void calculateraydirections(t_minirt *minirt);
 void calculateview(t_minirt *minirt);
@@ -293,10 +317,9 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-t_vector4 PerPixel(t_ray ray, t_scene scene);
+t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed);
 
 void hook(void *param);
-t_vector4 PerPixel(t_ray ray, t_scene scene);
 void	resize(int32_t width, int32_t height, void *param);
 void	cursor(double xpos, double ypos, void *param);
 t_model get_model(void);

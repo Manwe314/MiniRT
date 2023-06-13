@@ -54,6 +54,22 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
 		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
 
+	if (keydata.key == MLX_KEY_1 && keydata.action != MLX_RELEASE)
+		minirt->radius += 0.1f;
+	if (keydata.key == MLX_KEY_2 && keydata.action != MLX_RELEASE)
+		minirt->radius -= 0.1f;
+	if (keydata.key == MLX_KEY_4 && keydata.action != MLX_RELEASE)
+		minirt->x += 0.1f;
+	if (keydata.key == MLX_KEY_6 && keydata.action != MLX_RELEASE)
+		minirt->x -= 0.1f;
+	if (keydata.key == MLX_KEY_8 && keydata.action != MLX_RELEASE)
+		minirt->y += 0.1f;
+	if (keydata.key == MLX_KEY_5 && keydata.action != MLX_RELEASE)
+		minirt->y -= 0.1f;
+	if (keydata.key == MLX_KEY_7 && keydata.action != MLX_RELEASE)
+		minirt->z += 0.1f;
+	if (keydata.key == MLX_KEY_9 && keydata.action != MLX_RELEASE)
+		minirt->z -= 0.1f;
 
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
 		// minirt->camera.pos.x += speed;
@@ -187,6 +203,8 @@ void hook(void *param)
 	ray.origin = minirt->camera.pos;
 	calculatelookat(minirt);
 	calculateprojection(minirt);
+	minirt->scene.sphere[0].center = vector3(minirt->x, minirt->y, minirt->z);
+	minirt->scene.sphere[0].radius = minirt->radius;
 	//minirt->model = get_model();
 	//minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
 	x = -1;
@@ -198,13 +216,40 @@ void hook(void *param)
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
 			ray = create_ray(coord.x, coord.y, minirt);
-			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene));
+			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
 			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i) ;
 			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
 			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(accumulated_color));
 		}
 	}
 }
+
+/*void	hook(void *param)
+{
+	t_minirt *minirt = (t_minirt *)param;
+	t_ray ray;
+	t_scene scene;
+	t_vector4 color;
+	int x;
+	int y;
+
+	print_fps(minirt);
+	x = -1;
+	calculatelookat(minirt);
+	calculateprojection(minirt);
+	while (++x < minirt->width)
+	{
+		y = -1;
+		while (++y < minirt->height)
+		{
+			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
+			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
+			ray = create_ray(coord.x, coord.y, minirt);
+			color = PerPixel(ray, minirt->scene,  x * minirt->height + y);
+			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(color));
+		}
+	}
+}*/
 
 
 void	resize(int32_t width, int32_t height, void *param)

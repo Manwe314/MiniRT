@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/08 16:54:40 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:55:21 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,20 @@ void print_mat(t_matrix4x4 mat)
 	printf("\n");
 }
 
+t_material return_material(void)
+{
+	t_material material;
+
+	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	material.color = vector3(1.0f, 1.0f, 1.0f);
+	material.specular_color = vector3(1.0f, 0.0f, 0.0f);
+	material.emission_strength = 10.0f;
+	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
+	material.smoothness = 1.0f;
+	material.specular_probability = 0.0f;
+	return (material);
+}
+
 static int	init_minirt(t_minirt *minirt)
 {
 	int i;
@@ -135,6 +149,37 @@ static int	init_minirt(t_minirt *minirt)
 	calculateprojection(minirt);
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
+	minirt->x = 0;
+	minirt->y = 1;
+	minirt->z = 0;
+	minirt->radius = 1.0f;
+	minirt->scene.material[0] = return_material();
+	minirt->scene.material[1] = return_material();
+	minirt->scene.material[2] = return_material();
+	minirt->scene.material[1].emission = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.material[1].emission_strength = 0.0f;
+	minirt->scene.material[1].emission_color = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.material[1].color = vector3(0.0f, 1.0f, 0.0f);
+
+	minirt->scene.material[2].emission = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.material[2].emission_strength = 0.0f;
+	minirt->scene.material[2].emission_color = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.material[2].color = vector3(0.0f, 0.0f, 1.0f);
+
+	minirt->scene.sphere[0].center = vector3(0.0f, 1.0f, 0.0f);
+	minirt->scene.sphere[0].radius = 5.0f;
+	minirt->scene.sphere[0].material = minirt->scene.material[2];
+
+	minirt->scene.sphere[1].center = vector3(0.0f, -10.0f, 0.0f);
+	minirt->scene.sphere[1].radius = 10.0f;
+	minirt->scene.sphere[1].material = minirt->scene.material[1];
+
+	minirt->scene.sphere[2].center = vector3(5.0f, 50.0f, 20.0f);
+	minirt->scene.sphere[2].radius = 20.0f;
+	minirt->scene.sphere[2].material = minirt->scene.material[0];
+	minirt->scene.nb_sphere = 3;
+
+	/*
 	minirt->scene.material[0] = add_material(vector3(0.0f, 0.0f, 0.0f), 1.0f, 0.1f);
 	minirt->scene.material[1] = add_material(vector3(0.0f, 0.0f, 0.0f), 0.1f, 0.1f);
 	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 0.6f, 0.0f),  0.6f, vector3(1.0f, 0.0f, 0.0f), 0);
@@ -144,6 +189,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.sphere[4] = add_sphere(vector3(0.0f, -0.5f, 0.0f), 0.6f, vector3(1.0f, 0.0f, 1.0f), 0);
 	minirt->scene.sphere[5] = add_sphere(vector3(0.0f, 0.0f, -0.5f), 0.6f, vector3(1.0f, 1.0f, 1.0f), 0);
 	minirt->scene.nb_sphere =2;
+	*/
 	return (SUCCESS);
 }
 

@@ -12,64 +12,39 @@
 
 #include "minirt.h"
 
-#include <time.h>
-float	random_float()
+int nextrandom(uint state)
 {
-	uint result;
-	static int seed;
-
-	seed++;
-	int state = seed;
 	state = state * 747796405 + 2891336453;
-	result = (state >> ((state >> 28) + 4)) ^ state * 277803737;
+	uint result = ((state >> ((state >> 28) + 4)) ^ state) * 277803737;
 	result = (result >> 22) ^ result;
-	return ((result / 4294967295.0) - 0.5f);
+	return result;
 }
 
-// float	random_float(void)
+// float randomvalue(uint state)
 // {
-// 	float	random;
-// 	float min = -0.5f;
-// 	float max = 0.5f;
-// 	random = (float)rand() / (float)RAND_MAX;
-// 	return (min + (max - min) * random);
+// 	return nextrandom(state) / 4294967295.0; // 2^32 - 1
 // }
 
-t_vector3 vector3_random(float x, float y)
+float randomvalue(uint state)
 {
-	t_vector3 vec;
-	static long long state;
-	float random[3];
-
-	// random[0] = random_float(x * y * 53 + state);
-	// random[1] = random_float((x * 2 + 1) * y * 123 + state);
-	// random[2] = random_float(x * (y * 2 + 1) * 652 + state);
-	vec.x = random_float();
-	vec.y = random_float();
-	vec.z = random_float();
-	state++;
-	if (state > 1000000000000000000)
-		state = 0;
-	return (vec);
+	return rand() / (float)RAND_MAX;
 }
 
-/*
-float	random_float(void)
+// Random value in normal distribution (with mean=0 and sd=1)
+float randomvaluevormaldistribution(uint state)
 {
-	float	random;
-	float min = -0.5f;
-	float max = 0.5f;
-	random = (float)rand() / (float)RAND_MAX;
-	return (min + (max - min) * random);
+	float theta = 2 * 3.1415926 * randomvalue(state);
+	float rho = sqrt(-2 * log(randomvalue(state)));
+	return rho * cos(theta);
 }
 
-t_vector3 vector3_random(float x, float y)
+// Calculate a random direction
+t_vector3 random_direction(uint state)
 {
 	t_vector3 vec;
 
-	vec.x = random_float();
-	vec.y = random_float();
-	vec.z = random_float();
-	return (vec);
+	vec.x = randomvaluevormaldistribution(state);
+	vec.y = randomvaluevormaldistribution(state);
+	vec.z = randomvaluevormaldistribution(state);
+	return (vector3_normalize(vec));
 }
-*/
