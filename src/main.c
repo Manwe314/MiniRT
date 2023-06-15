@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/13 16:55:21 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/15 08:56:23 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void print_input(t_minirt *minirt)
 		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
 		{
 			t_cylinder *cam = input->object;
-			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->diameter,cam->normal_axis.x, cam->normal_axis.y, cam->normal_axis.z, cam->centre.x, cam->centre.y, cam->centre.z, cam->color.x, cam->color.y, cam->color.z);
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->radius,cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
 		}
 		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		input = input->next;
@@ -114,12 +114,34 @@ t_material return_material(void)
 
 	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
 	material.color = vector3(1.0f, 1.0f, 1.0f);
-	material.specular_color = vector3(1.0f, 0.0f, 0.0f);
-	material.emission_strength = 10.0f;
+	material.specular_color = vector3(1.0f, 1.0f, 1.0f);
+	material.emission_strength = 50.0f;
 	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
 	material.smoothness = 1.0f;
 	material.specular_probability = 0.0f;
 	return (material);
+}
+
+t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top, t_minirt *minirt)
+{
+	t_circle circle;
+	static int i;
+
+	circle.radius = cylinder.radius;
+	circle.material = cylinder.material;
+	if (is_top)
+	{
+		circle.center = vector3_add(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.normal = cylinder.normal;
+	}
+	else
+	{
+		circle.center = vector3_subtract(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.normal = vector3_multiply_float(cylinder.normal, -1.0f);
+	}
+	// minirt->scene.circle[i++] = circle;
+	// minirt->scene.nb_circle++;
+	return (circle);
 }
 
 static int	init_minirt(t_minirt *minirt)
@@ -133,7 +155,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->error = 1;
 
 	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(-0.0f, 0.0f, 1.5f);
+	minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
@@ -159,25 +181,83 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.material[1].emission = vector3(0.0f, 0.0f, 0.0f);
 	minirt->scene.material[1].emission_strength = 0.0f;
 	minirt->scene.material[1].emission_color = vector3(0.0f, 0.0f, 0.0f);
-	minirt->scene.material[1].color = vector3(0.0f, 1.0f, 0.0f);
+	minirt->scene.material[1].color = vector3(1.0f, 1.0f, 1.0f);
 
 	minirt->scene.material[2].emission = vector3(0.0f, 0.0f, 0.0f);
 	minirt->scene.material[2].emission_strength = 0.0f;
 	minirt->scene.material[2].emission_color = vector3(0.0f, 0.0f, 0.0f);
 	minirt->scene.material[2].color = vector3(0.0f, 0.0f, 1.0f);
 
-	minirt->scene.sphere[0].center = vector3(0.0f, 1.0f, 0.0f);
-	minirt->scene.sphere[0].radius = 5.0f;
-	minirt->scene.sphere[0].material = minirt->scene.material[2];
+	// minirt->scene.sphere[1].center = vector3(0.0f, -10.0f, 0.0f);
+	// minirt->scene.sphere[1].radius = 10.0f;
+	// minirt->scene.sphere[1].material = minirt->scene.material[1];
+	// minirt->scene.sphere[1].material.color = vector3(0.5f, 0.6f, 0.7f);
 
-	minirt->scene.sphere[1].center = vector3(0.0f, -10.0f, 0.0f);
-	minirt->scene.sphere[1].radius = 10.0f;
-	minirt->scene.sphere[1].material = minirt->scene.material[1];
 
-	minirt->scene.sphere[2].center = vector3(5.0f, 50.0f, 20.0f);
-	minirt->scene.sphere[2].radius = 20.0f;
-	minirt->scene.sphere[2].material = minirt->scene.material[0];
-	minirt->scene.nb_sphere = 3;
+	// minirt->scene.sphere[2].center = vector3(5.0f, 50.0f, 20.0f);
+	// minirt->scene.sphere[2].radius = 20.0f;
+	// minirt->scene.sphere[2].material = minirt->scene.material[0];
+
+	// minirt->scene.sphere[0].center = vector3(0.0f, 1.0f, 0.0f);
+	// minirt->scene.sphere[0].radius = 1.0f;
+	// minirt->scene.sphere[0].material = minirt->scene.material[2];
+	// minirt->scene.sphere[0].material.color = vector3(1.0f, 1.0f, 1.0f);
+	// minirt->scene.sphere[0].material.smoothness = 1.0f;
+	// minirt->scene.sphere[0].material.specular_probability = 1.0f;
+
+
+	// minirt->scene.sphere[1].center = vector3(1.7f, 0.5f, -0.2f);
+	// minirt->scene.sphere[1].radius = 0.8f;
+	// minirt->scene.sphere[1].material = minirt->scene.material[2];
+	// minirt->scene.sphere[1].material.color = vector3(1.0f, 1.0f, 1.0f);
+	// minirt->scene.sphere[1].material.smoothness = 1.0f;
+	// minirt->scene.sphere[1].material.specular_probability = 1.0f;
+//
+	// minirt->scene.sphere[4].center = vector3(0.0f, 1.0f, 0.0f);
+	// minirt->scene.sphere[4].radius = 2.0f;
+	// minirt->scene.sphere[4].material = minirt->scene.material[2];
+
+
+	minirt->scene.plane[0].point_on_plane = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.plane[0].normal = vector3(0.0f, 1.0f, 0.0f);
+	minirt->scene.plane[0].normal = vector3_normalize(minirt->scene.plane[0].normal);
+	minirt->scene.plane[0].material = minirt->scene.material[1];
+	minirt->scene.plane[0].material.color = vector3(0.5f, 0.0f, 0.0f);
+
+	minirt->scene.nb_plane = 1;
+
+	minirt->scene.cylinder[0].center = vector3(-1.0f, 1.0f, 0.0f);
+	minirt->scene.cylinder[0].normal = vector3(0.0f, 1.0f, 0.0f);
+	minirt->scene.cylinder[0].normal = vector3_normalize(minirt->scene.cylinder[0].normal);
+	minirt->scene.cylinder[0].radius = 0.5f;
+	minirt->scene.cylinder[0].height = 1.0f;
+	minirt->scene.cylinder[0].material = minirt->scene.material[1];
+	minirt->scene.cylinder[0].material.color = vector3(0.9f, 0.5f, 0.8f);
+	minirt->scene.cylinder[0].circle_top = get_circle_from_cylinder(minirt->scene.cylinder[0], 1, minirt);
+	minirt->scene.cylinder[0].circle_bottom = get_circle_from_cylinder(minirt->scene.cylinder[0], 0, minirt);
+	minirt->scene.nb_cylinder = 1;
+
+	minirt->scene.circle[0].center = vector3(-1.0f, 1.5f, 0.0f);
+	minirt->scene.circle[0].normal = vector3(0.0f, 0.0, 1.0f);
+	minirt->scene.circle[0].normal = vector3_normalize(minirt->scene.circle[0].normal);
+	minirt->scene.circle[0].radius = 0.5f;
+	minirt->scene.circle[0].material = minirt->scene.material[1];
+	minirt->scene.circle[0].material.color = vector3(0.9f, 0.5f, 0.8f);
+	// printf("circle: %f, %f, %f\n", minirt->scene.circle[0].center.x, minirt->scene.circle[0].center.y, minirt->scene.circle[0].center.z);
+
+	t_sphere light;
+	light.center = vector3(1.0f, 1.5f, 0.0f);
+	light.radius = 0.5f;
+	light.material = minirt->scene.material[0];
+	light.material.color = vector3(1.0f, 0.0f, 1.0f);
+	light.material.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	light.material.emission_strength = 50.0f;
+	light.material.emission = vector3_multiply_float(light.material.emission_color, light.material.emission_strength);
+	minirt->scene.sphere[0] = light;
+
+	minirt->scene.nb_sphere = 1;
+	minirt->scene.nb_circle = 0;
+
 
 	/*
 	minirt->scene.material[0] = add_material(vector3(0.0f, 0.0f, 0.0f), 1.0f, 0.1f);

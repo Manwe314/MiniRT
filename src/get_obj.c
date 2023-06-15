@@ -87,7 +87,7 @@ t_model get_model(void)
 		}
 		else
 		{
-			model.planes[l] = add_plane(coord[(int)ordre[k + l].x], coord[(int)ordre[k + l].y], coord[(int)ordre[k].z], coord[(int)ordre[k + l].w]);
+			//model.planes[l] = add_plane(coord[(int)ordre[k + l].x], coord[(int)ordre[k + l].y], coord[(int)ordre[k].z], coord[(int)ordre[k + l].w]);
 			l++;
 		}
 	}

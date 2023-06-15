@@ -14,6 +14,12 @@
 
 int nextrandom(uint state)
 {
+	static uint seed;
+
+	if (seed == 0)
+		seed = 4532156;
+	seed +=56;
+	state += seed;
 	state = state * 747796405 + 2891336453;
 	uint result = ((state >> ((state >> 28) + 4)) ^ state) * 277803737;
 	result = (result >> 22) ^ result;
@@ -22,9 +28,9 @@ int nextrandom(uint state)
 
 // float randomvalue(uint state)
 // {
-// 	return nextrandom(state) / 4294967295.0; // 2^32 - 1
+	// return nextrandom(state) / 4294967295.0; // 2^32 - 1
 // }
-
+// 
 float randomvalue(uint state)
 {
 	return rand() / (float)RAND_MAX;

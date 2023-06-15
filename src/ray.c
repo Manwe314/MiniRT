@@ -22,8 +22,9 @@ t_ray create_ray(float x, float y, t_minirt *minirt)
 	worldSpacePos = multiplymatrixvector4(cameraSpacePos, minirt->camera.inv_lookat);
 
 	ray.origin = minirt->camera.pos;
-	// ray.direction = vector3(x, y, -1);
-	ray.direction = vector3_subtract(vector3(worldSpacePos.x, worldSpacePos.y, worldSpacePos.z), ray.origin);
+	ray.direction = vector3(x, y, -1);
 	ray.direction = vector3_normalize(ray.direction);
+	// ray.direction = vector3_subtract(vector3(worldSpacePos.x, worldSpacePos.y, worldSpacePos.z), ray.origin);
+	// ray.direction = vector3_normalize(ray.direction);
 	return (ray);
 }

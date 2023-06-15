@@ -96,14 +96,15 @@ t_vector3 vector3_add_float(t_vector3 a, float b)
     return (vec);
 }
 
-float vector3_magnitude(t_vector3 v)
+
+float vector3_length(t_vector3 v)
 {
-    return (sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
+    return (sqrtf(v.x * v.x + v.y * v.y + v.z * v.z));
 }
 
 t_vector3 vector3_normalize(t_vector3 v)
 {
-    float mag = vector3_magnitude(v);
+    float mag = vector3_length(v);
     t_vector3 result;
     result.x = v.x / mag;
     result.y = v.y / mag;

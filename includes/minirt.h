@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/13 16:29:52 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:39:05 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,23 +81,34 @@ typedef struct s_world
 }	t_world;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+typedef struct s_circle
+{
+	t_vector3 center;
+	t_vector3 normal;
+	t_vector3 color;
+	float radius;
+	t_material material;
+} t_circle;
+
+
 typedef struct s_cylinder
 {
-    t_vector3 centre;
-	t_vector3 normal_axis;
+    t_vector3 center;
+	t_vector3 normal;
 	t_vector3 color;
 	float height;
-	float diameter;
-	int	material_index;
+	float radius;
+	t_circle circle_top;
+	t_circle circle_bottom;
+	t_material material;
 } t_cylinder;
 
 typedef struct s_plane
 {
-	t_vector3 plane[4];
 	t_vector3 point_on_plane;
 	t_vector3 normal;
 	t_vector3 color;
-	int	material_index;
+	t_material material;
 } t_plane;
 
 typedef struct s_light
@@ -117,7 +128,6 @@ typedef struct s_sphere
     t_vector3 center;
 	t_vector3 color;
     double radius;
-	int	material_index;
 	t_material material;
 } t_sphere;
 
@@ -162,11 +172,6 @@ typedef struct s_camera_eye
 	float yaw;
 }	t_camera_eye;
 
-typedef struct s_cuboid
-{
-	t_plane plane[6];
-} t_cuboid;
-
 
 typedef struct s_ray
 {
@@ -182,21 +187,24 @@ typedef struct s_info
 	t_vector3 normal;
 	t_material material;
 	float hit_distance;
-	t_sphere sphere;
 } t_info;
 
 typedef struct s_scene
 {
 	t_sphere sphere[100];
-	t_plane planes[100];
-	//t_cone *cones;
-	t_triangle triangles[100];
-	t_cuboid *cuboid;
+	t_plane plane[100];
+	t_cylinder cylinder[100];
+	//t_cone *cone;
+	t_triangle triangle[100];
+	t_circle circle[100];
+	//t_cuboid *cuboid;
 	t_obj *obj;
 	int nb_sphere;
 	int nb_plane;
 	int nb_triangle;
-	int nb_cuboid;
+	int nb_cylinder;
+	int nb_circle;
+	//int nb_cuboid;
 	int nb_obj;
 	t_material material[4];
 	//t_light *light;
@@ -217,7 +225,7 @@ typedef struct s_model
 	t_sphere sphere;
 	t_plane *planes;
 	t_triangle *triangles;
-	t_cuboid cuboid;
+	//t_cuboid cuboid;
 	t_obj *obj;
 	int nb_obj;
 }	t_model;
@@ -251,7 +259,7 @@ t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2);
 t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2);
 float vector3_dot(t_vector3 vec1, t_vector3 vector2);
 t_vector3 vector3_normalize(t_vector3 v);
-float vec3d_magnitude(t_vector3 v);
+float vector3_length(t_vector3 v);
 
 
 t_vector2 vector2(float x, float y);
@@ -269,12 +277,13 @@ t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
 t_vector3 vector3_multiply_float(t_vector3 a, float b);
 t_vector3 vector3_add_float(t_vector3 a, float b);
 t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
-t_vector3 vector3_random(float x, float y);
 t_vector4	vector4_clamp(t_vector4 color, float min, float max);
 t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
-float	random_float(void);
 
+t_vector3 vector3_random(float x, float y);
+float	random_float(void);
+float randomvalue(uint state);
 t_vector3 random_direction(uint state);
 
 void calculateraydirections(t_minirt *minirt);
@@ -285,7 +294,7 @@ t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
 t_vector3 add_point(float x, float y, float z);
 t_vector3 add_center(float x, float y, float z);
 t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
-t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color, int index);
+t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color);
 t_material add_material(t_vector3 color, float roughness, float mettalic);
 
 

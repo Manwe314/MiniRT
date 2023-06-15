@@ -47,7 +47,7 @@ void keyhook(mlx_key_data_t keydata, void *param)
 		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
 	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
 		minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(updirection, speed));
-	if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
+	if (keydata.key == MLX_KEY_Q && keydata.action != MLX_RELEASE)
 		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(updirection, speed));
 	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
 		minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
@@ -98,7 +98,8 @@ void keyhook(mlx_key_data_t keydata, void *param)
 
 	if (keydata.key == MLX_KEY_D || keydata.key == MLX_KEY_A \
 	|| keydata.key == MLX_KEY_SPACE || keydata.key == MLX_KEY_LEFT_CONTROL \
-	|| keydata.key == MLX_KEY_W || keydata.key == MLX_KEY_S)
+	|| keydata.key == MLX_KEY_W || keydata.key == MLX_KEY_S || keydata.key == MLX_KEY_Q)
+
 	{
 		minirt->moved = true;
 		// calculateraydirections(minirt);
@@ -203,8 +204,6 @@ void hook(void *param)
 	ray.origin = minirt->camera.pos;
 	calculatelookat(minirt);
 	calculateprojection(minirt);
-	minirt->scene.sphere[0].center = vector3(minirt->x, minirt->y, minirt->z);
-	minirt->scene.sphere[0].radius = minirt->radius;
 	//minirt->model = get_model();
 	//minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
 	x = -1;
