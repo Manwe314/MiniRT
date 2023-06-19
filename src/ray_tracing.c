@@ -187,7 +187,7 @@ t_vector3 lerp(t_vector3 a, t_vector3 b, float t)
 		return (vector3_multiply_float(vector3_add(a, b), 0.5f));
 }
 
-t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
+/*t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
 {
 	t_vector3 raycolor;
 	t_vector3 incoming_light;
@@ -205,6 +205,7 @@ t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
 
 			//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
 			ray.origin = hit_info.hit_point;
+			ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
 			//ray.direction = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
 
 			// Update light calculation
@@ -228,4 +229,78 @@ t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
 		}
 	}
 	return (vector4(incoming_light.x, incoming_light.y, incoming_light.z, 1.0f));
+}*/
+
+
+t_vector4	can_see_light(t_ray ray, t_scene scene, t_vector3 color_obj)
+{
+	int	i;
+	int nb_light;
+	float brightness;
+	t_vector3 color;
+
+	nb_light = 0;
+	brightness = 0.0f;
+	color = vector3(0.0f, 0.0f, 0.0f);
+
+	i = -1;
+	while (++i < scene.nb_light)
+	{
+		ray.direction = vector3_normalize(vector3_subtract(scene.light[i].position, ray.origin));
+		ray.direction = vector3_normalize(vector3_add(ray.direction, random_direction(0)));
+		if (calculate_ray_collision(ray, scene).hit_distance == FLT_MAX)
+		{
+			color = vector3_add(color, vector3_multiply_float(scene.light[i].color, scene.light[i].brightness));
+			
+			nb_light++;
+		}
+	}
+	if (nb_light == 0)
+		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
+	color_obj = vector3_multiply(color_obj, color);
+	return (vector4(color_obj.x, color_obj.y, color_obj.z, 1.0f));
+}
+
+t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
+{
+	t_vector3 raycolor;
+	t_vector3 incoming_light;
+	t_info hit_info;
+
+	t_light light;
+	light.position = vector3(2.0f, 0.0f, 0.0f);
+	light.color = vector3(1.0f, 1.0f, 1.0f);
+	light.brightness = 1.0f;
+
+	t_light light2;
+	light2.position = vector3(-2.0f, 0.0f, 0.0f);
+	light2.color = vector3(1.0f, 1.0f, 1.0f);
+	light2.brightness = 1.0f;
+
+	t_light light3;
+	light3.position = vector3(0.0f, 2.0f, 0.0f);
+	light3.color = vector3(1.0f, 1.0f, 1.0f);
+	light3.brightness = 1.0f;
+
+	scene.light[0] = light;
+	scene.light[1] = light2;
+	scene.light[2] = light3;
+	scene.nb_light = 3;
+
+	raycolor = vector3(0.0f, 0.0f, 0.0f);
+	hit_info = calculate_ray_collision(ray, scene);
+	if (hit_info.hit_distance != FLT_MAX)
+	{
+		ray.origin = hit_info.hit_point;
+		ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
+		return (can_see_light(ray, scene, hit_info.material.color));
+		// if (can_see_light(ray, scene, hit_info.material.color))
+		// {
+			// raycolor = vector3_multiply(hit_info.material.color, light.color);
+			// raycolor = vector3_multiply_float(raycolor, light.brightness);
+		// }
+		//ray.direction = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
+	}
+
+	return (vector4(raycolor.x, raycolor.y, raycolor.z, 1.0f));
 }

@@ -217,7 +217,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.plane[0].material = minirt->scene.material[1];
 	minirt->scene.plane[0].material.color = vector3(0.5f, 0.0f, 0.0f);
 
-	minirt->scene.nb_plane = 0;
+	minirt->scene.nb_plane = 1;
 
 	minirt->scene.cylinder[0].center = vector3(-1.0f, 1.0f, 0.0f);
 	minirt->scene.cylinder[0].normal = vector3(0.0f, 1.0f, 0.0f);
@@ -249,7 +249,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.sphere[0] = light;
 
 	t_sphere sphere;
-	sphere.center = vector3(0.0f, 1.0f, 0.0f);
+	sphere.center = vector3(1.0f, 1.0f, 0.0f);
 	sphere.radius = 1.0f;
 	sphere.material = minirt->scene.material[2];
 
