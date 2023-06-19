@@ -218,7 +218,7 @@ void hook(void *param)
 			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
 			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i) ;
 			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(accumulated_color));
+			mlx_put_pixel(minirt->img, x, minirt->height - y - 1, get_rgba(accumulated_color));
 		}
 	}
 }

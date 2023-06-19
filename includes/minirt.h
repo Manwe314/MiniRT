@@ -198,7 +198,9 @@ typedef struct s_scene
 	t_triangle triangle[100];
 	t_circle circle[100];
 	//t_cuboid *cuboid;
+	t_light light[100];
 	t_obj *obj;
+	int nb_light;
 	int nb_sphere;
 	int nb_plane;
 	int nb_triangle;

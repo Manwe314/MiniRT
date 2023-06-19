@@ -113,11 +113,11 @@ t_material return_material(void)
 	t_material material;
 
 	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	material.color = vector3(1.0f, 1.0f, 1.0f);
-	material.specular_color = vector3(1.0f, 1.0f, 1.0f);
-	material.emission_strength = 50.0f;
+	material.color = vector3(1.0f, 0.0f, 0.0f);
+	material.specular_color = vector3(0.0f, 0.0f, 0.0f);
+	material.emission_strength = 0.0f;
 	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
-	material.smoothness = 1.0f;
+	material.smoothness = 0.0f;
 	material.specular_probability = 0.0f;
 	return (material);
 }
@@ -178,14 +178,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.material[0] = return_material();
 	minirt->scene.material[1] = return_material();
 	minirt->scene.material[2] = return_material();
-	minirt->scene.material[1].emission = vector3(0.0f, 0.0f, 0.0f);
-	minirt->scene.material[1].emission_strength = 0.0f;
-	minirt->scene.material[1].emission_color = vector3(0.0f, 0.0f, 0.0f);
-	minirt->scene.material[1].color = vector3(1.0f, 1.0f, 1.0f);
-
-	minirt->scene.material[2].emission = vector3(0.0f, 0.0f, 0.0f);
-	minirt->scene.material[2].emission_strength = 0.0f;
-	minirt->scene.material[2].emission_color = vector3(0.0f, 0.0f, 0.0f);
+	minirt->scene.material[1].color = vector3(0.0f, 1.0f, 0.0f);
 	minirt->scene.material[2].color = vector3(0.0f, 0.0f, 1.0f);
 
 	// minirt->scene.sphere[1].center = vector3(0.0f, -10.0f, 0.0f);
@@ -224,7 +217,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->scene.plane[0].material = minirt->scene.material[1];
 	minirt->scene.plane[0].material.color = vector3(0.5f, 0.0f, 0.0f);
 
-	minirt->scene.nb_plane = 1;
+	minirt->scene.nb_plane = 0;
 
 	minirt->scene.cylinder[0].center = vector3(-1.0f, 1.0f, 0.0f);
 	minirt->scene.cylinder[0].normal = vector3(0.0f, 1.0f, 0.0f);
@@ -246,8 +239,8 @@ static int	init_minirt(t_minirt *minirt)
 	// printf("circle: %f, %f, %f\n", minirt->scene.circle[0].center.x, minirt->scene.circle[0].center.y, minirt->scene.circle[0].center.z);
 
 	t_sphere light;
-	light.center = vector3(1.0f, 1.5f, 0.0f);
-	light.radius = 0.5f;
+	light.center = vector3(1.0f, 20.5f, 0.0f);
+	light.radius = 5.0f;
 	light.material = minirt->scene.material[0];
 	light.material.color = vector3(1.0f, 0.0f, 1.0f);
 	light.material.emission_color = vector3(1.0f, 1.0f, 1.0f);
@@ -255,7 +248,13 @@ static int	init_minirt(t_minirt *minirt)
 	light.material.emission = vector3_multiply_float(light.material.emission_color, light.material.emission_strength);
 	minirt->scene.sphere[0] = light;
 
-	minirt->scene.nb_sphere = 1;
+	t_sphere sphere;
+	sphere.center = vector3(0.0f, 1.0f, 0.0f);
+	sphere.radius = 1.0f;
+	sphere.material = minirt->scene.material[2];
+
+	minirt->scene.sphere[1] = sphere;
+	minirt->scene.nb_sphere = 2;
 	minirt->scene.nb_circle = 0;
 
 

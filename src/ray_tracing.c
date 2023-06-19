@@ -197,13 +197,13 @@ t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
 	bounce = 0;
 	raycolor = vector3(1.0f, 1.0f, 1.0f);
 	incoming_light = vector3(0.0f, 0.0f, 0.0f);
-	while (bounce++ < 1)
+	while (bounce++ < 3)
 	{
 		hit_info = calculate_ray_collision(ray, scene);
 		if (hit_info.hit_distance != FLT_MAX)
 		{
 
-			// return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
+			//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
 			ray.origin = hit_info.hit_point;
 			//ray.direction = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
 
@@ -219,10 +219,11 @@ t_vector4 PerPixel(t_ray ray, t_scene scene, uint rng_seed)
 
 			// Update light calculations
 			raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, hit_info.material.specular_color, is_specular_bounce));
+			//printf("raycolor: %f %f %f\n", raycolor.x, raycolor.y, raycolor.z);
 		}
 		else
 		{
-			//incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f, 0.8f));
+			incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f, 0.8f));
 			break;
 		}
 	}
