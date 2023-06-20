@@ -247,6 +247,7 @@ void hook(void *param)
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
 			ray = create_ray(coord.x, coord.y, minirt);
+<<<<<<< HEAD
 			color[x][y] = vector4_add(color[x][y] , perpixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
 			//t_vector4 blurred_color = blurred(color, x, y, minirt);
 			
@@ -256,6 +257,11 @@ void hook(void *param)
 			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
 			
 			
+=======
+			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
+			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i) ;
+			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
+>>>>>>> refs/remotes/origin/main
 			mlx_put_pixel(minirt->img, x, minirt->height - y - 1, get_rgba(accumulated_color));
 		}
 	}
