@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cylinder.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 18:08:42 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:09:31 by lkukhale         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:15:54 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ t_cylinder *init_cylinder(const char *line, t_input_list *input)
 		return (obj);
 	}
 	i = get_to_next_param(line, 0, input);
-	obj->centre = get_vector3(line, i, input);
+	obj->center = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->normal_axis = get_vector3(line, i, input);
+	obj->normal = get_vector3(line, i, input);
 	i = get_to_next_param(line, i, input);
-	obj->diameter = ft_atof(line + i);
+	obj->radius = ft_atof(line + i);
 	i = get_to_next_param(line, i, input);
 	obj->height = ft_atof(line + i);
 	i = get_to_next_param(line, i, input);
@@ -78,7 +78,7 @@ void validate_values_cylinder(t_input_list *input)
 		printf("Cylinder color out of range\n");
 		failed = 1;
 	}
-	if (!vector3_checker(obj->normal_axis , -1.0, 1.0))
+	if (!vector3_checker(obj->normal , -1.0, 1.0))
 	{
 		printf("Cylinder normal axis out of range\n");
 		failed = 1;

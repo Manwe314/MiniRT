@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:14:01 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/10 22:01:34 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:39:05 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 # include "../lib/libft/includes/libft.h"
-# include <math.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <stdint.h>
@@ -30,12 +29,10 @@
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH  300
-# define HEIGHT 300
+# define WIDTH  150
+# define HEIGHT 150
 
-# define TRUE 1
-# define FALSE 0
-
+# define CHECKER_PATTERN 1
 
 typedef struct s_vec2d
 {
@@ -51,12 +48,56 @@ typedef struct s_vec4d
 	float x, y, z, w;
 } t_vector4;
 
+typedef struct s_material
+{
+	float roughness;
+	float mettalic;
+	t_vector3 emission_color;
+	t_vector3 color;
+	t_vector3 specular_color;
+	float emission_strength;
+	t_vector3 emission;
+	float smoothness;
+	float specular_probability;
+	int flag;
+} t_material;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 typedef struct s_triangle
 {
 	t_vector3 p[3];
+	t_material material;
 } t_triangle;
+
+typedef struct s_cone
+{
+	t_vector3 center;
+	t_vector3 normal;
+	t_vector3 color;
+	float height;
+	float radius;
+	t_material material;
+} t_cone;
+
+typedef struct hyperboloid
+{
+	t_vector3 center;
+	t_vector3 normal;
+	t_vector3 color;
+	float height;
+	float radius;
+	t_material material;
+} t_hyperboloid;
+
+typedef struct paraboloid
+{
+	t_vector3 center;
+	t_vector3 normal;
+	t_vector3 color;
+	float height;
+	float radius;
+	t_material material;
+} t_paraboloid;
 
 typedef struct s_matrix4x4
 {
@@ -71,23 +112,34 @@ typedef struct s_world
 }	t_world;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+typedef struct s_circle
+{
+	t_vector3 center;
+	t_vector3 normal;
+	t_vector3 color;
+	float radius;
+	t_material material;
+} t_circle;
+
+
 typedef struct s_cylinder
 {
-    t_vector3 centre;
-	t_vector3 normal_axis;
+    t_vector3 center;
+	t_vector3 normal;
 	t_vector3 color;
 	float height;
-	float diameter;
-	int	material_index;
+	float radius;
+	t_circle circle_top;
+	t_circle circle_bottom;
+	t_material material;
 } t_cylinder;
 
 typedef struct s_plane
 {
-	t_vector3 plane[4];
 	t_vector3 point_on_plane;
 	t_vector3 normal;
 	t_vector3 color;
-	int	material_index;
+	t_material material;
 } t_plane;
 
 typedef struct s_light
@@ -101,13 +153,15 @@ typedef struct s_ambient
 {
     t_vector3 color;
     float intensity;
+	t_vector4 ambient;
 } t_ambient;
+
 typedef struct s_sphere
 {
     t_vector3 center;
 	t_vector3 color;
     double radius;
-	int	material_index;
+	t_material material;
 } t_sphere;
 
 typedef struct s_camera
@@ -135,6 +189,8 @@ typedef struct s_obj
 } t_obj;
 
 
+
+
 typedef struct s_camera_eye
 {
 	t_vector3 pos;
@@ -149,11 +205,6 @@ typedef struct s_camera_eye
 	float yaw;
 }	t_camera_eye;
 
-typedef struct s_cuboid
-{
-	t_plane plane[6];
-} t_cuboid;
-
 
 typedef struct s_ray
 {
@@ -161,50 +212,52 @@ typedef struct s_ray
 	t_vector3 direction;
 } t_ray;
 
-typedef struct s_material
+
+
+typedef struct s_info
 {
-	float roughness;
-	float mettalic;
-	t_vector3 color;
-	t_vector3 emission_color;
-	float emission_intensity;
-	t_vector3 emission;
-} t_material;
+	t_vector3 hit_point;
+	t_vector3 normal;
+	t_material material;
+	float hit_distance;
+} t_info;
 
 typedef struct s_scene
 {
 	t_sphere sphere[100];
-	t_plane planes[100];
-	//t_cone *cones;
-	t_triangle triangles[100];
-	t_cuboid *cuboid;
-	t_obj *obj;
+	t_plane plane[100];
+	t_cylinder cylinder[100];
+	t_cone cone[100];
+	t_hyperboloid hyperboloid[100];
+	t_paraboloid paraboloid[100];
+	t_triangle triangle[100];
+	t_circle circle[100];
+	//t_cuboid *cuboid;
+	t_light light[100];
+	t_ambient ambient;
+	t_obj obj;
+	int nb_light;
 	int nb_sphere;
 	int nb_plane;
 	int nb_triangle;
-	int nb_cuboid;
+	int nb_cylinder;
+	int nb_circle;
+	int nb_cone;
+	int nb_hyperboloid;
+	int nb_paraboloid;
+	//int nb_cuboid;
 	int nb_obj;
-	t_material material[4];
+	t_material material[20];
 	//t_light *light;
 
 }	t_scene;
-
-typedef struct s_info
-{
-	bool did_hit;
-	float dst;
-	t_vector3 hitpoint;
-	t_vector3 normal;
-	int index_sphere;
-	int index_material;
-} t_info;
 
 typedef struct s_hitpayload
 {
 	float HitDistance;
 	t_vector3 WorldPosition;
 	t_vector3 WorldNormal;
-	t_vector3 normal;
+
 	int ObjectIndex;
 } t_hitpayload;
 
@@ -213,7 +266,7 @@ typedef struct s_model
 	t_sphere sphere;
 	t_plane *planes;
 	t_triangle *triangles;
-	t_cuboid cuboid;
+	//t_cuboid cuboid;
 	t_obj *obj;
 	int nb_obj;
 }	t_model;
@@ -227,9 +280,12 @@ typedef struct s_minirt
 	t_camera_eye	camera;
 	t_input_list	*input_head;
 	int				error;
-	bool			moved;
-	bool			resized;
+	int				moved;
 	int				input_validity;
+	float x;
+	float y;
+	float z;
+	float radius;
 	t_model			model;
 	t_scene			scene;
 }	t_minirt;
@@ -244,7 +300,7 @@ t_matrix4x4 mult_mat4x4(t_matrix4x4 mat1, t_matrix4x4 mat2);
 t_vector3 vector3_cross(t_vector3 v1, t_vector3 v2);
 float vector3_dot(t_vector3 vec1, t_vector3 vector2);
 t_vector3 vector3_normalize(t_vector3 v);
-float vec3d_magnitude(t_vector3 v);
+float vector3_length(t_vector3 v);
 
 
 t_vector2 vector2(float x, float y);
@@ -266,10 +322,10 @@ t_vector4	vector4_clamp(t_vector4 color, float min, float max);
 t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
 
-t_vector3 randomspheredirection(t_vector3 normal);
 t_vector3 vector3_random(float x, float y);
 float	random_float(void);
-
+float randomvalue(uint state);
+t_vector3 random_direction(uint state);
 
 void calculateraydirections(t_minirt *minirt);
 void calculateview(t_minirt *minirt);
@@ -279,8 +335,8 @@ t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4)
 t_vector3 add_point(float x, float y, float z);
 t_vector3 add_center(float x, float y, float z);
 t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
-t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color, int index);
-t_material add_material(t_vector3 color, float roughness, float mettalic, t_vector3 emission_color, float emission_intensity);
+t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color);
+t_material add_material(t_vector3 color, float roughness, float mettalic);
 
 
 void keyhook(mlx_key_data_t keydata, void *param);
@@ -301,9 +357,7 @@ void calculatelookat(t_minirt *minirt);
 t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up);
 t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up);
 t_matrix4x4 projection_transform(float fov, float aspect, float near, float far);
-
 t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far);
-
 t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far);
 
 t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw );
@@ -313,10 +367,11 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-t_vector4 PerPixel(t_ray ray, t_scene scene);
+t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed);
+t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed);
+
 
 void hook(void *param);
-t_vector4 PerPixel(t_ray ray, t_scene scene);
 void	resize(int32_t width, int32_t height, void *param);
 void	cursor(double xpos, double ypos, void *param);
 t_model get_model(void);
@@ -325,6 +380,15 @@ int	get_rgba(t_vector4 color);
 
 t_ray create_ray(float x, float y, t_minirt *minirt);
 
+t_info	sphere_collision(t_ray ray, t_sphere sphere);
+t_info	plane_collision(t_ray ray, t_plane plane);
+t_info circle_collision(t_ray ray, t_circle cirle);
+t_info	cylinder_collision(t_ray ray, t_cylinder cylinder);
+t_info triangle_collision(t_ray ray, t_triangle triangle);
+
+t_info paraboloid_collision(t_ray ray, t_paraboloid paraboloid);
+t_info hyperboloid_collision(t_ray ray, t_hyperboloid hyperboloid);
+t_info cone_collision(t_ray ray, t_cone cone);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 

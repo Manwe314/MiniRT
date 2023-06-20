@@ -127,7 +127,7 @@ t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float f
 
 */
 
-/*t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far)
+t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far)
 {
 	t_matrix4x4 m;
 	const float zRange = near - far;
@@ -140,21 +140,6 @@ t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float f
 	m.matrix[2][3] = 2.0f * far * near / zRange;
 	m.matrix[3][2] = 1.0f;
 	return (m);
-}*/
-
-t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far) {
-    t_matrix4x4 perspective_matrix;
-
-    float tan_half_fov = tanf(fov * 0.5 * (M_PI / 180.0f));
-
-	perspective_matrix = init_mat_0();
-	perspective_matrix.matrix[0][0] = 1.0f / (aspect * tan_half_fov);
-    perspective_matrix.matrix[1][1] = 1.0f / tan_half_fov;
-    perspective_matrix.matrix[2][2] = -(far + near) / (far - near);
-    perspective_matrix.matrix[2][3] = -2.0f * far * near / (far - near);
-    perspective_matrix.matrix[3][2] = -1.0f;
-
-    return perspective_matrix;
 }
 
 t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far)

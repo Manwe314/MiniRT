@@ -12,70 +12,6 @@
 
 #include "minirt.h"
 
-/*t_vector4 PerPixel(t_ray ray, t_scene scene)
-
-{
-	t_vector4 color;
-	t_sphere* closestsphere = 0;
-	float closest = FLT_MAX;
-
-
-	color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
-	t_sphere sphere[10];
-	int nb_sphere = 6;
-	int i = -1;
-	sphere[0] = add_sphere(vector3(1.0f, 0.0f, 0.0f),  0.3f, vector3(1.0f, 0.0f, 0.0f));
-	sphere[1] = add_sphere(vector3(0.0f, 1.0f, 0.0f),  0.3f, vector3(0.0f, 1.0f, 0.0f));
-	sphere[2] = add_sphere(vector3(0.0f, 0.0f, 1.0f),  0.3f, vector3(0.0f, 0.0f, 1.0f));
-	sphere[3] = add_sphere(vector3(-1.0f, 0.0f, 0.0f), 0.3f, vector3(1.0f, 1.0f, 0.0f));
-	sphere[4] = add_sphere(vector3(0.0f, -1.0f, 0.0f), 0.3f, vector3(1.0f, 0.0f, 1.0f));
-	sphere[5] = add_sphere(vector3(0.0f, 0.0f, -1.0f), 0.3f, vector3(1.0f, 1.0f, 1.0f));
-
-	//t_vector3 oc = ray.origin;
-
-	while (++i < nb_sphere)
-	{
-		t_vector3 oc = vector3_subtract(ray.origin, sphere[i].center);
-
-		float a = vector3_dot(ray.direction, ray.direction);
-		float b = 2.0f * vector3_dot(oc, ray.direction);
-		float c = vector3_dot(oc, oc) - sphere[i].radius * sphere[i].radius;
-
-		float det = b * b - 4 * a * c;
-		if (det < 0)
-			continue;
-		float t = (-b - sqrtf(det)) / (2.0f * a);
-		if (t < 0)
-			continue;
-			//t = (-b - sqrtf(det)) / (2.0f * a);
-		if (closest > t)
-		{
-			closest = t;
-			closestsphere = &sphere[i];
-		}
-	}
-	if (closestsphere == 0)
-		return (color);
-
-	t_vector3 oc = vector3_subtract(ray.origin, closestsphere->center);
-	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, closest));
-	t_vector3 normal = vector3_normalize(hit);
-	t_vector3 light_dir = vector3_normalize(vector3(1.0f, 1.0f, 1.0f));
-	float diffuse = vector3_dot(light_dir, normal);
-	diffuse = max(diffuse, 0.0f);
-
-	// sphere[i].color = normal;
-	// sphere[i].color = vector3_multiply(sphere[i].color, normal);
-	// sphere[i].color = vector3_normalize(sphere[i].color);
-	// sphere[i].color = vector3_multiply_float(sphere[i].color, 0.5f);
-	// sphere[i].color = vector3_add_float(sphere[i].color, 0.5f);
-
-	closestsphere->color = vector3_multiply_float(closestsphere->color, diffuse);
-	color = vector4(closestsphere->color.x, closestsphere->color.y, closestsphere->color.z, 1.0f);
-	return (color);
-}
-*/
-
 t_vector3 vector3_normal(t_vector3 a,t_vector3 b)
 {
     t_vector3 normal;
@@ -345,6 +281,7 @@ t_hitpayload ClosestHit(t_ray ray, float hitDistance, int objectIndex, t_scene s
 	payload.WorldPosition = vector3_multiply_float(ray.direction, hitDistance);
 	payload.WorldPosition = vector3_add(origin, payload.WorldPosition);
 	payload.WorldNormal = vector3_normalize(payload.WorldPosition);
+
 	payload.WorldPosition = vector3_add(payload.WorldPosition, closestSphere.center);
 
 	return payload;
@@ -388,6 +325,10 @@ t_hitpayload TraceRay(t_ray ray, t_scene scene)
 		if (discriminant < 0.0f)
 			continue;
 
+		// Quadratic formula:
+		// (-b +- sqrt(discriminant)) / 2a
+
+		// float t0 = (-b + glm::sqrt(discriminant)) / (2.0f * a); // Second hit distance (currently unused)
 		float closestT = (-b - sqrtf(discriminant)) / (2.0f * a);
 		if (closestT > 0.0f && closestT < hitDistance)
 		{
@@ -402,27 +343,12 @@ t_hitpayload TraceRay(t_ray ray, t_scene scene)
 	return ClosestHit(ray, hitDistance, closestSphere, scene);
 }
 
-t_vector3 RandomInUnitSphere() {
-    t_vector3 result;
-    float radius, theta, phi;
-
-    radius = (float)rand() / RAND_MAX; // Génère un nombre aléatoire entre 0 et 1
-    theta = 2 * M_PI * ((float)rand() / RAND_MAX); // Génère un angle aléatoire entre 0 et 2pi
-    phi = acos(2 * ((float)rand() / RAND_MAX) - 1); // Génère un angle aléatoire entre 0 et pi
-
-    result.x = radius * sin(phi) * cos(theta);
-    result.y = radius * sin(phi) * sin(theta);
-    result.z = radius * cos(phi);
-
-    return result;
-}
-
-t_vector4 PerPixel(t_ray ray, t_scene scene)
+/*t_vector4 PerPixel(t_ray ray, t_scene scene)
 {
-	t_vector3 light;
-	t_vector3 contribution = vector3 (1.0f, 1.0f, 1.0f);
+	t_vector3 color;
+	float multiplier =1.0f;
 
-	light = vector3(0.0f, 0.0f, 0.0f);
+	color = vector3(0.0f, 0.0f, 0.0f);
 	int bounces = 3;
 	while(bounces--)
 	{
@@ -431,234 +357,93 @@ t_vector4 PerPixel(t_ray ray, t_scene scene)
 		{
 			t_vector3 skyColor = vector3(0.6f, 0.7f, 0.9f);
 			// t_vector3 skyColor = vector3(0.0f, 0.0f , 0.0f);
-			//light = vector3_add(light, vector3_multiply(skyColor, contribution));
+			color = vector3_add(color, vector3_multiply_float(skyColor, multiplier));
 			break;
 		}
+
+		t_vector3 lightDir = vector3_normalize(vector3(1, 1, 1));
+		float lightIntensity = max(vector3_dot(payload.WorldNormal, lightDir), 0.0f); // == cos(angle)
+
 		const t_sphere sphere = scene.sphere[payload.ObjectIndex];
+		const t_material material = scene.material[sphere.material_index];
+		t_vector3 sphereColor = sphere.color;
+		sphereColor = vector3_multiply_float(sphereColor, lightIntensity);
+		sphereColor = vector3_multiply_float(sphereColor, multiplier);
 
+		color = vector3_add(color, sphereColor);
 
-		contribution = vector3_multiply(contribution, sphere.color);
-		light = vector3_add(light, scene.material[sphere.material_index].emission);
-		// light = vector3_multiply(light, contribution);
+		multiplier *= 0.5f;
 
-		ray.origin = vector3_add(payload.WorldPosition, vector3_multiply_float(payload.WorldNormal, 1.0001f));
-		ray.direction = vector3_normalize(vector3_add(payload.WorldNormal, RandomInUnitSphere()));
+		//ray.origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
+		ray.origin = vector3_add(payload.WorldPosition, vector3_multiply_float(payload.WorldNormal, 0.0001f));
+		t_vector3 diffuse =vector3_multiply_float(vector3_random(ray.direction.x, ray.direction.y), scene.material[sphere.material_index].roughness);
+		diffuse = vector3_add(diffuse, payload.WorldNormal);
+		ray.direction = vector3_reflect(ray.direction, diffuse);
 	}
 
-	return (vector4(light.x, light.y, light.z, 1.0f));
-}
-
-/*
-t_info touch_sphere(t_ray ray, t_scene scene)
-{
-	int i;
-	float det;
-	t_info info;
-
-	i = -1;
-	info.did_hit = FALSE;
-	info.dst = FLT_MAX;
-	while (++i < scene.nb_sphere)
-	{
-		t_vector3 offset_origin = vector3_subtract(ray.origin, scene.sphere[i].center);
-
-		float a = vector3_dot(ray.direction, ray.direction);
-		float b = 2 * vector3_dot( offset_origin, ray.direction);
-		float c = vector3_dot(offset_origin, offset_origin) - scene.sphere[i].radius * scene.sphere[i].radius;
-
-		det = b * b - 4 * a * c;
-		if (det < 0)
-			continue;
-		float t = (-b - sqrt(det)) / (2 * a);
-		if (t >= 0 && t < info.dst)
-		{
-			info.dst = t;
-			info.index_sphere = i;
-			info.did_hit = TRUE;
-		}
-	}
-	if (info.did_hit == TRUE)
-	{
-		info.hitpoint = vector3_add(ray.origin, vector3_multiply_float(ray.direction, info.dst));
-		info.normal = vector3_normalize(vector3_subtract(info.hitpoint, scene.sphere[info.index_sphere].center));
-		info.index_material = scene.sphere[info.index_sphere].material_index;
-	}
-	return (info);
-
-
-}
-
-t_vector4 PerPixel(t_ray ray, t_scene scene)
-{
-	t_vector3 light = vector3(0.0f, 0.0f, 0.0f);
-	t_vector3 color = vector3(1.0f, 1.0f, 1.0f);
-	t_material material[2];
-
-	material[0].color = vector3(1.0f, 1.0f, 0.0f);
-	material[0].emission = vector3(0.0f, 1.0f, 1.0f);
-	material[1].color = vector3(1.0f, 0.0f, 1.0f);
-	material[1].emission = vector3(0.0f, 0.0f, 0.0f);
-
-	t_info info;
-	light = vector3(0.0f, 0.0f, 0.0f);
-	int bounces = 3;
-	while(bounces--)
-	{
-		info = touch_sphere(ray, scene);
-		if (info.did_hit == FALSE)
-		{
-			// has miss
-			//add_sky_color(light, contribution);
-			break;
-		}
-		ray.origin = vector3_multiply_float(info.hitpoint, 1.001f);
-		ray.direction = randomspheredirection(info.normal);
-
-		//t_vector3 emitted_light = scene.material[info.index_material].emission;
-		t_vector3 emitted_light = material[info.index_material].emission;
-		light =	vector3_add(light, vector3_multiply(color, emitted_light));
-		//color = vector3_multiply(color, scene.material[info.index_material].color);
-		color = vector3_multiply(color, material[info.index_material].color);
-	}
-	return (vector4(light.x, light.y, light.z, 1.0f));
-
-}*/
-
-/*
-
-t_hitpayload TraceRay(t_ray ray, t_scene scene)
-{
-
-}
-
-t_vector4 PerPixel(t_ray ray, t_scene scene)
-{
-	t_vector3 light;
-	t_vector3 contribution = vector3 (1.0f, 1.0f, 1.0f);
-	t_payload info;
-	light = vector3(0.0f, 0.0f, 0.0f);
-	int bounces = 3;
-	while(bounces--)
-	{
-		info = TraceRay(ray, scene);
-		if (info.hitdistance < 0.0f)
-		{
-			// has miss
-			add_sky_color(light, contribution);
-			break;
-		}
-
-
-}
-
-#define MAX_RAY_DEPTH 3
-
-color Trace(const Ray &ray, int depth)
-{
-    Object *object = NULL;
-    float minDist = INFINITY;
-    Point pHit;
-    Normal nHit;
-    for (int k = 0; k < objects.size(); ++k) {
-        if (Intersect(objects[k], ray, &pHit, &nHit)) {
-            // ray origin = eye position of the prim ray
-            float distance = Distance(ray.origin, pHit);
-            if (distance < minDistance) {
-                object = objects[i];
-                minDistance = distance;
-            }
-        }
-    }
-    if (object == NULL)
-        return 0;
-    // if the object material is glass, split the ray into a reflection
-    // and a refraction ray.
-    if (object->isGlass && depth < MAX_RAY_DEPTH) {
-        // compute the reflection
-        Ray reflectionRay;
-        reflectionRay = computeReflectionRay(ray.direction, nHit);
-        // recurse
-        color reflectionColor = Trace(reflectionRay, depth + 1);
-        Ray refractioRay;
-        refractionRay = computeRefractionRay(
-            object->indexOfRefraction,
-            ray.direction,
-            nHit);
-        // recurse
-        color refractionColor = Trace(refractionRay, depth + 1);
-        float Kr, Kt;
-        fresnel(
-            object->indexOfRefraction,
-            nHit,
-            ray.direction,
-            &Kr,
-            &Kt);
-        return reflectionColor * Kr + refractionColor * (1-Kr);
-    }
-    // object is a diffuse opaque object
-    // compute illumination
-    Ray shadowRay;
-    shadowRay.direction = lightPosition - pHit;
-    bool isShadow = false;
-    for (int k = 0; k < objects.size(); ++k) {
-        if (Intersect(objects[k], shadowRay)) {
-            // hit point is in shadow so return
-            return 0;
-        }
-    }
-    // point is illuminated
-    return object->color * light.brightness;
-}
-
-// for each pixel of the image
-for (int j = 0; j < imageHeight; ++j) {
-    for (int i = 0; i < imageWidth; ++i) {
-        // compute primary ray direction
-        Ray primRay;
-        computePrimRay(i, j, &primRay);
-        pixels[i][j] = Trace(primRay, 0);
-    }
+	return (vector4(color.x, color.y, color.z, 1.0f));
 }
 */
 
-/*
-t_vector4 PerPixel(t_ray ray, t_scene scene)
+/*t_vector4 PerPixel(t_ray ray, t_scene scene)
 {
-	t_vector4 color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
-	int bounce = 1;
+	t_vector4 color;
+	t_sphere* closestsphere = 0;
+	float closest = FLT_MAX;
 
-	while (bounce--)
+
+	color = vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	t_sphere sphere[10];
+	int nb_sphere = 6;
+	int i = -1;
+	sphere[0] = add_sphere(vector3(1.0f, 0.0f, 0.0f),  0.3f, vector3(1.0f, 0.0f, 0.0f));
+	sphere[1] = add_sphere(vector3(0.0f, 1.0f, 0.0f),  0.3f, vector3(0.0f, 1.0f, 0.0f));
+	sphere[2] = add_sphere(vector3(0.0f, 0.0f, 1.0f),  0.3f, vector3(0.0f, 0.0f, 1.0f));
+	sphere[3] = add_sphere(vector3(-1.0f, 0.0f, 0.0f), 0.3f, vector3(1.0f, 1.0f, 0.0f));
+	sphere[4] = add_sphere(vector3(0.0f, -1.0f, 0.0f), 0.3f, vector3(1.0f, 0.0f, 1.0f));
+	sphere[5] = add_sphere(vector3(0.0f, 0.0f, -1.0f), 0.3f, vector3(1.0f, 1.0f, 1.0f));
+
+	//t_vector3 oc = ray.origin;
+
+	while (++i < nb_sphere)
 	{
+		t_vector3 oc = vector3_subtract(ray.origin, sphere[i].center);
 
+		float a = vector3_dot(ray.direction, ray.direction);
+		float b = 2.0f * vector3_dot(oc, ray.direction);
+		float c = vector3_dot(oc, oc) - sphere[i].radius * sphere[i].radius;
+
+		float det = b * b - 4 * a * c;
+		if (det < 0)
+			continue;
+		float t = (-b - sqrtf(det)) / (2.0f * a);
+		if (t < 0)
+			continue;
+			//t = (-b - sqrtf(det)) / (2.0f * a);
+		if (closest > t)
+		{
+			closest = t;
+			closestsphere = &sphere[i];
+		}
 	}
+	if (closestsphere == 0)
+		return (color);
 
+	t_vector3 oc = vector3_subtract(ray.origin, closestsphere->center);
+	t_vector3 hit = vector3_add(oc, vector3_multiply_float(ray.direction, closest));
+	t_vector3 normal = vector3_normalize(hit);
+	t_vector3 light_dir = vector3_normalize(vector3(1.0f, 1.0f, 1.0f));
+	float diffuse = vector3_dot(light_dir, normal);
+	diffuse = max(diffuse, 0.0f);
+
+	// sphere[i].color = normal;
+	// sphere[i].color = vector3_multiply(sphere[i].color, normal);
+	// sphere[i].color = vector3_normalize(sphere[i].color);
+	// sphere[i].color = vector3_multiply_float(sphere[i].color, 0.5f);
+	// sphere[i].color = vector3_add_float(sphere[i].color, 0.5f);
+
+	closestsphere->color = vector3_multiply_float(closestsphere->color, diffuse);
+	color = vector4(closestsphere->color.x, closestsphere->color.y, closestsphere->color.z, 1.0f);
 	return (color);
-}*/
-
-/*int checkIntersection(t_vector3 point, t_vector3 direction, t_triangle triangle) {
-	t_vector3 edge1, edge2, h, s, q;
-	double a, f, u, v;
-	edge1 = vector3_subtract(triangle.p[1], triangle.p[0]);
-	edge2 = vector3_subtract(triangle.p[2], triangle.p[0]);
-	h = vector3_cross(direction, edge2);
-	a = edge1.x * h.x + edge1.y * h.y + edge1.z * h.z;
-	if (a > -0.00001 && a < 0.00001)
-		return 0; // Le vecteur est parallèle au triangle ou se trouve dans le plan du triangle
-	f = 1.0 / a;
-	s =  vector3_subtract(point, triangle.p[0]);
-	u = f * (s.x * h.x + s.y * h.y + s.z * h.z);
-	if (u < 0.0 || u > 1.0)
-		return 0; // Le vecteur ne traverse pas le triangle
-	q = vector3_cross(s, edge1);
-	v = f * (direction.x * q.x + direction.y * q.y + direction.z * q.z);
-	if (v < 0.0 || u + v > 1.0)
-		return 0; // Le vecteur ne traverse pas le triangle
-	// Vérification de l'orientation du triangle par rapport au vecteur
-	t_vector3 normal = vector3_cross(edge1, edge2);
-	t_vector3 vectorToTriangle = vector3_subtract(triangle.p[0], point);
-	double dotProduct = normal.x * vectorToTriangle.x + normal.y * vectorToTriangle.y + normal.z * vectorToTriangle.z;
-	if (dotProduct < 0)
-		return 0;
-	// Le vecteur traverse le triangle
-	return 1;
-}*/
+}
+*/
