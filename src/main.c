@@ -92,24 +92,132 @@ void print_input(t_minirt *minirt)
 
 }
 
-
-
-void print_mat(t_matrix4x4 mat)
+t_material create_material(void)
 {
-	int i;
-	int j;
+	t_material material;
 
-	i = -1;
-	while (++i < 4)
-	{
-		j = -1;
-		while (++j < 4)
-			printf("%f ", mat.matrix[i][j]);
-		printf("\n");
-	}
-	printf("\n");
+	material.color = vector3(1.0f, 1.0f, 1.0f);
+	material.specular_color = vector3(1.0f, 1.0f, 1.0f);
+
+	material.emission_strength = 0.0f;
+	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	material.emission = vector3(0.0f, 0.0f, 0.0f);
+	material.smoothness = 1.0f;
+	material.specular_probability = 0.0f;
+	material.flag = 0;
 }
 
+t_scene	create_scene(void)
+{
+	t_scene scene;
+	t_material red;
+	t_material green;
+	t_material blue;
+	t_material white;
+	t_material light;
+	t_material yellow;
+
+	red = create_material();
+	red.color = vector3(1.0f, 0.0f, 0.0f);
+	scene.material[0] = red;
+
+	green = create_material();
+	green.color = vector3(0.0f, 1.0f, 0.0f);
+	scene.material[1] = green;
+
+	blue = create_material();
+	blue.color = vector3(0.0f, 0.0f, 1.0f);
+	scene.material[2] = blue;
+
+	white = create_material();
+	white.color = vector3(1.0f, 1.0f, 1.0f);
+	scene.material[3] = white;
+
+	light = create_material();
+	light.color = vector3(1.0f, 1.0f, 1.0f);
+	light.emission_strength = 1.0f;
+	light.emission = vector3_multiply_float(light.color, light.emission_strength);
+	scene.material[4] = light;
+
+	yellow = create_material();
+	yellow.color = vector3(1.0f, 1.0f, 0.0f);
+	scene.material[5] = yellow;
+
+	t_sphere sphere;
+	sphere.center = vector3(1.0f, 1.0f, 0.0f);
+	sphere.radius = 1.0f;
+	sphere.material = white;
+	sphere.material.specular_probability = 1.0f;
+	scene.sphere[0] = sphere;
+
+	t_sphere sphere2;
+	sphere2.center = vector3(-1.0f, 1.0f, 0.0f);
+	sphere2.radius = 1.0f;
+	sphere2.material = white;
+	sphere2.material.specular_probability = 1.0f;
+	scene.sphere[1] = sphere2;
+
+	t_plane plane;
+	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
+	plane.normal = vector3(0.0f, 1.0f, 0.0f);
+	plane.material = white;
+	scene.plane[0] = plane;
+
+	t_plane plane2;
+	plane2.point_on_plane = vector3(0.0f, 4.0f, 0.0f);
+	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
+	plane2.material = light;
+	scene.plane[1] = plane2;
+
+	t_plane plane3;
+	plane3.point_on_plane = vector3(0.0f, 0.0f, -4.0f);
+	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
+	plane3.material = green;
+	scene.plane[2] = plane3;
+
+	t_plane plane4;
+	plane4.point_on_plane = vector3(0.0f, 0.0f, 4.0f);
+	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
+	plane4.material = red;
+	scene.plane[3] = plane4;
+
+	t_plane plane5;
+	plane5.point_on_plane = vector3(-4.0f, 0.0f, 0.0f);
+	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
+	plane5.material = blue;
+	scene.plane[4] = plane5;
+
+	t_plane plane6;
+	plane6.point_on_plane = vector3(4.0f, 0.0f, 0.0f);
+	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
+	plane6.material = yellow;
+	scene.plane[5] = plane6;
+
+	t_light light1;
+	light1.position = vector3(0.0f, 3.0f, 0.0f);
+	light1.color = vector3(1.0f, 1.0f, 1.0f);
+	light1.brightness = 1.0f;
+	scene.light[0] = light1;
+
+
+	scene.nb_light = 0;
+	scene.nb_sphere = 0;
+	scene.nb_plane = 0;
+	scene.nb_triangle = 0;
+	scene.nb_cylinder = 0;
+	scene.nb_circle = 0;
+	scene.nb_cone = 0;
+	scene.nb_hyperboloid = 0;
+	scene.nb_paraboloid = 0;
+	scene.nb_obj = 0;
+
+	scene.nb_sphere = 2;
+	scene.nb_plane = 6;
+
+	scene.nb_light = 1;
+
+	return (scene);
+}
 static int	init_minirt(t_minirt *minirt)
 {
 	int i;
@@ -136,15 +244,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->camera.yaw = 0.0f;
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
-	minirt->scene.material[0] = add_material(vector3(0.0f, 0.0f, 0.0f), 1.0f, 0.1f);
-	minirt->scene.material[1] = add_material(vector3(0.0f, 0.0f, 0.0f), 0.1f, 0.1f);
-	minirt->scene.sphere[0] = add_sphere(vector3(0.0f, 0.6f, 0.0f),  0.6f, vector3(1.0f, 0.0f, 0.0f), 0);
-	minirt->scene.sphere[1] = add_sphere(vector3(0.0f, -10.0f, 0.0f),  10.0f, vector3(0.0f, 1.0f, 0.0f), 1);
-	minirt->scene.sphere[2] = add_sphere(vector3(0.0f, 0.0f, 0.5f),  0.6f, vector3(0.0f, 0.0f, 1.0f), 0);
-	minirt->scene.sphere[3] = add_sphere(vector3(-0.5f, 0.0f, 0.0f), 0.6f, vector3(1.0f, 1.0f, 0.0f), 0);
-	minirt->scene.sphere[4] = add_sphere(vector3(0.0f, -0.5f, 0.0f), 0.6f, vector3(1.0f, 0.0f, 1.0f), 0);
-	minirt->scene.sphere[5] = add_sphere(vector3(0.0f, 0.0f, -0.5f), 0.6f, vector3(1.0f, 1.0f, 1.0f), 0);
-	minirt->scene.nb_sphere =2;
+
 	return (SUCCESS);
 }
 
@@ -166,7 +266,7 @@ int main(int argc, char *argv[])
 
 	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
-
+	minirt.scene = create_scene();
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);

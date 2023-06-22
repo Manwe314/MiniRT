@@ -153,7 +153,7 @@ t_vector4 vector4_multiply_float(t_vector4 a, float b)
     return (vec);
 }
 
-t_vector4	vector4_clamp(t_vector4 color, float min, float max)
+t_vector3	vector3_clamp(t_vector3 color, float min, float max)
 {
 	if (color.x < min)
 		color.x = min;
@@ -167,10 +167,6 @@ t_vector4	vector4_clamp(t_vector4 color, float min, float max)
 		color.z = min;
 	else if (color.z > max)
 		color.z = max;
-	if (color.w < min)
-		color.w = min;
-	else if (color.w > max)
-		color.w = max;
 	return (color);
 
 }

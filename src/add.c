@@ -43,12 +43,3 @@ t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color)
 	return (sphere);
 }
 
-t_material add_material(t_vector3 color, float roughness, float mettalic)
-{
-	t_material material;
-
-	material.color = color;
-	material.roughness = roughness;
-	material.mettalic = mettalic;
-	return (material);
-}

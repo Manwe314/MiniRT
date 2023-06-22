@@ -50,8 +50,6 @@ typedef struct s_vec4d
 
 typedef struct s_material
 {
-	float roughness;
-	float mettalic;
 	t_vector3 emission_color;
 	t_vector3 color;
 	t_vector3 specular_color;
@@ -279,8 +277,9 @@ typedef struct s_minirt
 	int32_t			height;
 	t_camera_eye	camera;
 	t_input_list	*input_head;
-	int				error;
-	int				moved;
+	bool				error;
+	bool				moved;
+	bool			resized;
 	int				input_validity;
 	float x;
 	float y;
@@ -318,7 +317,7 @@ t_vector3 vector3_multiply(t_vector3 a, t_vector3 b);
 t_vector3 vector3_multiply_float(t_vector3 a, float b);
 t_vector3 vector3_add_float(t_vector3 a, float b);
 t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
-t_vector4	vector4_clamp(t_vector4 color, float min, float max);
+t_vector3	vector3_clamp(t_vector3 color, float min, float max);
 t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
 
@@ -367,18 +366,18 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed);
-t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed);
+t_vector3 Perpixel(t_ray ray, const t_scene *scene, uint rng_seed);
+t_vector3 perpixel(t_ray ray, const t_scene *scene, uint rng_seed);
 
 
 void hook(void *param);
 void	resize(int32_t width, int32_t height, void *param);
 void	cursor(double xpos, double ypos, void *param);
 t_model get_model(void);
-int	get_rgba(t_vector4 color);
+int	get_rgba(t_vector3 color);
 
 
-t_ray create_ray(float x, float y, t_minirt *minirt);
+t_vector3 create_ray(float x, float y, t_minirt *minirt);
 
 t_info	sphere_collision(t_ray ray, t_sphere sphere);
 t_info	plane_collision(t_ray ray, t_plane plane);

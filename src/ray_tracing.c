@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-t_info	calculate_ray_collision(t_ray ray, t_scene scene)
+t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 {
 	t_info hit_info;
 	t_info closest_hit;
@@ -20,64 +20,64 @@ t_info	calculate_ray_collision(t_ray ray, t_scene scene)
 
 	closest_hit.hit_distance = FLT_MAX;
 	i = -1;
-	while (++i < scene.nb_sphere)
+	while (++i < scene->nb_sphere)
 	{
-		hit_info = sphere_collision(ray, scene.sphere[i]);
+		hit_info = sphere_collision(ray, scene->sphere[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_plane)
+	while (++i < scene->nb_plane)
 	{
-		hit_info = plane_collision(ray, scene.plane[i]);
+		hit_info = plane_collision(ray, scene->plane[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_cylinder)
+	while (++i < scene->nb_cylinder)
 	{
-		hit_info = cylinder_collision(ray, scene.cylinder[i]);
+		hit_info = cylinder_collision(ray, scene->cylinder[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
-		hit_info = circle_collision(ray, scene.cylinder[i].circle_top);
+		hit_info = circle_collision(ray, scene->cylinder[i].circle_top);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
-		hit_info = circle_collision(ray, scene.cylinder[i].circle_bottom);
+		hit_info = circle_collision(ray, scene->cylinder[i].circle_bottom);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_circle)
+	while (++i < scene->nb_circle)
 	{
-		hit_info = circle_collision(ray, scene.circle[i]);
+		hit_info = circle_collision(ray, scene->circle[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_triangle)
+	while (++i < scene->nb_triangle)
 	{
-		hit_info = triangle_collision(ray, scene.triangle[i]);
+		hit_info = triangle_collision(ray, scene->triangle[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_paraboloid)
+	while (++i < scene->nb_paraboloid)
 	{
-		hit_info = paraboloid_collision(ray, scene.paraboloid[i]);
+		hit_info = paraboloid_collision(ray, scene->paraboloid[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_cone)
+	while (++i < scene->nb_cone)
 	{
-		hit_info = cone_collision(ray, scene.cone[i]);
+		hit_info = cone_collision(ray, scene->cone[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
 	i = -1;
-	while (++i < scene.nb_hyperboloid)
+	while (++i < scene->nb_hyperboloid)
 	{
-		hit_info = hyperboloid_collision(ray, scene.hyperboloid[i]);
+		hit_info = hyperboloid_collision(ray, scene->hyperboloid[i]);
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
@@ -109,7 +109,7 @@ t_vector2 vector2_floor(t_vector2 a)
 	return (vector2(floor(a.x), floor(a.y)));
 }
 
-t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed)
+t_vector3 perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 {
 	t_vector3 raycolor;
 	t_vector3 incoming_light;
@@ -130,7 +130,7 @@ t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed)
 				// if (c.x == c.y)
 					// hit_info.material.color = hit_info.material.emission_color;
 			// }
-			//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
+			//return (vector3(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
 			// ray.origin = hit_info.hit_point;
 			// ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
 			// t_vector3 diffusedir = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
@@ -168,10 +168,10 @@ t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed)
 			break;
 		}
 	}
-	return (vector4(incoming_light.x, incoming_light.y, incoming_light.z, 1.0f));
+	return (incoming_light);
 }
 
-t_vector4	can_see_light(t_ray ray, t_scene scene, t_vector3 color_obj)
+t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj)
 {
 	int	i;
 	int nb_light;
@@ -183,26 +183,26 @@ t_vector4	can_see_light(t_ray ray, t_scene scene, t_vector3 color_obj)
 	color = vector3(0.0f, 0.0f, 0.0f);
 
 	i = -1;
-	while (++i < scene.nb_light)
+	while (++i < scene->nb_light)
 	{
-		ray.direction = vector3_normalize(vector3_subtract(scene.light[i].position, ray.origin));
+		ray.direction = vector3_normalize(vector3_subtract(scene->light[i].position, ray.origin));
 		ray.direction = vector3_normalize(vector3_add(ray.direction, random_direction(0)));
 		if (calculate_ray_collision(ray, scene).hit_distance <= vector3_length(ray.direction))
 		{
-			color = vector3_add(color, vector3_multiply_float(scene.light[i].color, scene.light[i].brightness));
+			color = vector3_add(color, vector3_multiply_float(scene->light[i].color, scene->light[i].brightness));
 			nb_light++;
 		}
 	}
 	if (nb_light == 0)
 	{
-		return (vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		return (color_obj);
 	}
 	color_obj = vector3_multiply(color_obj, color);
-	return (vector4(color_obj.x, color_obj.y, color_obj.z, 1.0f));
+	return (color_obj);
 }
 
 
-t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed)
+t_vector3 Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 {
 	t_vector3 raycolor;
 	t_vector3 incoming_light;
@@ -212,11 +212,11 @@ t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed)
 	hit_info = calculate_ray_collision(ray, scene);
 	if (hit_info.hit_distance != FLT_MAX)
 	{
-		//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
+		//return (vector3(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
 		ray.origin = hit_info.hit_point;
 		ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
 		return (can_see_light(ray, scene, hit_info.material.color));
 	}
 
-	return (vector4(raycolor.x, raycolor.y, raycolor.z, 1.0f));
+	return (raycolor);
 }

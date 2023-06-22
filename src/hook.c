@@ -117,33 +117,33 @@ void print_fps(t_minirt *minirt)
 {
 	static int frames;
 	static int last_time;
+	static int i;
 	int current_time = time(NULL);
-	char *str;
+
 	frames++;
+	i++;
+	
 	if (current_time - last_time >= 1)
 	{
-		str = ft_itoa(frames);
-		printf("FPS: %s\n", str);
-		free(str);
-
+		printf("FPS: %d   frames = %d\n", frames,i);
 		frames = 0;
 		last_time = current_time;
 	}
 }
 
-t_vector4 **init_0(t_minirt *minirt)
+t_vector3 **init_0(t_minirt *minirt)
 {
 	int x;
 	int y;
-	t_vector4 **color;
+	t_vector3 **color;
 
-	color = malloc(sizeof(t_vector4 *) * minirt->width + 1);
+	color = malloc(sizeof(t_vector3 *) * minirt->width + 1);
 	if (!color)
 		return (NULL);
 	x = -1;
 	while (++x < minirt->width)
 	{
-		color[x] = malloc(sizeof(t_vector4) * minirt->height + 1);
+		color[x] = malloc(sizeof(t_vector3) * minirt->height + 1);
 		if (!color[x])
 		{
 			while (--x >= 0)
@@ -154,12 +154,12 @@ t_vector4 **init_0(t_minirt *minirt)
 		}
 		y = -1;
 		while (++y < minirt->height)
-			color[x][y] = vector4(0, 0, 0, 0);
+			color[x][y] = vector3(0, 0, 0);
 	}
 	return (color);
 }
 
-t_vector4 **set_0(t_vector4 **color, t_minirt *minirt)
+t_vector3 **set_0(t_vector3 **color, t_minirt *minirt)
 {
 	int i;
 	int j;
@@ -169,42 +169,42 @@ t_vector4 **set_0(t_vector4 **color, t_minirt *minirt)
 	{
 		j = -1;
 		while (++j < minirt->height)
-			color[i][j] = vector4(0, 0, 0, 0);
+			color[i][j] = vector3(0, 0, 0);
 	}
 	return (color);
 }
 
 
-t_vector4 blurred(t_vector4 **color, int x, int y, t_minirt *minirt)
+t_vector3 blurred(t_vector3 **color, int x, int y, t_minirt *minirt)
 {
-	t_vector4 blurred_color;
+	t_vector3 blurred_color;
 	float i;
 
 	i = 0.0f;
 
-	blurred_color = vector4(0, 0, 0, 0);
+	blurred_color = vector3(0, 0, 0);
 	if (x - 1 >= 0)
 	{
-		blurred_color = vector4_add(blurred_color, color[x - 1][y - 1]);
+		blurred_color = vector3_add(blurred_color, color[x - 1][y - 1]);
 		i++;
 	}
 	if (x + 1 < minirt->width)
 	{
-		blurred_color = vector4_add(blurred_color, color[x + 1][y - 1]);
+		blurred_color = vector3_add(blurred_color, color[x + 1][y - 1]);
 		i++;
 	}
 	if (y - 1 >= 0)
 	{
-		blurred_color = vector4_add(blurred_color, color[x][y - 1]);
+		blurred_color = vector3_add(blurred_color, color[x][y - 1]);
 		i++;
 	}
 	if (y + 1 < minirt->height)
 	{
-		blurred_color = vector4_add(blurred_color, color[x][y + 1]);
+		blurred_color = vector3_add(blurred_color, color[x][y + 1]);
 		i++;
 	}
 
-	blurred_color = vector4_multiply_float(blurred_color, 1.0f / i);
+	blurred_color = vector3_multiply_float(blurred_color, 1.0f / i);
 	return (blurred_color);
 }
 
@@ -216,25 +216,24 @@ void hook(void *param)
 	int x;
 	int y;
 	static int i;
-	static t_vector4 **color;
+	static t_vector3 color[10000][10000];
 
 
 	print_fps(minirt);
-	if (i == 0)
+	if (minirt->moved == true || minirt->resized == true)
 	{
-		color = init_0(minirt);
-		if (!color)
-			exit(EXIT_FAILURE);
-	}
-
-	if (minirt->moved == true)
-	{
-		color = set_0(color, minirt);
+		x = -1;
+		while (++x < minirt->width)
+		{
+			y = -1;
+			while (++y < minirt->height)
+				color[x][y] = vector3(0, 0, 0);
+		}
 		i = 0;
 	}
 	i++;
-	printf("i = %d\n", i);
 	minirt->moved = false;
+	minirt->resized = false;
 	ray.origin = minirt->camera.pos;
 	//minirt->model = get_model();
 	//minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
@@ -246,22 +245,14 @@ void hook(void *param)
 		{
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			ray = create_ray(coord.x, coord.y, minirt);
-<<<<<<< HEAD
-			color[x][y] = vector4_add(color[x][y] , perpixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
-			//t_vector4 blurred_color = blurred(color, x, y, minirt);
+			ray.direction = create_ray(coord.x, coord.y, minirt);
+			color[x][y] = vector3_add(color[x][y] , perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
+			//t_vector3 blurred_color = blurred(color, x, y, minirt);
 			
-			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i);
-			// accumulated_color = vector4_add(accumulated_color, scene.ambient.ambient);
-			// accumulated_color = vector4_multiply_float(accumulated_color, 1 / scene.ambient.intensity);
-			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
-			
-			
-=======
-			color[x][y] = vector4_add(color[x][y] , PerPixel(ray, minirt->scene,  x * minirt->height + y + i * 719393));
-			t_vector4 accumulated_color = vector4_multiply_float(color[x][y] , 1.0f / (float)i) ;
-			accumulated_color = vector4_clamp(accumulated_color, 0.0f, 1.0f);
->>>>>>> refs/remotes/origin/main
+			t_vector3 accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
+			// accumulated_color = vector3_add(accumulated_color, scene.ambient.ambient);
+			// accumulated_color = vector3_multiply_float(accumulated_color, 1 / scene.ambient.intensity);
+			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);			
 			mlx_put_pixel(minirt->img, x, minirt->height - y - 1, get_rgba(accumulated_color));
 		}
 	}
@@ -272,14 +263,13 @@ void hook(void *param)
 	t_minirt *minirt = (t_minirt *)param;
 	t_ray ray;
 	t_scene scene;
-	t_vector4 color;
+	t_vector3 color;
 	int x;
 	int y;
 
 	print_fps(minirt);
 	x = -1;
-	calculatelookat(minirt);
-	calculateprojection(minirt);
+	ray.origin = minirt->camera.pos;
 	while (++x < minirt->width)
 	{
 		y = -1;
@@ -287,8 +277,8 @@ void hook(void *param)
 		{
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			ray = create_ray(coord.x, coord.y, minirt);
-			color = PerPixel(ray, minirt->scene,  x * minirt->height + y);
+			ray.direction = create_ray(coord.x, coord.y, minirt);
+			color = PerPixel(ray, &minirt->scene,  x * minirt->height + y);
 			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y - 1, get_rgba(color));
 		}
 	}
@@ -316,6 +306,7 @@ void	resize(int32_t width, int32_t height, void *param)
 	}
 	calculateprojection(minirt);
 	minirt->moved = true;
+	minirt->resized = true;
 	mlx_image_to_window( minirt->mlx,  minirt->img, 0, 0);
 }
 
