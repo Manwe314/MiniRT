@@ -222,7 +222,7 @@ void	hook(void *param)
 			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
 			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
 			ray.direction = create_ray(coord.x, coord.y, minirt);
-			 color = Perpixel(ray, minirt->scene,  x * minirt->height + y);
+			 color = perpixel(ray, minirt->scene,  x * minirt->height + y);
 			//color = vector4(0, 0, 0, 0);
 			mlx_put_pixel(minirt->img, x, minirt->height - y - 1, get_rgba(vector3(color.x, color.y, color.z)));
 		}

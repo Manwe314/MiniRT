@@ -528,7 +528,7 @@ int main(int argc, char *argv[])
 
 	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
-	minirt.scene = create_scene2();
+	minirt.scene = create_scene();
 
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
