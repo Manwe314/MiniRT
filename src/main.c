@@ -92,19 +92,41 @@ void print_input(t_minirt *minirt)
 
 }
 
-t_material create_material(void)
+t_material return_material(void)
 {
 	t_material material;
 
-	material.color = vector3(1.0f, 1.0f, 1.0f);
-	material.specular_color = vector3(1.0f, 1.0f, 1.0f);
-
-	material.emission_strength = 0.0f;
 	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	material.emission = vector3(0.0f, 0.0f, 0.0f);
+	material.color = vector3(1.0f, 0.0f, 0.0f);
+	material.specular_color = vector3(1,1,1);
+	material.emission_strength = 0.0f;
+	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
 	material.smoothness = 1.0f;
 	material.specular_probability = 0.0f;
 	material.flag = 0;
+	return (material);
+}
+
+t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top, t_minirt *minirt)
+{
+	t_circle circle;
+	static int i;
+
+	circle.radius = cylinder.radius;
+	circle.material = cylinder.material;
+	if (is_top)
+	{
+		circle.center = vector3_add(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.normal = cylinder.normal;
+	}
+	else
+	{
+		circle.center = vector3_subtract(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.normal = vector3_multiply_float(cylinder.normal, -1.0f);
+	}
+	// minirt->scene.circle[i++] = circle;
+	// minirt->scene.nb_circle++;
+	return (circle);
 }
 
 t_scene	create_scene(void)
@@ -114,94 +136,171 @@ t_scene	create_scene(void)
 	t_material green;
 	t_material blue;
 	t_material white;
-	t_material light;
 	t_material yellow;
+	t_material purple;
+	t_material light;
 
-	red = create_material();
+	float emission_strength = 0.0f;
+
+	red = return_material();
 	red.color = vector3(1.0f, 0.0f, 0.0f);
-	scene.material[0] = red;
-
-	green = create_material();
+	red.emission_strength = emission_strength;
+	red.emission_color = vector3(1.0f, 0.0f, 0.0f);
+	red.emission = vector3_multiply_float(red.emission_color, red.emission_strength);
+	
+	green = return_material();
 	green.color = vector3(0.0f, 1.0f, 0.0f);
-	scene.material[1] = green;
+	green.emission_strength = emission_strength;
+	green.emission_color = vector3(0.0f, 1.0f, 0.0f);
+	green.emission = vector3_multiply_float(green.emission_color, green.emission_strength);
 
-	blue = create_material();
+	
+	blue = return_material();
 	blue.color = vector3(0.0f, 0.0f, 1.0f);
-	scene.material[2] = blue;
-
-	white = create_material();
+	blue.emission_strength = emission_strength;
+	blue.emission_color = vector3(0.0f, 0.0f, 1.0f);
+	blue.emission = vector3_multiply_float(blue.emission_color, blue.emission_strength);
+	
+	white = return_material();
 	white.color = vector3(1.0f, 1.0f, 1.0f);
-	scene.material[3] = white;
+	white.emission_strength = emission_strength;
+	white.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	white.emission = vector3_multiply_float(white.emission_color, white.emission_strength);
 
-	light = create_material();
+	yellow = return_material();
+	yellow.color = vector3(1.0f, 1.0f, 0.0f);
+	yellow.emission_strength = emission_strength;
+	yellow.emission_color = vector3(1.0f, 1.0f, 0.0f);
+	yellow.emission = vector3_multiply_float(yellow.emission_color, yellow.emission_strength);
+
+	purple = return_material();
+	purple.color = vector3(1.0f, 0.0f, 1.0f);
+	purple.emission_strength = emission_strength;
+	purple.emission_color = vector3(1.0f, 0.0f, 1.0f);
+	purple.emission = vector3_multiply_float(purple.emission_color, purple.emission_strength);
+
+
+
+	light = return_material();
 	light.color = vector3(1.0f, 1.0f, 1.0f);
-	light.emission_strength = 0.5f;
+	light.emission_strength = 1.0f;
 	light.emission_color = vector3(1.0f, 1.0f, 1.0f);
 	light.emission = vector3_multiply_float(light.emission_color, light.emission_strength);
 
-	yellow = create_material();
-	yellow.color = vector3(1.0f, 1.0f, 0.0f);
-	scene.material[5] = yellow;
+	t_triangle triangle;
+	triangle.p[0] = vector3(-1,4,0);
+	triangle.p[1] = vector3(1,4,0);
+	triangle.p[2] = vector3(0,4,1);
+	triangle.material = light;
+	scene.triangle[0] = triangle;
+
+
+
+
 
 	t_sphere sphere;
-	sphere.center = vector3(1.0f, 1.0f, 0.0f);
+	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
-	sphere.material = white;
+	sphere.material = red;
 	sphere.material.specular_probability = 1.0f;
+	sphere.material.specular_color = vector3(1.0f, 0.0f, 0.0f);
 	scene.sphere[0] = sphere;
 
+
 	t_sphere sphere2;
-	sphere2.center = vector3(-1.0f, 1.0f, 0.0f);
+	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
-	sphere2.material = white;
+	sphere2.material = blue;
 	sphere2.material.specular_probability = 1.0f;
+	sphere2.material.specular_color = vector3(0.0f, 0.0f, 1.0f);
 	scene.sphere[1] = sphere2;
+
+	t_sphere sphere3;
+	sphere3.center = vector3(0.0f, 3.3f, 0.0f);
+	sphere3.radius = 1.0f;
+	sphere3.material = white;
+	sphere3.material.color = vector3(0.3f, 0.6f, 0.2f);
+	sphere3.material.specular_probability = 1.0f;
+	sphere3.material.specular_color = vector3(0.3f, 0.9f, 0.5f);
+	scene.sphere[2] = sphere3;
 
 	t_plane plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
+	plane.normal = vector3_normalize(plane.normal);
 	plane.material = white;
+	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
 	t_plane plane2;
-	plane2.point_on_plane = vector3(0.0f, 4.0f, 0.0f);
+	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
 	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
 	plane2.normal = vector3_normalize(plane2.normal);
 	plane2.material = light;
 	scene.plane[1] = plane2;
 
 	t_plane plane3;
-	plane3.point_on_plane = vector3(0.0f, 0.0f, -4.0f);
+	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
 	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
-	plane3.material = green;
+	plane3.normal = vector3_normalize(plane3.normal);
+	plane3.material = yellow;
 	scene.plane[2] = plane3;
 
 	t_plane plane4;
-	plane4.point_on_plane = vector3(0.0f, 0.0f, 4.0f);
+	plane4.point_on_plane = vector3(0.0f, 0.0f, 5.0f);
 	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
-	plane4.material = red;
+	plane4.normal = vector3_normalize(plane4.normal);
+	plane4.material = purple;
 	scene.plane[3] = plane4;
 
 	t_plane plane5;
-	plane5.point_on_plane = vector3(-4.0f, 0.0f, 0.0f);
+	plane5.point_on_plane = vector3(-5.0f, 0.0f, 0.0f);
 	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
-	plane5.material = blue;
+	plane5.normal = vector3_normalize(plane5.normal);
+	plane5.material = red;
 	scene.plane[4] = plane5;
 
 	t_plane plane6;
-	plane6.point_on_plane = vector3(4.0f, 0.0f, 0.0f);
+	plane6.point_on_plane = vector3(5.0f, 0.0f, 0.0f);
 	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
-	plane6.material = yellow;
+	plane6.normal = vector3_normalize(plane6.normal);
+	plane6.material = green;
 	scene.plane[5] = plane6;
 
-	t_light light1;
-	light1.position = vector3(0.0f, 3.0f, 0.0f);
-	light1.color = vector3(1.0f, 1.0f, 1.0f);
-	light1.brightness = 1.0f;
-	scene.light[0] = light1;
+	float light_strength = 5.0f;
 
 
-	scene.nb_light = 0;
+	t_light led;
+	led.position = vector3(0,3,0);
+	led.color = vector3(1.0f, 1.0f, 1.0f);
+	led.brightness = light_strength;
+	scene.light[0] = led;
+
+	t_light led2;
+	led2.position = vector3(0,4,0);
+	led2.color = vector3(1.0f, 1.0f, 1.0f);
+	led2.brightness = light_strength;
+	scene.light[1] = led2;
+
+	t_light led3;
+	led3.position = vector3(3,0,0);
+	led3.color = vector3(1.0f, 1.0f, 1.0f);
+	led3.brightness = light_strength;
+	scene.light[2] = led3;
+
+	t_light led4;
+	led4.position = vector3(-3,0,0);
+	led4.color = vector3(1.0f, 1.0f, 1.0f);
+	led4.brightness = light_strength;
+	scene.light[3] = led4;
+
+	t_light led5;
+	led5.position = vector3(0,0,3);
+	led5.color = vector3(1.0f, 1.0f, 1.0f);
+	led5.brightness = light_strength;
+	scene.light[4] = led5;
+	
+	
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -212,12 +311,13 @@ t_scene	create_scene(void)
 	scene.nb_paraboloid = 0;
 	scene.nb_obj = 0;
 
-	scene.nb_sphere = 2;
 	scene.nb_plane = 6;
-
+	scene.nb_sphere = 3;
 	scene.nb_light = 1;
 	scene.nb_triangle = 0;
 	return (scene);
+
+	
 }
 
 t_scene	create_scene2(void)
