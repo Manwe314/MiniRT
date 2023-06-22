@@ -114,61 +114,52 @@ t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed)
 	t_vector3 raycolor;
 	t_vector3 incoming_light;
 	int bounce;
+	float ray_per_pixel = 1.0f;
 	t_info hit_info;
+	t_vector3 color_obj;
 
-	bounce = 0;
-	raycolor = vector3(1.0f, 1.0f, 1.0f);
-	incoming_light = vector3(0.0f, 0.0f, 0.0f);
-	while (bounce++ < 5)
+	int i = 0;
+	color_obj = vector3(0.0f, 0.0f, 0.0f);
+	while (i++ < ray_per_pixel)
 	{
-		hit_info = calculate_ray_collision(ray, scene);
-		if (hit_info.hit_distance != FLT_MAX)
+		bounce = 0;
+		raycolor = vector3(1.0f, 1.0f, 1.0f);
+		incoming_light = vector3(0.0f, 0.0f, 0.0f);
+		while (bounce++ < 5)
 		{
-			// if (hit_info.material.flag == CHECKER_PATTERN)
-			// {
-				// t_vector2 c = vector2_mod(vector2_floor(vector2(hit_info.hit_point.x, hit_info.hit_point.y)), 2.0);
-				// if (c.x == c.y)
-					// hit_info.material.color = hit_info.material.emission_color;
-			// }
-			//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
-			// ray.origin = hit_info.hit_point;
-			// ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
-			// t_vector3 diffusedir = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
-			// t_vector3 speculardir = vector3_reflect(ray.direction, hit_info.normal);
-			// 
-			// bool is_specular_bounce = hit_info.material.specular_probability >= randomvalue(rng_seed);
-			// ray.direction = vector3_normalize(lerp(diffusedir, speculardir, hit_info.material.smoothness * is_specular_bounce));
+			hit_info = calculate_ray_collision(ray, scene);
+			if (hit_info.hit_distance != FLT_MAX)
+			{
+				ray.origin = hit_info.hit_point;
+				ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
 
-			// incoming_light = vector3_add(incoming_light, vector3_multiply(hit_info.material.emission, raycolor));
-			// raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, hit_info.material.specular_color, is_specular_bounce));			
+				t_vector3 diffuse = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
+				t_vector3 reflect = vector3_reflect(ray.direction, hit_info.normal);
+
+				bool is_specular_bounce = hit_info.material.specular_probability >= randomvalue(rng_seed);
+
+				ray.direction = vector3_normalize(lerp(diffuse, reflect, hit_info.material.smoothness * is_specular_bounce));
 			
-			ray.origin = hit_info.hit_point;
-			ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
-
-			t_vector3 diffuse = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
-			t_vector3 reflect = vector3_reflect(ray.direction, hit_info.normal);
-
-			bool is_specular_bounce = hit_info.material.specular_probability >= randomvalue(rng_seed);
-
-			ray.direction = vector3_normalize(lerp(diffuse, reflect, hit_info.material.smoothness * is_specular_bounce));
-		
-			incoming_light = vector3_add(incoming_light, vector3_multiply(hit_info.material.emission, raycolor));
-			raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, hit_info.material.specular_color, is_specular_bounce));
-		
-			float p = fmaxf(raycolor.x, fmaxf(raycolor.y, raycolor.z));
+				incoming_light = vector3_add(incoming_light, vector3_multiply(hit_info.material.emission, raycolor));
+				raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, hit_info.material.specular_color, is_specular_bounce));
 			
-			if (randomvalue(rng_seed) >= p)
+				float p = fmaxf(raycolor.x, fmaxf(raycolor.y, raycolor.z));
+				
+				if (randomvalue(rng_seed) >= p)
+					break;
+				raycolor = vector3_multiply_float(raycolor, 1.0f / p);
+			
+			}
+			else
+			{
+				//incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f, 0.8f));
 				break;
-			raycolor = vector3_multiply_float(raycolor, 1.0f / p);
-		
+			}
 		}
-		else
-		{
-			//incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f, 0.8f));
-			break;
-		}
+		color_obj = vector3_add(color_obj, incoming_light);
 	}
-	return (vector4(incoming_light.x, incoming_light.y, incoming_light.z, 1.0f));
+	color_obj = vector3_multiply_float(color_obj, 1 / ray_per_pixel);
+	return (vector4(color_obj.x, color_obj.y, color_obj.z, 1.0f));
 }
 
 t_vector4	can_see_light(t_ray ray, t_scene scene, t_vector3 color_obj)
@@ -186,8 +177,8 @@ t_vector4	can_see_light(t_ray ray, t_scene scene, t_vector3 color_obj)
 	while (++i < scene.nb_light)
 	{
 		ray.direction = vector3_normalize(vector3_subtract(scene.light[i].position, ray.origin));
-		ray.direction = vector3_normalize(vector3_add(ray.direction, random_direction(0)));
-		if (calculate_ray_collision(ray, scene).hit_distance <= vector3_length(ray.direction))
+		//ray.direction = vector3_normalize(vector3_add(ray.direction, random_direction(0)));
+		if (calculate_ray_collision(ray, scene).hit_distance >= vector3_length(ray.direction))
 		{
 			color = vector3_add(color, vector3_multiply_float(scene.light[i].color, scene.light[i].brightness));
 			nb_light++;
@@ -209,10 +200,12 @@ t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed)
 	t_info hit_info;
 
 	raycolor = vector3(0.0f, 0.0f, 0.0f);
+	// return (vector4(raycolor.x, raycolor.y, raycolor.z, 1.0f));
+
 	hit_info = calculate_ray_collision(ray, scene);
 	if (hit_info.hit_distance != FLT_MAX)
 	{
-		//return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
+		return (vector4(hit_info.material.color.x, hit_info.material.color.y, hit_info.material.color.z, 1.0f));
 		ray.origin = hit_info.hit_point;
 		ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
 		return (can_see_light(ray, scene, hit_info.material.color));

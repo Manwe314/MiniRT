@@ -24,6 +24,7 @@
 # include <string.h>
 # include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <float.h>
 
 # define PI 3.14159265358979323846
@@ -367,18 +368,18 @@ float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
 
-t_vector4 Perpixel(t_ray ray, t_scene scene, uint rng_seed);
-t_vector4 perpixel(t_ray ray, t_scene scene, uint rng_seed);
+t_vector4 Perpixel(t_ray ray, const t_scene scene, uint rng_seed);
+t_vector4 perpixel(t_ray ray, const t_scene scene, uint rng_seed);
 
 
 void hook(void *param);
 void	resize(int32_t width, int32_t height, void *param);
 void	cursor(double xpos, double ypos, void *param);
 t_model get_model(void);
-int	get_rgba(t_vector4 color);
+int	get_rgba(t_vector3 color);
 
 
-t_ray create_ray(float x, float y, t_minirt *minirt);
+t_vector3 create_ray(float x, float y, t_minirt *minirt);
 
 t_info	sphere_collision(t_ray ray, t_sphere sphere);
 t_info	plane_collision(t_ray ray, t_plane plane);

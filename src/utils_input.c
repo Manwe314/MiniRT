@@ -56,13 +56,15 @@ float ft_atof(const char *str)
 	return (result * sign);
 }
 
-int	get_rgba(t_vector4 color)
+int	get_rgba(t_vector3 color)
 {
 	color.x = color.x * 255.0f;
 	color.y = color.y * 255.0f;
 	color.z = color.z * 255.0f;
-	color.w = color.w * 255.0f;
-	return ((int) color.x << 24 | (int) color.y << 16 | (int) color.z << 8 |(int)  color.w);
+	// static int i = 0;
+	// if (i++ % 500 == 0)
+	// 	printf("color: %f %f %f\n", color.x, color.y, color.z);
+	return ((int) color.x << 24 | (int) color.y << 16 | (int) color.z << 8 | 255);
 }
 
 void	free_split(char **split)

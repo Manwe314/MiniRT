@@ -21,6 +21,7 @@ t_info	sphere_collision(t_ray ray, t_sphere sphere)
 	float c;
 	float discriminant;
 	float t;
+	static int i = 0;
 
 	hit_info.hit_distance = FLT_MAX;
 	oc = vector3_subtract(ray.origin, sphere.center);
