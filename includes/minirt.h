@@ -24,6 +24,7 @@
 # include <string.h>
 # include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <float.h>
 
 # define PI 3.14159265358979323846
