@@ -146,6 +146,13 @@ t_vector3 blurred(t_vector3 **color, int x, int y, t_minirt *minirt)
 	return (accumulatedcol);
 }*/
 
+
+/*
+((2.0f * x) / ((float)minirt->width) - 1.0f) * aspect_ratio
+((2 * x - width) / width ) * aspect
+2 * aspect * x / width  -   width * aspect / width
+2 * aspect * x / width  -   aspect
+*/
 void hook(void *param)
 {
 	t_minirt *minirt = (t_minirt *)param;
@@ -155,7 +162,10 @@ void hook(void *param)
 	int y;
 	static int i;
 	static t_vector3 color[10000][10000];
-
+	t_vector3 accumulated_color;
+	static float x_aspect_ratio;
+	static float y_aspect_ratio;
+	float aspect_ratio = (float)minirt->width / (float)minirt->height;
 
 	print_fps(minirt);
 	//print_time(minirt);
@@ -163,6 +173,8 @@ void hook(void *param)
 	if (minirt->moved == true || minirt->resized == true)
 	{
 		x = -1;
+		x_aspect_ratio =2.0f * aspect_ratio / minirt->width;
+		y_aspect_ratio = 2.0f / (float)minirt->height;
 		while (++x < minirt->width)
 		{
 			y = -1;
@@ -183,17 +195,12 @@ void hook(void *param)
 		y = -1;
 		while (++y < minirt->height)
 		{
-			t_vector3 coord = vector3((float)x / (float)minirt->width, (float)(y) / (float)minirt->height,0);
-			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			ray.direction = create_ray(coord.x, coord.y, minirt);
-			color[x][y] = vector3_add(color[x][y] , perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
-			//t_vector3 blurred_color = blurred(color, x, y, minirt);
-			
-			t_vector3 accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
-			// accumulated_color = vector3_add(accumulated_color, scene.ambient.ambient);
-			// accumulated_color = vector3_multiply_float(accumulated_color, 1 / scene.ambient.intensity);
+			ray.direction = create_ray( (float) x * x_aspect_ratio - aspect_ratio,\
+			 1.0f - y * y_aspect_ratio, minirt);
+			color[x][y] = vector3_add(color[x][y] , Perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
+			accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
 			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);			
-			mlx_put_pixel(minirt->img, x, minirt->height - y - 1, get_rgba(accumulated_color));
+			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
 		}
 	}
 }
@@ -254,6 +261,8 @@ void	cursor(double xpos, double ypos, void *param)
 {
 	t_minirt *minirt;
 	minirt = (t_minirt *)param;
+	static float lastx;
+	static float lasty;
 	t_matrix4x4 mat[2];
 	static int i;
 
@@ -265,35 +274,49 @@ void	cursor(double xpos, double ypos, void *param)
 	if (i == 0)
 	{
 		mlx_set_mouse_pos(minirt->mlx, minirt->width / 2, minirt->height / 2);
+		lastx =0;
+		lasty = 0;
 		i++;
 		return;
 	}
+	if (lastx == lasty == 0)
+	{
+		lastx = 0;
+		lasty = 0;
+	}
 	xpos = (xpos / minirt->width) * 2.0f - 1.0f;
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
-	xpos = asin(xpos);
-	ypos = atan2(-ypos, 1.0f);
-	// if (lastx == 0 && lasty == 0)
-	// {
-		// lastx = xpos;
-		// lasty = ypos;
-	// }
-	xpos /= 20;
-	ypos /= -20;
-	mat[0] = rotation_y(xpos);
-	mat[1] =  rotation_x(ypos);
 
-	mat[0] = mult_mat4x4(mat[1], mat[0]);
-	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, mat[0]);
+	// if (xpos >= lastx)
+		// minirt->camera.pitch += 1;
+	// else if (xpos < lastx)
+		// minirt->camera.pitch -= 1;
+	// if (ypos >= lasty)
+		// minirt->camera.yaw += 1;
+	// else if (ypos < lasty)
+		// minirt->camera.yaw -= 1;
+	
+	minirt->camera.pitch += (xpos - lastx) * 1.5f;
+	minirt->camera.yaw += (ypos - lasty) * 1.5f;
+
+
+
+
+	lastx = xpos;
+	lasty = ypos;
+
+	// xpos = asin(minirt->camera.pitch);
+	// ypos = atan2(minirt->camera.yaw, 1.0f);
+	
+	mat[0] = rotation_y(to_radian(minirt->camera.pitch));
+	mat[1] =  rotation_x(to_radian(minirt->camera.yaw ));
+
+	minirt->camera.inv_lookat = mult_mat4x4(mat[1], mat[0]);
+
+	mat[0] = rotation_y(to_radian(-minirt->camera.pitch));
+	mat[1] =  rotation_x(to_radian(-minirt->camera.yaw ));
+	minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, minirt->camera.inv_lookat);
 	minirt->camera.forward = vector3_normalize(minirt->camera.forward);
-	//if (minirt->camera.forward.z < 0.0f)
-	//	minirt->camera.forward.z = -minirt->camera.forward.z;
-	//printf("forward = %f %f %f\n", minirt->camera.forward.x, minirt->camera.forward.y, minirt->camera.forward.z);
-
-	// minirt->camera.forward = vector3(-xpos / 2, ypos / 2, 1.0f);
-	// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_y(to_radian(1.0f * xpos)));
-	// minirt->camera.forward = vector3_normalize(minirt->camera.forward);
-	// minirt->camera.forward = multiplymatrixvector(minirt->camera.forward, rotation_x(to_radian(1.0f * ypos)));
-	// minirt->camera.forward = vector3_normalize(minirt->camera.forward);
 	mlx_set_mouse_pos(minirt->mlx, minirt->width / 2, minirt->height / 2);
 
 	minirt->moved = true;
@@ -332,18 +355,18 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	}
 	updirection = vector3(0.0f, 1.0f, 0.0f);
 	rightdirection = vector3_cross(minirt->camera.forward, vector3(0.0f, 1.0f, 0.0f));
-	if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
-	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
-	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(updirection, speed));
-	if (keydata.key == MLX_KEY_Q && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(updirection, speed));
-	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
-	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
+	// if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
+	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(rightdirection, speed));
+	// if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(updirection, speed));
+	// if (keydata.key == MLX_KEY_Q && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(updirection, speed));
+	// if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_add(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
+	// if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
+	// 	minirt->camera.pos = vector3_subtract(minirt->camera.pos, vector3_multiply_float(minirt->camera.forward, speed));
 
 	if (keydata.key == MLX_KEY_1 && keydata.action != MLX_RELEASE)
 		minirt->radius += 0.1f;
@@ -362,30 +385,31 @@ void keyhook(mlx_key_data_t keydata, void *param)
 	if (keydata.key == MLX_KEY_9 && keydata.action != MLX_RELEASE)
 		minirt->z -= 0.1f;
 
+	if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.x += speed;
+	if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.x -= speed;
+	if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.y += speed;
+	if (keydata.key == MLX_KEY_Q && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.y -= speed;
+	if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.z -= speed;
+	if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
+		minirt->camera.pos.z += speed;
+// 
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.x += speed;
+		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(vector3_multiply_float(rightdirection, -1.0f)));
 	// if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.x -= speed;
-	// if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.y += speed;
-	// if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.y -= speed;
-	// if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.z -= speed;
-	// if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos.z += speed;
-
-	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
 		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(rightdirection));
-	// if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
-
 	// if (keydata.key == MLX_KEY_SPACE && keydata.action != MLX_RELEASE)
 		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(updirection));
 	// if (keydata.key == MLX_KEY_LEFT_CONTROL && keydata.action != MLX_RELEASE)
-
+		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(vector3_multiply_float(updirection, -1.0f)));
 	// if (keydata.key == MLX_KEY_W && keydata.action != MLX_RELEASE)
-		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(minirt->camera.forward));
+		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(vector3_multiply_float(minirt->camera.forward, -1.0f)));
 	// if (keydata.key == MLX_KEY_S && keydata.action != MLX_RELEASE)
+		// minirt->camera.pos = multiplymatrixvector(minirt->camera.pos, translation(minirt->camera.forward));
 
 	if (keydata.key == MLX_KEY_D || keydata.key == MLX_KEY_A \
 	|| keydata.key == MLX_KEY_SPACE || keydata.key == MLX_KEY_LEFT_CONTROL \

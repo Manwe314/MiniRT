@@ -27,11 +27,14 @@
 #include <sys/time.h>
 #include <float.h>
 
+# ifndef RANDOM
+#  define RANDOM 1
+# endif
+
 # define PI 3.14159265358979323846
 # define ERROR 0
 # define SUCCESS 1
-# define WIDTH  150
-# define HEIGHT 150
+
 
 # define CHECKER_PATTERN 1
 
@@ -380,15 +383,15 @@ int	get_rgba(t_vector3 color);
 
 t_vector3 create_ray(float x, float y, t_minirt *minirt);
 
-t_info	sphere_collision(t_ray ray, t_sphere sphere);
-t_info	plane_collision(t_ray ray, t_plane plane);
-t_info circle_collision(t_ray ray, t_circle cirle);
-t_info	cylinder_collision(t_ray ray, t_cylinder cylinder);
-t_info triangle_collision(t_ray ray, t_triangle triangle);
+t_info	sphere_collision(t_ray ray, const t_sphere *sphere);
+t_info	plane_collision(t_ray ray, const t_plane *plane);
+t_info circle_collision(t_ray ray, const t_circle *cirle);
+t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder);
+t_info triangle_collision(t_ray ray, const t_triangle *triangle);
 
-t_info paraboloid_collision(t_ray ray, t_paraboloid paraboloid);
-t_info hyperboloid_collision(t_ray ray, t_hyperboloid hyperboloid);
-t_info cone_collision(t_ray ray, t_cone cone);
+t_info paraboloid_collision(t_ray ray, const t_paraboloid *paraboloid);
+t_info hyperboloid_collision(t_ray ray, const t_hyperboloid *hyperboloid);
+t_info cone_collision(t_ray ray, const t_cone *cone);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 

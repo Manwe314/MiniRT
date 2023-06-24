@@ -14,6 +14,9 @@
 #include "minirt.h"
 #include "../lib/libft/includes/libft.h"
 
+# define WIDTH  150
+# define HEIGHT 150
+
 float min(float a, float b)
 {
 	if (a > b)
@@ -101,7 +104,7 @@ t_material return_material(void)
 	material.specular_color = vector3(1,1,1);
 	material.emission_strength = 0.0f;
 	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
-	material.smoothness = 1.0f;
+	material.smoothness = 0.5f;
 	material.specular_probability = 0.0f;
 	material.flag = 0;
 	return (material);
@@ -138,6 +141,7 @@ t_scene	create_scene(void)
 	t_material white;
 	t_material yellow;
 	t_material purple;
+	t_material black;
 	t_material light;
 
 	float emission_strength = 0.0f;
@@ -179,31 +183,38 @@ t_scene	create_scene(void)
 	purple.emission_color = vector3(1.0f, 0.0f, 1.0f);
 	purple.emission = vector3_multiply_float(purple.emission_color, purple.emission_strength);
 
+	black = return_material();
+	black.color = vector3(0.0f, 0.0f, 0.0f);
+	black.emission_strength = emission_strength;
+	black.emission_color = vector3(0.0f, 0.0f, 0.0f);
+	black.emission = vector3_multiply_float(black.emission_color, black.emission_strength);
+
+
 
 
 	light = return_material();
 	light.color = vector3(1.0f, 1.0f, 1.0f);
-	light.emission_strength = 1.0f;
+	light.emission_strength = 0.6f;
 	light.emission_color = vector3(1.0f, 1.0f, 1.0f);
 	light.emission = vector3_multiply_float(light.emission_color, light.emission_strength);
 
 	t_triangle triangle;
-	triangle.p[0] = vector3(-1,4,0);
-	triangle.p[1] = vector3(1,4,0);
-	triangle.p[2] = vector3(0,4,1);
+	triangle.p[0] = vector3(-3,4.9f,0);
+	triangle.p[1] = vector3(3,4.9f,0);
+	triangle.p[2] = vector3(0,4.9f,1);
 	triangle.material = light;
+	triangle.material.emission_strength = 10.0f;
+	triangle.material.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	triangle.material.emission = vector3_multiply_float(triangle.material.emission_color, triangle.material.emission_strength);
 	scene.triangle[0] = triangle;
-
-
-
-
 
 	t_sphere sphere;
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
-	sphere.material = red;
+	sphere.material = white;
 	sphere.material.specular_probability = 1.0f;
-	sphere.material.specular_color = vector3(1.0f, 0.0f, 0.0f);
+	sphere.material.smoothness = 1.0f;
+	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
 
 
@@ -211,6 +222,7 @@ t_scene	create_scene(void)
 	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
 	sphere2.material = blue;
+	sphere2.material.smoothness = 0.9f;
 	sphere2.material.specular_probability = 1.0f;
 	sphere2.material.specular_color = vector3(0.0f, 0.0f, 1.0f);
 	scene.sphere[1] = sphere2;
@@ -220,9 +232,11 @@ t_scene	create_scene(void)
 	sphere3.radius = 1.0f;
 	sphere3.material = white;
 	sphere3.material.color = vector3(0.3f, 0.6f, 0.2f);
-	sphere3.material.specular_probability = 1.0f;
+	sphere3.material.specular_probability = 0.0f;
 	sphere3.material.specular_color = vector3(0.3f, 0.9f, 0.5f);
+	sphere3.material.flag = CHECKER_PATTERN;
 	scene.sphere[2] = sphere3;
+
 
 	t_plane plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
@@ -232,6 +246,8 @@ t_scene	create_scene(void)
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
+
+
 	t_plane plane2;
 	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
 	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
@@ -239,64 +255,66 @@ t_scene	create_scene(void)
 	plane2.material = light;
 	scene.plane[1] = plane2;
 
+
+
 	t_plane plane3;
 	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
 	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
 	plane3.normal = vector3_normalize(plane3.normal);
-	plane3.material = yellow;
+	plane3.material = purple;
 	scene.plane[2] = plane3;
 
 	t_plane plane4;
 	plane4.point_on_plane = vector3(0.0f, 0.0f, 5.0f);
 	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
 	plane4.normal = vector3_normalize(plane4.normal);
-	plane4.material = purple;
+	plane4.material = white;
 	scene.plane[3] = plane4;
 
 	t_plane plane5;
 	plane5.point_on_plane = vector3(-5.0f, 0.0f, 0.0f);
 	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
 	plane5.normal = vector3_normalize(plane5.normal);
-	plane5.material = red;
+	plane5.material = white;
 	scene.plane[4] = plane5;
 
 	t_plane plane6;
 	plane6.point_on_plane = vector3(5.0f, 0.0f, 0.0f);
 	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
 	plane6.normal = vector3_normalize(plane6.normal);
-	plane6.material = green;
+	plane6.material = white;
 	scene.plane[5] = plane6;
 
-	float light_strength = 5.0f;
+	float light_strength = 0.3f;
 
 
 	t_light led;
-	led.position = vector3(0,3,0);
-	led.color = vector3(1.0f, 1.0f, 1.0f);
+	led.position = vector3(3,2,0);
+	led.color = vector3(1.0f, 0.0f, 0.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
 	t_light led2;
-	led2.position = vector3(0,4,0);
+	led2.position = vector3(0,4.5f,0);
 	led2.color = vector3(1.0f, 1.0f, 1.0f);
 	led2.brightness = light_strength;
 	scene.light[1] = led2;
 
 	t_light led3;
-	led3.position = vector3(3,0,0);
-	led3.color = vector3(1.0f, 1.0f, 1.0f);
+	led3.position = vector3(3,2,0);
+	led3.color = vector3(0.0f, 0.0f, 1.0f);
 	led3.brightness = light_strength;
 	scene.light[2] = led3;
 
 	t_light led4;
-	led4.position = vector3(-3,0,0);
-	led4.color = vector3(1.0f, 1.0f, 1.0f);
+	led4.position = vector3(-3,2,0);
+	led4.color = vector3(1.0f, 0.0f, 1.0f);
 	led4.brightness = light_strength;
 	scene.light[3] = led4;
 
 	t_light led5;
-	led5.position = vector3(0,0,3);
-	led5.color = vector3(1.0f, 1.0f, 1.0f);
+	led5.position = vector3(0,2,3);
+	led5.color = vector3(1.0f, 1.0f, 0.0f);
 	led5.brightness = light_strength;
 	scene.light[4] = led5;
 	
@@ -313,7 +331,7 @@ t_scene	create_scene(void)
 
 	scene.nb_plane = 6;
 	scene.nb_sphere = 3;
-	scene.nb_light = 1;
+	scene.nb_light = 6;
 	scene.nb_triangle = 0;
 	return (scene);
 
@@ -496,6 +514,8 @@ static int	init_minirt(t_minirt *minirt)
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 	minirt->camera.pitch = 0.0f;
 	minirt->camera.yaw = 0.0f;
+
+	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),rotation_x(to_radian(minirt->camera.yaw )));
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
 	minirt->x = 0;
@@ -516,6 +536,7 @@ static int	init_minirt(t_minirt *minirt)
 int main(int argc, char *argv[])
 {
 	t_minirt minirt;
+
 	//minirt.model = get_model();
 	int	fd;
 

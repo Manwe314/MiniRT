@@ -28,17 +28,19 @@ int nextrandom(uint state)
 
 // float randomvalue(uint state)
 // {
-	// return nextrandom(state) / 4294967295.0; // 2^32 - 1
+	// return (nextrandom(state) / (float)RAND_MAX); // 2^32 - 1
 // }
 // 
 float randomvalue(uint state)
 {
-	return rand() / (float)RAND_MAX;
+	return (rand() / (float)RAND_MAX);
 }
 
-// Random value in normal distribution (with mean=0 and sd=1)
+// Random value in normal distribution
 float randomvaluevormaldistribution(uint state)
 {
+	if (RANDOM != 1)
+		return (0.0f);
 	float theta = 2 * 3.1415926 * randomvalue(state);
 	float rho = sqrt(-2 * log(randomvalue(state)));
 	return rho * cos(theta);
