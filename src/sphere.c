@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   sphere.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:06:32 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:07:34 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:21:49 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:21:49 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_sphere(const char *line)
+
+int	validate_line_sphere(const char *line)
 {
-	char **inputs;
-	int i;
-	int j;
+	char	**inputs;
+	int		i;
+	int		j;
 
 	inputs = ft_split(line, ' ');
 	if (split_size(inputs) != 4)
@@ -29,7 +30,8 @@ int validate_line_sphere(const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("Non valid character on line: \n%s\nObject will not be rendered\n", line);
+				printf(\
+	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				free_split(inputs);
 				return (0);
 			}
@@ -41,10 +43,10 @@ int validate_line_sphere(const char *line)
 	return (1);
 }
 
-t_sphere *init_sphere(const char *line, t_input_list *input)
+t_sphere	*init_sphere(const char *line, t_input_list *input)
 {
-	t_sphere *obj;
-	int i;
+	t_sphere	*obj;
+	int			i;
 
 	obj = (t_sphere *)malloc(sizeof(t_sphere));
 	if (!validate_line_sphere(line))
@@ -62,14 +64,14 @@ t_sphere *init_sphere(const char *line, t_input_list *input)
 	return (obj);
 }
 
-void validate_values_sphere(t_input_list *input)
+void	validate_values_sphere(t_input_list *input)
 {
-	int failed;
-	t_sphere *obj;
+	int			failed;
+	t_sphere	*obj;
 
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->color , 0.0, 255.0))
+	if (!vector3_checker(obj->color, 0.0, 255.0))
 	{
 		printf("Sphere color out of range\n");
 		failed = 1;

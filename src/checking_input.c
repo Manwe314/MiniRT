@@ -3,28 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   checking_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:19:17 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:19:46 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:19:51 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:19:51 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int is_non_valid_character(char a)
+
+int	is_non_valid_character(char a)
 {
 	if (a >= '0' && a <= '9')
 		return (0);
 	if (a == '.' || a == ',' || a == '-' || a)
 		return (0);
 	return (1);
-
 }
 
-int check_file(char *file_name)
+int	check_file(char *file_name)
 {
-	int len;
+	int	len;
 
 	len = ft_strlen(file_name);
 	len -= 3;
@@ -39,7 +39,7 @@ int check_file(char *file_name)
 	close(len);
 	return (0);
 }
-int vector3_checker(t_vector3 vector3, float range_min, float range_max)
+int	vector3_checker(t_vector3 vector3, float range_min, float range_max)
 {
 	if (vector3.x < range_min || vector3.x > range_max)
 		return (0);

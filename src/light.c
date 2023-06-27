@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   light.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:04:11 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:31:09 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:20:35 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:20:35 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_light(const char *line)
+
+int	validate_line_light(const char *line)
 {
-	char **inputs;
-	int i;
-	int j;
+	char	**inputs;
+	int		i;
+	int		j;
 
 	inputs = ft_split(line, ' ');
 	if (split_size(inputs) != 4)
@@ -29,7 +30,8 @@ int validate_line_light(const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("Non valid character on line: \n%s\nObject will not be rendered\n", line);
+				printf(\
+	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				free_split(inputs);
 				return (0);
 			}
@@ -41,10 +43,10 @@ int validate_line_light(const char *line)
 	return (1);
 }
 
-t_light *init_light(const char *line, t_input_list *input)
+t_light	*init_light(const char *line, t_input_list *input)
 {
-	t_light *obj;
-	int i;
+	t_light	*obj;
+	int		i;
 
 	obj = (t_light *)malloc(sizeof(t_light));
 	if (!validate_line_light(line))
@@ -62,14 +64,14 @@ t_light *init_light(const char *line, t_input_list *input)
 	return (obj);
 }
 
-void validate_values_light(t_input_list *input)
+void	validate_values_light(t_input_list *input)
 {
-	int failed;
-	t_light *obj;
+	int		failed;
+	t_light	*obj;
 
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->color , 0.0, 255.0))
+	if (!vector3_checker(obj->color, 0.0, 255.0))
 	{
 		printf("light color out of range\n");
 		failed = 1;

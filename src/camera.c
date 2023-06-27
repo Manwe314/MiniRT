@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   camera.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:05:23 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 21:07:35 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:19:44 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:19:44 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_camera(const char *line)
+
+int	validate_line_camera(const char *line)
 {
-	char **inputs;
-	int i;
-	int j;
+	char	**inputs;
+	int		i;
+	int		j;
 
 	inputs = ft_split(line, ' ');
 	if (split_size(inputs) != 4)
@@ -29,7 +30,8 @@ int validate_line_camera(const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("Non valid character on line: \n%s\nObject will not be rendered\n", line);
+				printf(\
+	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				free_split(inputs);
 				return (0);
 			}
@@ -41,10 +43,10 @@ int validate_line_camera(const char *line)
 	return (1);
 }
 
-t_camera *init_camera(const char *line, t_input_list *input)
+t_camera	*init_camera(const char *line, t_input_list *input)
 {
 	t_camera	*obj;
-	int i;
+	int			i;
 
 	obj = (t_camera *)malloc(sizeof(t_camera));
 	if (!validate_line_camera(line))
@@ -62,10 +64,11 @@ t_camera *init_camera(const char *line, t_input_list *input)
 	return (obj);
 }
 
-void validate_values_camera(t_input_list *input)
+void	validate_values_camera(t_input_list *input)
 {
-	int failed;
-	t_camera *obj;
+	int			failed;
+	t_camera	*obj;
+
 	failed = 0;
 	obj = input->object;
 	if (!vector3_checker(obj->orientation, -1.0, 1.0))

@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   plane.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:07:48 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:08:30 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:21:12 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:21:12 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_plane(const char *line)
+
+int	validate_line_plane(const char *line)
 {
-	char **inputs;
-	int i;
-	int j;
+	char	**inputs;
+	int		i;
+	int		j;
 
 	inputs = ft_split(line, ' ');
 	if (split_size(inputs) != 4)
@@ -29,7 +30,8 @@ int validate_line_plane(const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("Non valid character on line: \n%s\nObject will not be rendered\n", line);
+				printf(\
+	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				free_split(inputs);
 				return (0);
 			}
@@ -41,10 +43,10 @@ int validate_line_plane(const char *line)
 	return (1);
 }
 
-t_plane *init_plane(const char *line, t_input_list *input)
+t_plane	*init_plane(const char *line, t_input_list *input)
 {
-	t_plane *obj;
-	int i;
+	t_plane	*obj;
+	int		i;
 
 	obj = (t_plane *)malloc(sizeof(t_plane));
 	if (!validate_line_plane(line))
@@ -62,19 +64,19 @@ t_plane *init_plane(const char *line, t_input_list *input)
 	return (obj);
 }
 
-void validate_values_plane(t_input_list *input)
+void	validate_values_plane(t_input_list *input)
 {
-	int failed;
-	t_plane *obj;
+	int		failed;
+	t_plane	*obj;
 
 	failed = 0;
 	obj = input->object;
-	if (!vector3_checker(obj->color , 0.0, 255.0))
+	if (!vector3_checker(obj->color, 0.0, 255.0))
 	{
 		printf("plane color out of range\n");
 		failed = 1;
 	}
-	if (!vector3_checker(obj->normal , -1.0, 1.0))
+	if (!vector3_checker(obj->normal, -1.0, 1.0))
 	{
 		printf("plane normal out of range\n");
 		failed = 1;

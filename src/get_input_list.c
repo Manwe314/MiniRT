@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   get_input_list.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:10:32 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:12:17 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:20:08 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:20:08 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-char *remove_new_line(char *line)
+
+char	*remove_new_line(char *line)
 {
-	int size;
-	int i;
-	char *new;
+	int		size;
+	int		i;
+	char	*new;
 
 	if (line == 0)
 		return (0);
@@ -33,10 +34,10 @@ char *remove_new_line(char *line)
 	return (new);
 }
 
-char *get_name(const char *line)
+char	*get_name(const char *line)
 {
-	int i;
-	char *name;
+	int		i;
+	char	*name;
 
 	i = 0;
 	name = 0;
@@ -61,7 +62,7 @@ char *get_name(const char *line)
 
 void	*get_object(t_input_list *input, const char *line)
 {
-	void *object;
+	void	*object;
 
 	if (input->name == 0)
 		return (0);
@@ -80,12 +81,12 @@ void	*get_object(t_input_list *input, const char *line)
 	return (object);
 }
 
-void get_input_list(t_minirt *minirt, int fd)
+void	get_input_list(t_minirt *minirt, int fd)
 {
-	t_input_list *head;
-	t_input_list *temp;
-	t_input_list *save;
-	char *line;
+	t_input_list	*head;
+	t_input_list	*temp;
+	t_input_list	*save;
+	char			*line;
 
 	line = remove_new_line(get_next_line(fd));
 	temp = (t_input_list *)malloc(sizeof(t_input_list));
@@ -95,7 +96,8 @@ void get_input_list(t_minirt *minirt, int fd)
 		if (ft_strlen(line) > 1 && !is_all_space(line))
 		{
 			temp->name = get_name(line);
-			temp->object = get_object(temp, line); // need to fix errored edge casees
+			temp->object = get_object(temp, line);
+				// need to fix errored edge casees
 			temp->next = (t_input_list *)malloc(sizeof(t_input_list));
 			save = temp;
 			temp = temp->next;

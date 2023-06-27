@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ambient.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:02:17 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:29:43 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 18:48:02 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 18:48:02 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int validate_line_ambient(const char *line)
+
+int	validate_line_ambient(const char *line)
 {
-	char **inputs;
-	int i;
-	int j;
+	char	**inputs;
+	int		i;
+	int		j;
 
 	inputs = ft_split(line, ' ');
 	if (split_size(inputs) != 3)
@@ -29,7 +30,9 @@ int validate_line_ambient(const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("Non valid character on line: \n%s\nObject will not be rendered\n", line);
+				printf(\
+			"Non valid character on line: \n%s\nObject will not be rendered\n",
+					line);
 				free_split(inputs);
 				return (0);
 			}
@@ -41,10 +44,10 @@ int validate_line_ambient(const char *line)
 	return (1);
 }
 
-t_ambient *init_ambient(const char *line, t_input_list *input)
+t_ambient	*init_ambient(const char *line, t_input_list *input)
 {
-	t_ambient *obj;
-	int i;
+	t_ambient	*obj;
+	int			i;
 
 	obj = (t_ambient *)malloc(sizeof(t_ambient));
 	if (!validate_line_ambient(line))
@@ -60,9 +63,9 @@ t_ambient *init_ambient(const char *line, t_input_list *input)
 	return (obj);
 }
 
-void validate_values_ambient(t_input_list *input)
+void	validate_values_ambient(t_input_list *input)
 {
-	t_ambient *obj;
+	t_ambient	*obj;
 
 	obj = input->object;
 	if (obj->intensity < 0.0 || obj->intensity > 1.0)

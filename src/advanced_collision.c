@@ -3,28 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   advanced_collision.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/19 16:11:24 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/19 16:11:24 by marvin           ###   ########.fr       */
+/*   Created: 2023/06/27 18:42:32 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 18:42:32 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-t_info triangle_collision(t_ray ray, const t_triangle *triangle)
+
+t_info	triangle_collision(t_ray ray, const t_triangle *triangle)
 {
-	t_info hit_info;
-	t_vector3 edge1;
-	t_vector3 edge2;
-	t_vector3 h;
-	t_vector3 s;
-	t_vector3 q;
-	float a;
-	float f;
-	float u;
-	float v;
-	float t;
+	t_info		hit_info;
+	t_vector3	edge1;
+	t_vector3	edge2;
+	t_vector3	h;
+	t_vector3	s;
+	t_vector3	q;
+	float		a;
+	float		f;
+	float		u;
+	float		v;
+	float		t;
 
 	hit_info.hit_distance = FLT_MAX;
 	edge1 = vector3_subtract(triangle->p[1], triangle->p[0]);
@@ -46,27 +47,33 @@ t_info triangle_collision(t_ray ray, const t_triangle *triangle)
 	if (t < 0.0f)
 		return (hit_info);
 	hit_info.hit_distance = t;
-	hit_info.hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
+	hit_info.hit_point = vector3_add(ray.origin, \
+		vector3_multiply_float(ray.direction, t));
 	hit_info.normal = vector3_normalize(vector3_cross(edge1, edge2));
 	hit_info.material = triangle->material;
 	return (hit_info);
 }
 
-t_info paraboloid_collision(t_ray ray, const t_paraboloid *paraboloid)
+t_info	paraboloid_collision(t_ray ray, const t_paraboloid *paraboloid)
 {
-	t_info hit_info;
-	t_vector3 oc;
-	float a;
-	float b;
-	float c;
-	float discriminant;
-	float t;
+	t_vector3	oc;
+	t_info		hit_info;
+	float		a;
+	float		b;
+	float		c;
+	float		discriminant;
+	float		t;
 
 	hit_info.hit_distance = FLT_MAX;
 	oc = vector3_subtract(ray.origin, paraboloid->center);
-	a = vector3_dot(ray.direction, ray.direction) - vector3_dot(ray.direction, paraboloid->normal) * vector3_dot(ray.direction, paraboloid->normal);
-	b = 2.0f * (vector3_dot(oc, ray.direction) - vector3_dot(oc, paraboloid->normal) * vector3_dot(ray.direction, paraboloid->normal));
-	c = vector3_dot(oc, oc) - vector3_dot(oc, paraboloid->normal) * vector3_dot(oc, paraboloid->normal) - paraboloid->radius * paraboloid->radius;
+	a = vector3_dot(ray.direction, ray.direction) - vector3_dot(ray.direction, \
+		paraboloid->normal) * vector3_dot(ray.direction, paraboloid->normal);
+	b = 2.0f * (vector3_dot(oc, ray.direction) - vector3_dot(oc, \
+			paraboloid->normal) * vector3_dot(ray.direction, \
+			paraboloid->normal));
+	c = vector3_dot(oc, oc) - vector3_dot(oc, paraboloid->normal)
+		* vector3_dot(oc, paraboloid->normal) - paraboloid->radius
+		* paraboloid->radius;
 	discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
 		return (hit_info);
@@ -74,27 +81,34 @@ t_info paraboloid_collision(t_ray ray, const t_paraboloid *paraboloid)
 	if (t < 0.0f)
 		return (hit_info);
 	hit_info.hit_distance = t;
-	hit_info.hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
-	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, paraboloid->center));
+	hit_info.hit_point = vector3_add(ray.origin, \
+		vector3_multiply_float(ray.direction, t));
+	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, \
+			paraboloid->center));
 	hit_info.material = paraboloid->material;
 	return (hit_info);
 }
 
-t_info hyperboloid_collision(t_ray ray, const t_hyperboloid *hyperboloid)
+t_info	hyperboloid_collision(t_ray ray, const t_hyperboloid *hyperboloid)
 {
-	t_info hit_info;
-	t_vector3 oc;
-	float a;
-	float b;
-	float c;
-	float discriminant;
-	float t;
+	t_info		hit_info;
+	t_vector3	oc;
+	float		a;
+	float		b;
+	float		c;
+	float		discriminant;
+	float		t;
 
 	hit_info.hit_distance = FLT_MAX;
 	oc = vector3_subtract(ray.origin, hyperboloid->center);
-	a = vector3_dot(ray.direction, ray.direction) - vector3_dot(ray.direction, hyperboloid->normal) * vector3_dot(ray.direction, hyperboloid->normal);
-	b = 2.0f * (vector3_dot(oc, ray.direction) - vector3_dot(oc, hyperboloid->normal) * vector3_dot(ray.direction, hyperboloid->normal));
-	c = vector3_dot(oc, oc) - vector3_dot(oc, hyperboloid->normal) * vector3_dot(oc, hyperboloid->normal) - hyperboloid->radius * hyperboloid->radius;
+	a = vector3_dot(ray.direction, ray.direction) - vector3_dot(ray.direction, \
+		hyperboloid->normal) * vector3_dot(ray.direction, hyperboloid->normal);
+	b = 2.0f * (vector3_dot(oc, ray.direction) - vector3_dot(oc, \
+			hyperboloid->normal) * vector3_dot(ray.direction, \
+			hyperboloid->normal));
+	c = vector3_dot(oc, oc) - vector3_dot(oc, hyperboloid->normal)
+		* vector3_dot(oc, hyperboloid->normal) - hyperboloid->radius
+		* hyperboloid->radius;
 	discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
 		return (hit_info);
@@ -102,27 +116,34 @@ t_info hyperboloid_collision(t_ray ray, const t_hyperboloid *hyperboloid)
 	if (t < 0.0f)
 		return (hit_info);
 	hit_info.hit_distance = t;
-	hit_info.hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
-	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, hyperboloid->center));
+	hit_info.hit_point = vector3_add(ray.origin, \
+		vector3_multiply_float(ray.direction, t));
+	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, \
+			hyperboloid->center));
 	hit_info.material = hyperboloid->material;
 	return (hit_info);
 }
 
-t_info cone_collision(t_ray ray, const t_cone *cone)
+t_info	cone_collision(t_ray ray, const t_cone *cone)
 {
-	t_info hit_info;
-	t_vector3 oc;
-	float a;
-	float b;
-	float c;
-	float discriminant;
-	float t;
+	t_info		hit_info;
+	t_vector3	oc;
+	float		a;
+	float		b;
+	float		c;
+	float		discriminant;
+	float		t;
 
 	hit_info.hit_distance = FLT_MAX;
 	oc = vector3_subtract(ray.origin, cone->center);
-	a = vector3_dot(ray.direction, ray.direction) - (1 + cone->radius * cone->radius) * vector3_dot(ray.direction, cone->normal) * vector3_dot(ray.direction, cone->normal);
-	b = 2.0f * (vector3_dot(oc, ray.direction) - (1 + cone->radius * cone->radius) * vector3_dot(oc, cone->normal) * vector3_dot(ray.direction, cone->normal));
-	c = vector3_dot(oc, oc) - (1 + cone->radius * cone->radius) * vector3_dot(oc, cone->normal) * vector3_dot(oc, cone->normal);
+	a = vector3_dot(ray.direction, ray.direction) - (1 + cone->radius \
+		* cone->radius) * vector3_dot(ray.direction, cone->normal)
+		* vector3_dot(ray.direction, cone->normal);
+	b = 2.0f * (vector3_dot(oc, ray.direction) - (1 + cone->radius \
+			* cone->radius) * vector3_dot(oc, cone->normal) \
+		* vector3_dot(ray.direction, cone->normal));
+	c = vector3_dot(oc, oc) - (1 + cone->radius * cone->radius)
+		* vector3_dot(oc, cone->normal) * vector3_dot(oc, cone->normal);
 	discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
 		return (hit_info);
@@ -130,8 +151,10 @@ t_info cone_collision(t_ray ray, const t_cone *cone)
 	if (t < 0.0f)
 		return (hit_info);
 	hit_info.hit_distance = t;
-	hit_info.hit_point = vector3_add(ray.origin, vector3_multiply_float(ray.direction, t));
-	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, cone->center));
+	hit_info.hit_point = vector3_add(ray.origin, \
+		vector3_multiply_float(ray.direction, t));
+	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, \
+			cone->center));
 	hit_info.material = cone->material;
 	return (hit_info);
 }

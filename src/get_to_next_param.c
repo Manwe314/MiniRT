@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   get_to_next_param.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:15:40 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:16:18 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:20:22 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:20:22 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
 
 int	jump_spaces(const char *line, int i)
 {
@@ -30,7 +31,7 @@ int	jump_non_spaces(const char *line, int i)
 	return (i);
 }
 
-int evaluator(t_input_list *input, int i)
+int	evaluator(t_input_list *input, int i)
 {
 	if (i < 0)
 	{
@@ -42,7 +43,7 @@ int evaluator(t_input_list *input, int i)
 		return (0);
 }
 
-int get_to_next_param(const char *line, int i, t_input_list *input)
+int	get_to_next_param(const char *line, int i, t_input_list *input)
 {
 	if (i == 0)
 	{

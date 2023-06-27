@@ -5,18 +5,19 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/26 15:15:24 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/05/26 15:15:24 by beaudibe         ###   ########.fr       */
+/*   Created: 2023/06/27 20:21:05 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:21:05 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-t_matrix4x4 init_mat_0(void)
+
+t_matrix4x4	init_mat_0(void)
 {
-	t_matrix4x4 mat;
-	int i;
-	int j;
+	t_matrix4x4	mat;
+	int			i;
+	int			j;
 
 	i = -1;
 	while (++i < 4)
@@ -28,29 +29,29 @@ t_matrix4x4 init_mat_0(void)
 	return (mat);
 }
 
-t_matrix4x4 rotation_x(float angle)
+t_matrix4x4	rotation_x(float angle)
 {
-    t_matrix4x4 matrix;
-    float c;
-    float s;
+	t_matrix4x4		matrix;
+	float			c;
+	float			s;
 
-    c = cos(angle);
-    s = sin(angle);
-    matrix = init_mat_0();
-    matrix.matrix[0][0] = 1.0f;
-    matrix.matrix[1][1] = c;
-    matrix.matrix[1][2] = -s;
-    matrix.matrix[2][1] = s;
-    matrix.matrix[2][2] = c;
-    matrix.matrix[3][3] = 1.0f;
-    return (matrix);
+	c = cos(angle);
+	s = sin(angle);
+	matrix = init_mat_0();
+	matrix.matrix[0][0] = 1.0f;
+	matrix.matrix[1][1] = c;
+	matrix.matrix[1][2] = -s;
+	matrix.matrix[2][1] = s;
+	matrix.matrix[2][2] = c;
+	matrix.matrix[3][3] = 1.0f;
+	return (matrix);
 }
 
-t_matrix4x4 rotation_y(float angle)
+t_matrix4x4	rotation_y(float angle)
 {
-	t_matrix4x4 matrix;
-	float c;
-	float s;
+	t_matrix4x4	matrix;
+	float		c;
+	float		s;
 
 	c = cos(angle);
 	s = sin(angle);
@@ -64,11 +65,11 @@ t_matrix4x4 rotation_y(float angle)
 	return (matrix);
 }
 
-t_matrix4x4 rotation_z(float angle)
+t_matrix4x4	rotation_z(float angle)
 {
-	t_matrix4x4 matrix;
-	float c;
-	float s;
+	t_matrix4x4	matrix;
+	float		c;
+	float		s;
 
 	c = cos(angle);
 	s = sin(angle);
@@ -82,9 +83,9 @@ t_matrix4x4 rotation_z(float angle)
 	return (matrix);
 }
 
-t_matrix4x4 translation(t_vector3 vec)
+t_matrix4x4	translation(t_vector3 vec)
 {
-	t_matrix4x4 matrix;
+	t_matrix4x4	matrix;
 
 	matrix = init_mat_0();
 	matrix.matrix[0][0] = 1.0f;
@@ -97,9 +98,9 @@ t_matrix4x4 translation(t_vector3 vec)
 	return (matrix);
 }
 
-t_matrix4x4 scale(t_vector3 vec)
+t_matrix4x4	scale(t_vector3 vec)
 {
-	t_matrix4x4 matrix;
+	t_matrix4x4	matrix;
 
 	matrix = init_mat_0();
 	matrix.matrix[0][0] = vec.x;
@@ -110,7 +111,8 @@ t_matrix4x4 scale(t_vector3 vec)
 }
 
 /*
-t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far)
+t_matrix4x4	createperspectivematrix(float fov, float aspect, float near,
+		float far)
 {
 	t_matrix4x4 m;
 	const float zRange = near - far;
@@ -127,11 +129,12 @@ t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float f
 
 */
 
-t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float far)
+t_matrix4x4	createperspectivematrix(float fov, float aspect, float near, \
+		float far)
 {
-	t_matrix4x4 m;
-	const float zRange = near - far;
-	const float tanHalfFOV = tanf(to_radian(fov / 2.0));
+	t_matrix4x4	m;
+	const float	zRange = near - far;
+	const float	tanHalfFOV = tanf(to_radian(fov / 2.0));
 
 	m = init_mat_0();
 	m.matrix[0][0] = 1.0f / (tanHalfFOV * aspect);
@@ -142,27 +145,28 @@ t_matrix4x4 createperspectivematrix(float fov, float aspect, float near, float f
 	return (m);
 }
 
-t_matrix4x4 inverse_perspective_matrix(float fov, float aspect, float near, float far)
+t_matrix4x4	inverse_perspective_matrix(float fov, float aspect, float near,
+		float far)
 {
 	t_matrix4x4 m;
 	const float zRange = near - far;
 	const float tanHalfFOV = tanf(to_radian(fov / 2.0));
-// 1/2
-// (2 aspect tanHalfFOV | 0 | 0 | 0
-// 0 | 2 tanHalfFOV | 0 | 0
-// 0 | 0 | 0 | 2
-// 0 | 0 | zRange/(far near) | (far + near)/(far near))
+	// 1/2
+	// (2 aspect tanHalfFOV | 0 | 0 | 0
+	// 0 | 2 tanHalfFOV | 0 | 0
+	// 0 | 0 | 0 | 2
+	// 0 | 0 | zRange/(far near) | (far + near)/(far near))
 	m = init_mat_0();
 	m.matrix[0][0] = aspect * tanHalfFOV;
 	m.matrix[1][1] = tanHalfFOV;
 	m.matrix[2][3] = 1.0f;
-	m.matrix[3][2] = zRange/( 2.0f * far * near);
-	m.matrix[3][3] = (far + near)/(2.0f * far * near);
+	m.matrix[3][2] = zRange / (2.0f * far * near);
+	m.matrix[3][3] = (far + near) / (2.0f * far * near);
 	return (m);
 }
 
 /*
-t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
+t_matrix4x4	lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 {
 	t_vector3 forward;
 	t_vector3 right;
@@ -188,11 +192,10 @@ t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 	viewMatrix.matrix[3][1] = -vector3_dot(newUp, eye);
 	viewMatrix.matrix[3][2] = vector3_dot(forward, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
-	return viewMatrix;
+	return (viewMatrix);
 }*/
 
-
-t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
+t_matrix4x4	lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 {
 	t_vector3 forward;
 	t_vector3 right;
@@ -216,29 +219,62 @@ t_matrix4x4 lookat(t_vector3 eye, t_vector3 target, t_vector3 up)
 	viewMatrix.matrix[3][1] = -vector3_dot(newUp, eye);
 	viewMatrix.matrix[3][2] = -vector3_dot(forward, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
-	return viewMatrix;
+	return (viewMatrix);
 }
 
-
 /*
-((forwardz newUpy - forwardy newUpz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
- (forwardz newUpx - forwardx newUpz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-  (forwardy newUpx - forwardx newUpy)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
+((forwardz newUpy - forwardy newUpz)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+ (forwardz newUpx - forwardx newUpz)/(forwardx newUpy rightz
+	- forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx
+	+ forwardz newUpx righty - forwardz newUpy rightx) |
+  (forwardy newUpx - forwardx newUpy)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
    0
-(forwardz righty - forwardy rightz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
- (forwardz rightx - forwardx rightz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-  (forwardy rightx - forwardx righty)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
+(forwardz righty - forwardy rightz)/(forwardx newUpy rightz
+	- forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx
+	+ forwardz newUpx righty - forwardz newUpy rightx) |
+ (forwardz rightx - forwardx rightz)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
+  (forwardy rightx - forwardx righty)/(forwardx newUpy rightz
+	- forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx
+	+ forwardz newUpx righty - forwardz newUpy rightx) |
    0
-(newUpz righty - newUpy rightz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
- (newUpz rightx - newUpx rightz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-  (newUpy rightx - newUpx righty)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
+(newUpz righty - newUpy rightz)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
+ (newUpz rightx - newUpx rightz)/(forwardx newUpy rightz
+	- forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx
+	+ forwardz newUpx righty - forwardz newUpy rightx) |
+  (newUpy rightx - newUpx righty)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
    0
-(-dotforward newUpy rightz + dotforward newUpz righty + dotnewUp forwardy rightz - dotnewUp forwardz righty - dotright forwardy newUpz + dotright forwardz newUpy)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
- (-dotforward newUpx rightz + dotforward newUpz rightx + dotnewUp forwardx rightz - dotnewUp forwardz rightx - dotright forwardx newUpz + dotright forwardz newUpx)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-  (-dotforward newUpx righty + dotforward newUpy rightx + dotnewUp forwardx righty - dotnewUp forwardy rightx - dotright forwardx newUpy + dotright forwardy newUpx)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
+(-dotforward newUpy rightz + dotforward newUpz righty + dotnewUp forwardy rightz
+	- dotnewUp forwardz righty - dotright forwardy newUpz
+	+ dotright forwardz newUpy)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
+ (-dotforward newUpx rightz + dotforward newUpz rightx
+	+ dotnewUp forwardx rightz - dotnewUp forwardz rightx
+	- dotright forwardx newUpz
+	+ dotright forwardz newUpx)/(forwardx newUpy rightz - forwardx newUpz righty
+	- forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty
+	- forwardz newUpy rightx) |
+  (-dotforward newUpx righty + dotforward newUpy rightx
+	+ dotnewUp forwardx righty - dotnewUp forwardy rightx
+	- dotright forwardx newUpy
+	+ dotright forwardy newUpx)/(-forwardx newUpy rightz
+	+ forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx
+	- forwardz newUpx righty + forwardz newUpy rightx) |
    1)
 */
-t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up)
+t_matrix4x4	inverse_lookat_matrix(t_vector3 eye, t_vector3 target,
+		t_vector3 up)
 {
 	t_vector3 forward;
 	t_vector3 right;
@@ -249,59 +285,121 @@ t_matrix4x4 inverse_lookat_matrix(t_vector3 eye, t_vector3 target, t_vector3 up)
 	forward = vector3_normalize(vector3_subtract(target, eye));
 	right = vector3_normalize(vector3_cross(forward, up));
 	newUp = vector3_cross(right, forward);
-	det = forward.x * newUp.y * right.z - forward.x * newUp.z * right.y - \
-	forward.y * newUp.x * right.z + forward.y * newUp.z * right.x + \
-	forward.z * newUp.x * right.y - forward.z * newUp.y * right.x;
+	det = forward.x * newUp.y * right.z - forward.x * newUp.z * right.y
+		- forward.y * newUp.x * right.z + forward.y * newUp.z * right.x
+		+ forward.z * newUp.x * right.y - forward.z * newUp.y * right.x;
 	viewMatrix = init_mat_0();
-/*
-(forwardz newUpy - forwardy newUpz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-(forwardz newUpx - forwardx newUpz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-(forwardy newUpx - forwardx newUpy)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-   0
-(forwardz righty - forwardy rightz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-(forwardz rightx - forwardx rightz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-(forwardy rightx - forwardx righty)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-   0
-(newUpz righty - newUpy rightz)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-(newUpz rightx - newUpx rightz)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-(newUpy rightx - newUpx righty)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-   0
-(-dotforward newUpy rightz + dotforward newUpz righty + dotnewUp forwardy rightz - dotnewUp forwardz righty - dotright forwardy newUpz + dotright forwardz newUpy)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-(-dotforward newUpx rightz + dotforward newUpz rightx + dotnewUp forwardx rightz - dotnewUp forwardz rightx - dotright forwardx newUpz + dotright forwardz newUpx)/(forwardx newUpy rightz - forwardx newUpz righty - forwardy newUpx rightz + forwardy newUpz rightx + forwardz newUpx righty - forwardz newUpy rightx) |
-(-dotforward newUpx righty + dotforward newUpy rightx + dotnewUp forwardx righty - dotnewUp forwardy rightx - dotright forwardx newUpy + dotright forwardy newUpx)/(-forwardx newUpy rightz + forwardx newUpz righty + forwardy newUpx rightz - forwardy newUpz rightx - forwardz newUpx righty + forwardz newUpy rightx) |
-   1)
-*/
-	viewMatrix.matrix[0][0] = (forward.z * newUp.y - forward.y * newUp.z) / (-det);
-	viewMatrix.matrix[0][1] = (forward.z * newUp.x - forward.x * newUp.z) / (det);
-	viewMatrix.matrix[0][2] = (forward.y * newUp.x - forward.x * newUp.y) / (-det);
-	viewMatrix.matrix[1][0] = (forward.z * right.y - forward.y * right.z) / (det);
-	viewMatrix.matrix[1][1] = (forward.z * right.x - forward.x * right.z) / (-det);
-	viewMatrix.matrix[1][2] = (forward.y * right.x - forward.x * right.y) / (det);
+	/*
+	(forwardz newUpy - forwardy newUpz)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+	(forwardz newUpx - forwardx newUpz)/(forwardx newUpy rightz
+		- forwardx newUpz righty - forwardy newUpx rightz
+		+ forwardy newUpz rightx + forwardz newUpx righty
+		- forwardz newUpy rightx) |
+	(forwardy newUpx - forwardx newUpy)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+		0
+	(forwardz righty - forwardy rightz)/(forwardx newUpy rightz
+		- forwardx newUpz righty - forwardy newUpx rightz
+		+ forwardy newUpz rightx + forwardz newUpx righty
+		- forwardz newUpy rightx) |
+	(forwardz rightx - forwardx rightz)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+	(forwardy rightx - forwardx righty)/(forwardx newUpy rightz
+		- forwardx newUpz righty - forwardy newUpx rightz
+		+ forwardy newUpz rightx + forwardz newUpx righty
+		- forwardz newUpy rightx) |
+		0
+	(newUpz righty - newUpy rightz)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+	(newUpz rightx - newUpx rightz)/(forwardx newUpy rightz
+		- forwardx newUpz righty - forwardy newUpx rightz
+		+ forwardy newUpz rightx + forwardz newUpx righty
+		- forwardz newUpy rightx) |
+	(newUpy rightx - newUpx righty)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+		0
+	(-dotforward newUpy rightz + dotforward newUpz righty
+		+ dotnewUp forwardy rightz - dotnewUp forwardz righty
+		- dotright forwardy newUpz
+		+ dotright forwardz newUpy)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+	(-dotforward newUpx rightz + dotforward newUpz rightx
+		+ dotnewUp forwardx rightz - dotnewUp forwardz rightx
+		- dotright forwardx newUpz
+		+ dotright forwardz newUpx)/(forwardx newUpy rightz
+		- forwardx newUpz righty - forwardy newUpx rightz
+		+ forwardy newUpz rightx + forwardz newUpx righty
+		- forwardz newUpy rightx) |
+	(-dotforward newUpx righty + dotforward newUpy rightx
+		+ dotnewUp forwardx righty - dotnewUp forwardy rightx
+		- dotright forwardx newUpy
+		+ dotright forwardy newUpx)/(-forwardx newUpy rightz
+		+ forwardx newUpz righty + forwardy newUpx rightz
+		- forwardy newUpz rightx - forwardz newUpx righty
+		+ forwardz newUpy rightx) |
+		1)
+	*/
+	viewMatrix.matrix[0][0] = (forward.z * newUp.y - forward.y * newUp.z)
+		/ (-det);
+	viewMatrix.matrix[0][1] = (forward.z * newUp.x - forward.x * newUp.z)
+		/ (det);
+	viewMatrix.matrix[0][2] = (forward.y * newUp.x - forward.x * newUp.y)
+		/ (-det);
+	viewMatrix.matrix[1][0] = (forward.z * right.y - forward.y * right.z)
+		/ (det);
+	viewMatrix.matrix[1][1] = (forward.z * right.x - forward.x * right.z)
+		/ (-det);
+	viewMatrix.matrix[1][2] = (forward.y * right.x - forward.x * right.y)
+		/ (det);
 	viewMatrix.matrix[2][0] = (newUp.z * right.y - newUp.y * right.z) / (-det);
 	viewMatrix.matrix[2][1] = (newUp.z * right.x - newUp.x * right.z) / (det);
 	viewMatrix.matrix[2][2] = (newUp.y * right.x - newUp.x * right.y) / (-det);
-	viewMatrix.matrix[3][0] = (-vector3_dot(forward, eye) * newUp.y * right.z + vector3_dot(forward, eye) * newUp.z * right.y + vector3_dot(newUp, eye) * forward.y * right.z - vector3_dot(newUp, eye) * forward.z * right.y - vector3_dot(right, eye) * forward.y * newUp.z + vector3_dot(right, eye) * forward.z * newUp.y) / (-det);
-	viewMatrix.matrix[3][1] = (-vector3_dot(forward, eye) * newUp.x * right.z + vector3_dot(forward, eye) * newUp.z * right.x + vector3_dot(newUp, eye) * forward.x * right.z - vector3_dot(newUp, eye) * forward.z * right.x - vector3_dot(right, eye) * forward.x * newUp.z + vector3_dot(right, eye) * forward.z * newUp.x) / (det);
-	viewMatrix.matrix[3][2] = (-vector3_dot(forward, eye) * newUp.x * right.y + vector3_dot(forward, eye) * newUp.y * right.x + vector3_dot(newUp, eye) * forward.x * right.y - vector3_dot(newUp, eye) * forward.y * right.x - vector3_dot(right, eye) * forward.x * newUp.y + vector3_dot(right, eye) * forward.y * newUp.x) / (-det);
+	viewMatrix.matrix[3][0] = (-vector3_dot(forward, eye) * newUp.y * right.z
+		+ vector3_dot(forward, eye) * newUp.z * right.y + vector3_dot(newUp,
+			eye) * forward.y * right.z - vector3_dot(newUp, eye) * forward.z
+		* right.y - vector3_dot(right, eye) * forward.y * newUp.z
+		+ vector3_dot(right, eye) * forward.z * newUp.y) / (-det);
+	viewMatrix.matrix[3][1] = (-vector3_dot(forward, eye) * newUp.x * right.z
+		+ vector3_dot(forward, eye) * newUp.z * right.x + vector3_dot(newUp,
+			eye) * forward.x * right.z - vector3_dot(newUp, eye) * forward.z
+		* right.x - vector3_dot(right, eye) * forward.x * newUp.z
+		+ vector3_dot(right, eye) * forward.z * newUp.x) / (det);
+	viewMatrix.matrix[3][2] = (-vector3_dot(forward, eye) * newUp.x * right.y
+		+ vector3_dot(forward, eye) * newUp.y * right.x + vector3_dot(newUp,
+			eye) * forward.x * right.y - vector3_dot(newUp, eye) * forward.y
+		* right.x - vector3_dot(right, eye) * forward.x * newUp.y
+		+ vector3_dot(right, eye) * forward.y * newUp.x) / (-det);
 	viewMatrix.matrix[3][3] = 1.0f;
-	return viewMatrix;
+	return (viewMatrix);
 }
 
-
-t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw )
+t_matrix4x4	FPSViewRH(t_vector3 eye, float pitch, float yaw)
 {
-    // I assume the values are already converted to radians.
-    float cosPitch = cos(pitch);
-    float sinPitch = sin(pitch);
-    float cosYaw = cos(yaw);
-    float sinYaw = sin(yaw);
+	// I assume the values are already converted to radians.
+	float cosPitch = cos(pitch);
+	float sinPitch = sin(pitch);
+	float cosYaw = cos(yaw);
+	float sinYaw = sin(yaw);
 
-    t_vector3 xaxis = { cosYaw, 0, -sinYaw };
-    t_vector3 yaxis = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
-    t_vector3 zaxis = { -sinYaw * cosPitch, sinPitch, -cosPitch * cosYaw };
+	t_vector3 xaxis = {cosYaw, 0, -sinYaw};
+	t_vector3 yaxis = {sinYaw * sinPitch, cosPitch, cosYaw * sinPitch};
+	t_vector3 zaxis = {-sinYaw * cosPitch, sinPitch, -cosPitch * cosYaw};
 
-    // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-    t_matrix4x4 viewMatrix;
+	// Create a 4x4 view matrix from the right, up,	forward and eye position vectors
+	t_matrix4x4 viewMatrix;
 	viewMatrix.matrix[0][0] = xaxis.x;
 	viewMatrix.matrix[0][1] = yaxis.x;
 	viewMatrix.matrix[0][2] = -zaxis.x;
@@ -318,5 +416,5 @@ t_matrix4x4 FPSViewRH( t_vector3 eye, float pitch, float yaw )
 	viewMatrix.matrix[3][1] = vector3_dot(yaxis, eye);
 	viewMatrix.matrix[3][2] = vector3_dot(zaxis, eye);
 	viewMatrix.matrix[3][3] = 1.0f;
-    return viewMatrix;
+	return (viewMatrix);
 }

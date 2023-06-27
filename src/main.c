@@ -5,35 +5,35 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 17:16:05 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/15 08:56:23 by beaudibe         ###   ########.fr       */
-/*   Updated: 2023/06/15 08:56:23 by beaudibe         ###   ########.fr       */
+/*   Created: 2023/06/27 20:20:47 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:20:47 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt.h"
 #include "../lib/libft/includes/libft.h"
+#include "minirt.h"
 
-# define WIDTH  150
-# define HEIGHT 150
+#define WIDTH 500
+#define HEIGHT 500
 
-float min(float a, float b)
+
+float	min(float a, float b)
 {
 	if (a > b)
-		return b;
+		return (b);
 	else
-		return a;
+		return (a);
 }
 
-float max(float a, float b)
+float	max(float a, float b)
 {
 	if (a < b)
-		return b;
+		return (b);
 	else
-		return a;
+		return (a);
 }
 
-void close_function(void *param)
+void	close_function(void *param)
 {
 	t_minirt *minirt;
 
@@ -44,12 +44,12 @@ void close_function(void *param)
 	free(minirt->input_head->object);
 }
 
-float to_radian(float angle)
+float	to_radian(float angle)
 {
 	return (angle * (M_PI / 180));
 }
 
-void print_input(t_minirt *minirt)
+void	print_input(t_minirt *minirt)
 {
 	t_input_list *input;
 
@@ -61,56 +61,76 @@ void print_input(t_minirt *minirt)
 		if (ft_strncmp(input->name, "Ambient", 7) == 0)
 		{
 			t_ambient *amb = input->object;
-			printf("intense: %f\ncolor: %f , %f, %f.\n", amb->intensity, amb->color.x, amb->color.y, amb->color.z);
+			printf("intense: %f\ncolor: %f , %f, %f.\n", amb->intensity,
+				amb->color.x, amb->color.y, amb->color.z);
 		}
 		if (ft_strncmp(input->name, "Camera", 6) == 0)
 		{
 			t_camera *cam = input->object;
-			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f.\n",cam->fov, cam->position.x, cam->position.y, cam->position.z, cam->orientation.x, cam->orientation.y, cam->orientation.z);
+			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f.\n",
+				cam->fov, cam->position.x, cam->position.y, cam->position.z,
+				cam->orientation.x, cam->orientation.y, cam->orientation.z);
 		}
 		if (ft_strncmp(input->name, "Light", 5) == 0)
 		{
 			t_light *cam = input->object;
-			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->brightness, cam->position.x, cam->position.y, cam->position.z, cam->color.x, cam->color.y, cam->color.z);
+			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, \
+				%f.\n", cam->brightness, cam->position.x, cam->position.y, \
+				cam->position.z, cam->color.x, cam->color.y, cam->color.z);
 		}
 		if (ft_strncmp(input->name, "Sphere", 6) == 0)
 		{
 			t_sphere *cam = input->object;
-			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->radius, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
+			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n", \
+				cam->radius, cam->center.x, cam->center.y, cam->center.z, \
+				cam->color.x, cam->color.y, cam->color.z);
 		}
 		if (ft_strncmp(input->name, "Plane", 5) == 0)
 		{
 			t_plane *cam = input->object;
-			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->normal.x, cam->normal.y, cam->normal.z, cam->point_on_plane.x, cam->point_on_plane.y, cam->point_on_plane.z, cam->color.x, cam->color.y, cam->color.z);
+			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, \
+				%f.\n", cam->normal.x, cam->normal.y, cam->normal.z, \
+				cam->point_on_plane.x, cam->point_on_plane.y, \
+				cam->point_on_plane.z, cam->color.x, cam->color.y, \
+				cam->color.z);
 		}
 		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
 		{
 			t_cylinder *cam = input->object;
-			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->radius,cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
-			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n",cam->height ,cam->radius,cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, cam->center.y, cam->center.z, cam->color.x, cam->color.y, cam->color.z);
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , \
+				%f, %f.\ncolor: %f , %f, %f.\n", cam->height, cam->radius, \
+				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \
+				cam->center.y, cam->center.z, cam->color.x, cam->color.y, \
+				cam->color.z);
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , \
+				%f, %f.\ncolor: %f , %f, %f.\n", cam->height, cam->radius, \
+				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \
+				cam->center.y, cam->center.z, cam->color.x, cam->color.y, \
+				cam->color.z);
 		}
 		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		input = input->next;
 	}
-
 }
 
-t_material return_material(void)
+t_material	return_material(void)
 {
 	t_material material;
 
 	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
 	material.color = vector3(1.0f, 0.0f, 0.0f);
-	material.specular_color = vector3(1,1,1);
+	material.specular_color = vector3(1, 1, 1);
 	material.emission_strength = 0.0f;
-	material.emission = vector3_multiply_float(material.emission_color, material.emission_strength);
-	material.smoothness = 0.5f;
-	material.specular_probability = 0.0f;
+	material.emission = vector3_multiply_float(material.emission_color, \
+		material.emission_strength);
+	material.smoothness = 1.0f;
+	material.specular_probability = 1.0f;
 	material.flag = 0;
 	return (material);
 }
 
-t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top, t_minirt *minirt)
+t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top,
+		t_minirt *minirt)
 {
 	t_circle circle;
 	static int i;
@@ -119,12 +139,14 @@ t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top, t_minirt *mi
 	circle.material = cylinder.material;
 	if (is_top)
 	{
-		circle.center = vector3_add(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.center = vector3_add(cylinder.center,
+			vector3_multiply_float(cylinder.normal, cylinder.height));
 		circle.normal = cylinder.normal;
 	}
 	else
 	{
-		circle.center = vector3_subtract(cylinder.center, vector3_multiply_float(cylinder.normal, cylinder.height));
+		circle.center = vector3_subtract(cylinder.center,
+			vector3_multiply_float(cylinder.normal, cylinder.height));
 		circle.normal = vector3_multiply_float(cylinder.normal, -1.0f);
 	}
 	// minirt->scene.circle[i++] = circle;
@@ -134,15 +156,15 @@ t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top, t_minirt *mi
 
 t_scene	create_scene(void)
 {
-	t_scene scene;
-	t_material red;
-	t_material green;
-	t_material blue;
-	t_material white;
-	t_material yellow;
-	t_material purple;
-	t_material black;
-	t_material light;
+	t_scene		scene;
+	t_material	red;
+	t_material	green;
+	t_material	blue;
+	t_material	white;
+	t_material	yellow;
+	t_material	purple;
+	t_material	black;
+	t_material	light;
 
 	float emission_strength = 0.0f;
 
@@ -150,62 +172,67 @@ t_scene	create_scene(void)
 	red.color = vector3(1.0f, 0.0f, 0.0f);
 	red.emission_strength = emission_strength;
 	red.emission_color = vector3(1.0f, 0.0f, 0.0f);
-	red.emission = vector3_multiply_float(red.emission_color, red.emission_strength);
-	
+	red.emission = vector3_multiply_float(red.emission_color, \
+		red.emission_strength);
+
 	green = return_material();
 	green.color = vector3(0.0f, 1.0f, 0.0f);
 	green.emission_strength = emission_strength;
 	green.emission_color = vector3(0.0f, 1.0f, 0.0f);
-	green.emission = vector3_multiply_float(green.emission_color, green.emission_strength);
+	green.emission = vector3_multiply_float(green.emission_color, \
+		green.emission_strength);
 
-	
 	blue = return_material();
 	blue.color = vector3(0.0f, 0.0f, 1.0f);
 	blue.emission_strength = emission_strength;
 	blue.emission_color = vector3(0.0f, 0.0f, 1.0f);
-	blue.emission = vector3_multiply_float(blue.emission_color, blue.emission_strength);
-	
+	blue.emission = vector3_multiply_float(blue.emission_color, \
+		blue.emission_strength);
+
 	white = return_material();
 	white.color = vector3(1.0f, 1.0f, 1.0f);
 	white.emission_strength = emission_strength;
 	white.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	white.emission = vector3_multiply_float(white.emission_color, white.emission_strength);
+	white.emission = vector3_multiply_float(white.emission_color, \
+		white.emission_strength);
 
 	yellow = return_material();
 	yellow.color = vector3(1.0f, 1.0f, 0.0f);
 	yellow.emission_strength = emission_strength;
 	yellow.emission_color = vector3(1.0f, 1.0f, 0.0f);
-	yellow.emission = vector3_multiply_float(yellow.emission_color, yellow.emission_strength);
+	yellow.emission = vector3_multiply_float(yellow.emission_color, \
+		yellow.emission_strength);
 
 	purple = return_material();
 	purple.color = vector3(1.0f, 0.0f, 1.0f);
 	purple.emission_strength = emission_strength;
 	purple.emission_color = vector3(1.0f, 0.0f, 1.0f);
-	purple.emission = vector3_multiply_float(purple.emission_color, purple.emission_strength);
+	purple.emission = vector3_multiply_float(purple.emission_color, \
+		purple.emission_strength);
 
 	black = return_material();
 	black.color = vector3(0.0f, 0.0f, 0.0f);
 	black.emission_strength = emission_strength;
 	black.emission_color = vector3(0.0f, 0.0f, 0.0f);
-	black.emission = vector3_multiply_float(black.emission_color, black.emission_strength);
-
-
-
+	black.emission = vector3_multiply_float(black.emission_color, \
+		black.emission_strength);
 
 	light = return_material();
 	light.color = vector3(1.0f, 1.0f, 1.0f);
 	light.emission_strength = 0.6f;
 	light.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	light.emission = vector3_multiply_float(light.emission_color, light.emission_strength);
+	light.emission = vector3_multiply_float(light.emission_color, \
+		light.emission_strength);
 
 	t_triangle triangle;
-	triangle.p[0] = vector3(-3,4.9f,0);
-	triangle.p[1] = vector3(3,4.9f,0);
-	triangle.p[2] = vector3(0,4.9f,1);
+	triangle.p[0] = vector3(-3, 4.9f, 0);
+	triangle.p[1] = vector3(3, 4.9f, 0);
+	triangle.p[2] = vector3(0, 4.9f, 1);
 	triangle.material = light;
 	triangle.material.emission_strength = 10.0f;
 	triangle.material.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	triangle.material.emission = vector3_multiply_float(triangle.material.emission_color, triangle.material.emission_strength);
+	triangle.material.emission = vector3_multiply_float(triangle.material.emission_color, \
+		triangle.material.emission_strength);
 	scene.triangle[0] = triangle;
 
 	t_sphere sphere;
@@ -216,7 +243,6 @@ t_scene	create_scene(void)
 	sphere.material.smoothness = 1.0f;
 	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
-
 
 	t_sphere sphere2;
 	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
@@ -237,7 +263,6 @@ t_scene	create_scene(void)
 	sphere3.material.flag = CHECKER_PATTERN;
 	scene.sphere[2] = sphere3;
 
-
 	t_plane plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
@@ -246,16 +271,12 @@ t_scene	create_scene(void)
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
-
-
 	t_plane plane2;
 	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
 	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
 	plane2.normal = vector3_normalize(plane2.normal);
 	plane2.material = light;
 	scene.plane[1] = plane2;
-
-
 
 	t_plane plane3;
 	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
@@ -287,38 +308,36 @@ t_scene	create_scene(void)
 
 	float light_strength = 0.3f;
 
-
 	t_light led;
-	led.position = vector3(3,2,0);
-	led.color = vector3(1.0f, 0.0f, 0.0f);
+	led.position = vector3(3, 2, 0);
+	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
 	t_light led2;
-	led2.position = vector3(0,4.5f,0);
+	led2.position = vector3(0, 4.5f, 0);
 	led2.color = vector3(1.0f, 1.0f, 1.0f);
 	led2.brightness = light_strength;
 	scene.light[1] = led2;
 
 	t_light led3;
-	led3.position = vector3(3,2,0);
+	led3.position = vector3(3, 2, 0);
 	led3.color = vector3(0.0f, 0.0f, 1.0f);
 	led3.brightness = light_strength;
 	scene.light[2] = led3;
 
 	t_light led4;
-	led4.position = vector3(-3,2,0);
+	led4.position = vector3(-3, 2, 0);
 	led4.color = vector3(1.0f, 0.0f, 1.0f);
 	led4.brightness = light_strength;
 	scene.light[3] = led4;
 
 	t_light led5;
-	led5.position = vector3(0,2,3);
+	led5.position = vector3(0, 2, 3);
 	led5.color = vector3(1.0f, 1.0f, 0.0f);
 	led5.brightness = light_strength;
 	scene.light[4] = led5;
-	
-	
+
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -331,21 +350,19 @@ t_scene	create_scene(void)
 
 	scene.nb_plane = 6;
 	scene.nb_sphere = 3;
-	scene.nb_light = 6;
+	scene.nb_light = 1;
 	scene.nb_triangle = 0;
 	return (scene);
-
-	
 }
 
 t_scene	create_scene2(void)
 {
-		t_scene scene;
-	t_material red;
-	t_material green;
-	t_material blue;
-	t_material white;
-	t_material light;
+	t_scene		scene;
+	t_material	red;
+	t_material	green;
+	t_material	blue;
+	t_material	white;
+	t_material	light;
 
 	float emission_strength = 0.0f;
 
@@ -353,44 +370,43 @@ t_scene	create_scene2(void)
 	red.color = vector3(1.0f, 0.0f, 0.0f);
 	red.emission_strength = emission_strength;
 	red.emission_color = vector3(1.0f, 0.0f, 0.0f);
-	red.emission = vector3_multiply_float(red.emission_color, red.emission_strength);
-	
+	red.emission = vector3_multiply_float(red.emission_color, \
+		red.emission_strength);
+
 	green = return_material();
 	green.color = vector3(0.0f, 1.0f, 0.0f);
 	green.emission_strength = emission_strength;
 	green.emission_color = vector3(0.0f, 1.0f, 0.0f);
-	green.emission = vector3_multiply_float(green.emission_color, green.emission_strength);
+	green.emission = vector3_multiply_float(green.emission_color, \
+		green.emission_strength);
 
-	
 	blue = return_material();
 	blue.color = vector3(0.0f, 0.0f, 1.0f);
 	blue.emission_strength = emission_strength;
 	blue.emission_color = vector3(0.0f, 0.0f, 1.0f);
-	blue.emission = vector3_multiply_float(blue.emission_color, blue.emission_strength);
-	
+	blue.emission = vector3_multiply_float(blue.emission_color, \
+		blue.emission_strength);
+
 	white = return_material();
 	white.color = vector3(1.0f, 1.0f, 1.0f);
 	white.emission_strength = emission_strength;
 	white.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	white.emission = vector3_multiply_float(white.emission_color, white.emission_strength);
-
+	white.emission = vector3_multiply_float(white.emission_color, \
+		white.emission_strength);
 
 	light = return_material();
 	light.color = vector3(1.0f, 1.0f, 1.0f);
 	light.emission_strength = 1.0f;
 	light.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	light.emission = vector3_multiply_float(light.emission_color, light.emission_strength);
+	light.emission = vector3_multiply_float(light.emission_color, \
+		light.emission_strength);
 
 	t_triangle triangle;
-	triangle.p[0] = vector3(-1,4,0);
-	triangle.p[1] = vector3(1,4,0);
-	triangle.p[2] = vector3(0,4,1);
+	triangle.p[0] = vector3(-1, 4, 0);
+	triangle.p[1] = vector3(1, 4, 0);
+	triangle.p[2] = vector3(0, 4, 1);
 	triangle.material = light;
 	scene.triangle[0] = triangle;
-
-
-
-
 
 	t_sphere sphere;
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
@@ -398,7 +414,6 @@ t_scene	create_scene2(void)
 	sphere.material = blue;
 	sphere.material.specular_probability = 1.0f;
 	scene.sphere[0] = sphere;
-
 
 	t_sphere sphere2;
 	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
@@ -459,20 +474,18 @@ t_scene	create_scene2(void)
 
 	float light_strength = 5.0f;
 
-
 	t_light led;
-	led.position = vector3(0,3,0);
+	led.position = vector3(0, 3, 0);
 	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
 	t_light led2;
-	led2.position = vector3(0,4,0);
+	led2.position = vector3(0, 4, 0);
 	led2.color = vector3(1.0f, 1.0f, 1.0f);
 	led2.brightness = light_strength;
 	scene.light[1] = led2;
-	
-	
+
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -494,7 +507,7 @@ static int	init_minirt(t_minirt *minirt)
 {
 	int i;
 	int j;
-	
+
 	minirt->width = WIDTH;
 	minirt->height = HEIGHT;
 
@@ -504,10 +517,11 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
-	minirt->mlx = mlx_init(minirt->width ,minirt->height, "minirt", true);
+	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		exit(ERROR);
-	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width * minirt->height);
+	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width \
+		* minirt->height);
 	if (!minirt->camera.ray_dir)
 		exit(ERROR);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
@@ -515,13 +529,13 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->camera.pitch = 0.0f;
 	minirt->camera.yaw = 0.0f;
 
-	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),rotation_x(to_radian(minirt->camera.yaw )));
+	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)), \
+		rotation_x(to_radian(minirt->camera.yaw)));
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
 	minirt->x = 0;
 	minirt->y = 1;
 	minirt->z = 0;
-	
 
 	t_ambient ambient;
 	ambient.intensity = 1.0f;
@@ -532,22 +546,20 @@ static int	init_minirt(t_minirt *minirt)
 	return (SUCCESS);
 }
 
-
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
 	t_minirt minirt;
 
-	//minirt.model = get_model();
-	int	fd;
+	// minirt.model = get_model();
+	int fd;
 
 	// if (argc == 2  && !check_file(argv[1]))
-		// fd = open(argv[1], O_RDONLY);
+	// fd = open(argv[1], O_RDONLY);
 	// else
-		// return (0);
-	//get_input_list(&minirt, fd);
-	//validate_input(&minirt);
-	//minirt.scene = create the 3d world
-
+	// return (0);
+	// get_input_list(&minirt, fd);
+	// validate_input(&minirt);
+	// minirt.scene = create the 3d world
 
 	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
@@ -566,11 +578,9 @@ int main(int argc, char *argv[])
 	close(fd);
 	// int i = -100;
 	// while (++i < 100)
-		// printf("%f\n", ((random_float()) ));
+	// printf("%f\n", ((random_float()) ));
 
-
-
-	//system("leaks minirt");
+	// system("leaks minirt");
 	return (SUCCESS);
 }
 /*
@@ -585,7 +595,7 @@ float	random_float(float min, float max)
 	return (min + (max - min) * random);
 }
 
-t_vector3 vector3_random(float min, float max)
+t_vector3	vector3_random(float min, float max)
 {
 	t_vector3 vec;
 

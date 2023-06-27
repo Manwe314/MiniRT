@@ -5,12 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:16:56 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/06 14:58:22 by beaudibe         ###   ########.fr       */
+/*   Created: 2023/06/27 20:21:58 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:21:58 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
 
 int	is_all_space(char *input)
 {
@@ -30,7 +31,7 @@ int	is_all_space(char *input)
 	return (0);
 }
 
-float ft_atof(const char *str)
+float	ft_atof(const char *str)
 {
 	float	result;
 	float	fractionFactor;
@@ -48,7 +49,8 @@ float ft_atof(const char *str)
 	if (*str == '.')
 	{
 		str++;
-		while (ft_isdigit(*str)) {
+		while (ft_isdigit(*str))
+		{
 			result += (*str++ - '0') * fractionFactor;
 			fractionFactor *= 0.1;
 		}
@@ -61,7 +63,7 @@ int	get_rgba(t_vector3 color)
 	color.x = color.x * 255.0f;
 	color.y = color.y * 255.0f;
 	color.z = color.z * 255.0f;
-	return ((int) color.x << 24 | (int) color.y << 16 | (int) color.z << 8 | 255);
+	return ((int)color.x << 24 | (int)color.y << 16 | (int)color.z << 8 | 255);
 }
 
 void	free_split(char **split)
@@ -78,7 +80,7 @@ void	free_split(char **split)
 	free(split);
 }
 
-int split_size(char **split)
+int	split_size(char **split)
 {
 	int	i;
 
@@ -88,12 +90,12 @@ int split_size(char **split)
 	return (i);
 }
 
-t_vector3 get_vector3(const char *line, int i, t_input_list *input)
+t_vector3	get_vector3(const char *line, int i, t_input_list *input)
 {
-	char **values;
-	char *param;
-	int j;
-	t_vector3 output;
+	char		**values;
+	char		*param;
+	int			j;
+	t_vector3	output;
 
 	j = i;
 

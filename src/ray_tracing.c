@@ -5,18 +5,19 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/12 15:41:46 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/06/12 15:41:46 by beaudibe         ###   ########.fr       */
+/*   Created: 2023/06/27 20:21:28 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:21:28 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
+
 t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 {
-	t_info hit_info;
-	t_info closest_hit;
-	int i;
+	t_info	hit_info;
+	t_info	closest_hit;
+	int		i;
 
 	closest_hit.hit_distance = FLT_MAX;
 	i = -1;
@@ -81,26 +82,25 @@ t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
-	
+
 	return (closest_hit);
 }
 
-t_vector3 lerp(t_vector3 a, t_vector3 b, float t)
+t_vector3	lerp(t_vector3 a, t_vector3 b, float t)
 {
-	t_vector3 result;
+	t_vector3	result;
 
 	result.x = a.x + (b.x - a.x) * t;
 	result.y = a.y + (b.y - a.y) * t;
 	result.z = a.z + (b.z - a.z) * t;
-	return (result);	
+	return (result);
 }
 
-t_vector3 vector3_mod(t_vector3 a, int b)
+t_vector3	vector3_mod(t_vector3 a, int b)
 {
-	t_vector3 result;
+	t_vector3	result;
 
-	
-	result.x = (int)a.x % b; 
+	result.x = (int)a.x % b;
 	result.y = (int)a.y % b;
 	result.z = (int)a.z % b;
 	if (result.x < 0.0f)
@@ -112,25 +112,27 @@ t_vector3 vector3_mod(t_vector3 a, int b)
 	return (result);
 }
 
-t_vector3 vector3_floor(t_vector3 a)
+t_vector3	vector3_floor(t_vector3 a)
 {
-	t_vector3 result;
+	t_vector3	result;
 
 	result.x = floor(a.x);
 	result.y = floor(a.y);
 	result.z = floor(a.z);
 	return (result);
-	
 }
 
-t_vector3 perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
+t_vector3	perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 {
-	t_vector3 raycolor;
-	t_vector3 incoming_light;
-	int bounce;
-	t_vector3 diffuse;
-	t_vector3 reflect;
-	t_info hit_info;
+	t_vector3	raycolor;
+	t_vector3	incoming_light;
+	t_vector3	diffuse;
+	t_vector3	reflect;
+	t_vector3 	uv;
+	int			bounce;
+	t_info		hit_info;
+	bool		is_specular_bounce;
+	float		p;
 
 	bounce = 0;
 	raycolor = vector3(1.0f, 1.0f, 1.0f);
@@ -142,46 +144,52 @@ t_vector3 perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 		{
 			if (hit_info.material.flag == CHECKER_PATTERN)
 			{
-				t_vector3 uv = vector3_floor(vector3_multiply_float(hit_info.hit_point, 2.0f / 1.0f));
+				uv = vector3_floor(vector3_multiply_float(\
+				hit_info.hit_point, 2.0f / 1.0f));
 				if ((int)(uv.x + uv.y + uv.z) % 2 == 0)
 					hit_info.material.color = vector3(0.0f, 0.0f, 0.0f);
 			}
 
 			ray.origin = hit_info.hit_point;
-			ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
+			ray.origin = vector3_add(ray.origin, \
+				vector3_multiply_float(hit_info.normal, 0.0001f));
 
-			bool is_specular_bounce = hit_info.material.specular_probability >= randomvalue(rng_seed);
+			is_specular_bounce = hit_info.material.specular_probability >= \
+			randomvalue(rng_seed);
 			if (is_specular_bounce)
 				reflect = vector3_reflect(ray.direction, hit_info.normal);
 			else
 				reflect = vector3(0.0f, 0.0f, 0.0f);
 
-			//diffuse = vector3_normalize(vector3_add(hit_info.normal, random_direction(rng_seed)));
+			// diffuse = vector3_normalize(vector3_add(hit_info.normal,random_direction(rng_seed)));
 			diffuse = vector3_add(hit_info.normal, random_direction(rng_seed));
-			//ray.direction = vector3_normalize(lerp(diffuse, reflect, hit_info.material.smoothness * is_specular_bounce));
-			ray.direction = lerp(diffuse, reflect, hit_info.material.smoothness * is_specular_bounce);
-			incoming_light = vector3_add(incoming_light, vector3_multiply(hit_info.material.emission, raycolor));
-			raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, hit_info.material.specular_color, is_specular_bounce));
-		
-			float p = fmaxf(raycolor.x, fmaxf(raycolor.y, raycolor.z));
-			
+			// ray.direction = vector3_normalize(lerp(diffuse, reflect,hit_info.material.smoothness * is_specular_bounce));
+			ray.direction = lerp(diffuse, reflect, hit_info.material.smoothness\
+				* is_specular_bounce);
+			incoming_light = vector3_add(incoming_light, \
+				vector3_multiply(hit_info.material.emission, raycolor));
+			raycolor = vector3_multiply(raycolor, lerp(hit_info.material.color, \
+					hit_info.material.specular_color, is_specular_bounce));
+
+			p = fmaxf(raycolor.x, fmaxf(raycolor.y, raycolor.z));
+
 			if (randomvalue(rng_seed) >= p)
-				break;
+				break ;
 			raycolor = vector3_multiply_float(raycolor, 1.0f / p);
-		
 		}
 		else
 		{
-			//incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f, 0.8f));
-			break;
+			// incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f,0.8f));
+			break ;
 		}
 	}
 	return (incoming_light);
 }
 
-bool check_length(float hit_distance, float length)
+bool	check_length(float hit_distance, float length)
 {
-	static int j = 0;
+	static int	j;
+	
 	j++;
 	// if (j%10000 == 0)
 	// 	printf("hit_distance = %f, length = %f\n", hit_distance, length);
@@ -190,16 +198,15 @@ bool check_length(float hit_distance, float length)
 	return (true);
 }
 
-t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj, uint rng_seed)
+t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,\
+		uint rng_seed)
 {
-	int	i;
-	int nb_light;
-	float brightness;
-	t_vector3 color;
-	t_info hit_info;
-	t_vector3 length;
-	
-	
+	int			i;
+	int			nb_light;
+	float		brightness;
+	t_vector3	color;
+	t_vector3	length;
+	t_info		hit_info;
 
 	nb_light = 0;
 	brightness = 0.0f;
@@ -210,31 +217,30 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj, ui
 	{
 		ray.direction = vector3_subtract(scene->light[i].position, ray.origin);
 		length = ray.direction;
-		// ray.direction = vector3_add(ray.direction, random_direction(rng_seed));
+		// ray.direction = vector3_add(ray.direction,random_direction(rng_seed));
 		ray.direction = vector3_normalize(ray.direction);
 		hit_info = calculate_ray_collision(ray, scene);
 		if (hit_info.hit_distance >= vector3_length(length))
 		{
-			color = vector3_add(color, vector3_multiply_float(scene->light[i].color, scene->light[i].brightness));
+			color = vector3_add(color, vector3_multiply_float(\
+			scene->light[i].color, scene->light[i].brightness));
 			nb_light++;
 		}
-
 	}
 	if (nb_light == 0)
 	{
 		return (vector3(0.0f, 0.0f, 0.0f));
 	}
 	color_obj = vector3_multiply(color_obj, color);
-	color_obj = vector3_multiply_float(color_obj, 1.0f / (nb_light ));
+	color_obj = vector3_multiply_float(color_obj, 1.0f / (nb_light));
 	return (color_obj);
 }
 
-
-t_vector3 Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
+t_vector3	Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 {
-	t_vector3 raycolor;
-	t_vector3 incoming_light;
-	t_info hit_info;
+	t_vector3	raycolor;
+	t_vector3	incoming_light;
+	t_info		hit_info;
 
 	raycolor = vector3(0.0f, 0.0f, 0.0f);
 	hit_info = calculate_ray_collision(ray, scene);
@@ -242,7 +248,8 @@ t_vector3 Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 	{
 		// return (hit_info.material.color);
 		ray.origin = hit_info.hit_point;
-		ray.origin = vector3_add(ray.origin, vector3_multiply_float(hit_info.normal, 0.0001f));
+		ray.origin = vector3_add(ray.origin,
+			vector3_multiply_float(hit_info.normal, 0.0001f));
 		return (can_see_light(ray, scene, hit_info.material.color, rng_seed));
 	}
 

@@ -3,19 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   validate_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/05 18:13:01 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/06/05 18:16:20 by lkukhale         ###   ########.fr       */
+/*   Created: 2023/06/27 20:22:07 by beaudibe          #+#    #+#             */
+/*   Updated: 2023/06/27 20:22:07 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int has_invalid_input(t_input_list *input)
+
+int	has_invalid_input(t_input_list *input)
 {
-	t_input_list *traverse;
-	int is_invalid;
+	t_input_list	*traverse;
+	int				is_invalid;
 
 	traverse = input;
 	is_invalid = 0;
@@ -28,11 +29,11 @@ int has_invalid_input(t_input_list *input)
 	return (is_invalid);
 }
 
-void check_esentials(t_minirt *minirt)
+void	check_esentials(t_minirt *minirt)
 {
-	t_input_list *traverse;
-	int has_esentials;
-	int has_an_object;
+	t_input_list	*traverse;
+	int				has_esentials;
+	int				has_an_object;
 
 	has_esentials = 0;
 	has_an_object = 0;
@@ -58,24 +59,25 @@ void check_esentials(t_minirt *minirt)
 		minirt->input_validity = 1;
 }
 
-t_input_list *get_first_valid_node(t_input_list *lst)
+t_input_list	*get_first_valid_node(t_input_list *lst)
 {
 	while (lst != 0)
 	{
-		if (lst != 0 && (lst->name == 0 || ft_strncmp(lst->name, "inv", 3) == 0))
+		if (lst != 0 && (lst->name == 0 || ft_strncmp(lst->name, "inv",
+					3) == 0))
 			lst = lst->next;
 		else
-			return(lst);
+			return (lst);
 	}
 	return (0);
 }
 
 void	final_prepare_input(t_minirt *minirt)
 {
-	t_input_list *traverse;
-	t_input_list *temp;
-	t_input_list *last_valid;
-	t_input_list *first_valid;
+	t_input_list	*traverse;
+	t_input_list	*temp;
+	t_input_list	*last_valid;
+	t_input_list	*first_valid;
 
 	traverse = minirt->input_head;
 	last_valid = traverse;
@@ -85,7 +87,8 @@ void	final_prepare_input(t_minirt *minirt)
 		if (traverse != 0 && traverse->name == 0)
 		{
 			temp = traverse->next;
-			if (last_valid != 0 && (last_valid->name == 0 || ft_strncmp(last_valid->name, "inv", 3) == 0))
+			if (last_valid != 0 && (last_valid->name == 0
+					|| ft_strncmp(last_valid->name, "inv", 3) == 0))
 				last_valid = last_valid->next;
 			else
 				last_valid->next = temp;
@@ -95,7 +98,8 @@ void	final_prepare_input(t_minirt *minirt)
 		else if (traverse != 0 && ft_strncmp(traverse->name, "inv", 3) == 0)
 		{
 			temp = traverse->next;
-			if (last_valid != 0 && (last_valid->name == 0 || ft_strncmp(last_valid->name, "inv", 3) == 0))
+			if (last_valid != 0 && (last_valid->name == 0
+					|| ft_strncmp(last_valid->name, "inv", 3) == 0))
 				last_valid = last_valid->next;
 			else
 				last_valid->next = temp;
@@ -106,7 +110,8 @@ void	final_prepare_input(t_minirt *minirt)
 		}
 		else
 		{
-			if (traverse->next != 0 && traverse->next->name != 0 && ft_strncmp(traverse->next->name, "inv", 3 != 0))
+			if (traverse->next != 0 && traverse->next->name != 0
+				&& ft_strncmp(traverse->next->name, "inv", 3 != 0))
 				last_valid = traverse->next;
 			else
 				last_valid = traverse;
@@ -118,15 +123,16 @@ void	final_prepare_input(t_minirt *minirt)
 	check_esentials(minirt);
 }
 
-void validate_input(t_minirt *minirt)
+void	validate_input(t_minirt *minirt)
 {
-	t_input_list *input;
+	t_input_list	*input;
 
 	input = minirt->input_head;
 	while (input != 0)
 	{
 		if (input->name == 0 || ft_strncmp(input->name, "inv", 3) == 0)
-			printf("Invalid object description, object will not be rendered\n");
+			printf(\
+				"Invalid object description, object will not be rendered\n");
 		if (ft_strncmp(input->name, "Ambient", 7) == 0)
 			validate_values_ambient(input);
 		if (ft_strncmp(input->name, "Camera", 6) == 0)
