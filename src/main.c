@@ -35,7 +35,7 @@ float	max(float a, float b)
 
 void	close_function(void *param)
 {
-	t_minirt *minirt;
+	t_minirt	*minirt;
 
 	minirt = param;
 
@@ -51,7 +51,7 @@ float	to_radian(float angle)
 
 void	print_input(t_minirt *minirt)
 {
-	t_input_list *input;
+	t_input_list	*input;
 
 	input = minirt->input_head;
 	while (input != 0)
@@ -73,7 +73,7 @@ void	print_input(t_minirt *minirt)
 		}
 		if (ft_strncmp(input->name, "Light", 5) == 0)
 		{
-			t_light *cam = input->object;
+			t_light	*cam = input->object;
 			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, \
 				%f.\n", cam->brightness, cam->position.x, cam->position.y, \
 				cam->position.z, cam->color.x, cam->color.y, cam->color.z);
@@ -87,7 +87,7 @@ void	print_input(t_minirt *minirt)
 		}
 		if (ft_strncmp(input->name, "Plane", 5) == 0)
 		{
-			t_plane *cam = input->object;
+			t_plane	*cam = input->object;
 			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, \
 				%f.\n", cam->normal.x, cam->normal.y, cam->normal.z, \
 				cam->point_on_plane.x, cam->point_on_plane.y, \
@@ -132,20 +132,20 @@ t_material	return_material(void)
 t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top,
 		t_minirt *minirt)
 {
-	t_circle circle;
-	static int i;
+	t_circle	circle;
+	static int	i;
 
 	circle.radius = cylinder.radius;
 	circle.material = cylinder.material;
 	if (is_top)
 	{
-		circle.center = vector3_add(cylinder.center,
+		circle.center = vector3_add(cylinder.center, \
 			vector3_multiply_float(cylinder.normal, cylinder.height));
 		circle.normal = cylinder.normal;
 	}
 	else
 	{
-		circle.center = vector3_subtract(cylinder.center,
+		circle.center = vector3_subtract(cylinder.center, \
 			vector3_multiply_float(cylinder.normal, cylinder.height));
 		circle.normal = vector3_multiply_float(cylinder.normal, -1.0f);
 	}
@@ -224,18 +224,18 @@ t_scene	create_scene(void)
 	light.emission = vector3_multiply_float(light.emission_color, \
 		light.emission_strength);
 
-	t_triangle triangle;
+	t_triangle	triangle;
 	triangle.p[0] = vector3(-3, 4.9f, 0);
 	triangle.p[1] = vector3(3, 4.9f, 0);
 	triangle.p[2] = vector3(0, 4.9f, 1);
 	triangle.material = light;
 	triangle.material.emission_strength = 10.0f;
 	triangle.material.emission_color = vector3(1.0f, 1.0f, 1.0f);
-	triangle.material.emission = vector3_multiply_float(triangle.material.emission_color, \
-		triangle.material.emission_strength);
+	triangle.material.emission = vector3_multiply_float(\
+	triangle.material.emission_color, triangle.material.emission_strength);
 	scene.triangle[0] = triangle;
 
-	t_sphere sphere;
+	t_sphere	sphere;
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
 	sphere.material = white;
@@ -244,7 +244,7 @@ t_scene	create_scene(void)
 	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
 
-	t_sphere sphere2;
+	t_sphere	sphere2;
 	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
 	sphere2.material = blue;
@@ -253,7 +253,7 @@ t_scene	create_scene(void)
 	sphere2.material.specular_color = vector3(0.0f, 0.0f, 1.0f);
 	scene.sphere[1] = sphere2;
 
-	t_sphere sphere3;
+	t_sphere	sphere3;
 	sphere3.center = vector3(0.0f, 3.3f, 0.0f);
 	sphere3.radius = 1.0f;
 	sphere3.material = white;
@@ -263,7 +263,7 @@ t_scene	create_scene(void)
 	sphere3.material.flag = CHECKER_PATTERN;
 	scene.sphere[2] = sphere3;
 
-	t_plane plane;
+	t_plane	plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3_normalize(plane.normal);
@@ -271,68 +271,68 @@ t_scene	create_scene(void)
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
-	t_plane plane2;
+	t_plane	plane2;
 	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
 	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
 	plane2.normal = vector3_normalize(plane2.normal);
 	plane2.material = light;
 	scene.plane[1] = plane2;
 
-	t_plane plane3;
+	t_plane	plane3;
 	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
 	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
 	plane3.normal = vector3_normalize(plane3.normal);
 	plane3.material = purple;
 	scene.plane[2] = plane3;
 
-	t_plane plane4;
+	t_plane	plane4;
 	plane4.point_on_plane = vector3(0.0f, 0.0f, 5.0f);
 	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
 	plane4.normal = vector3_normalize(plane4.normal);
 	plane4.material = white;
 	scene.plane[3] = plane4;
 
-	t_plane plane5;
+	t_plane	plane5;
 	plane5.point_on_plane = vector3(-5.0f, 0.0f, 0.0f);
 	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
 	plane5.normal = vector3_normalize(plane5.normal);
 	plane5.material = white;
 	scene.plane[4] = plane5;
 
-	t_plane plane6;
+	t_plane	plane6;
 	plane6.point_on_plane = vector3(5.0f, 0.0f, 0.0f);
 	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
 	plane6.normal = vector3_normalize(plane6.normal);
 	plane6.material = white;
 	scene.plane[5] = plane6;
 
-	float light_strength = 0.3f;
+	float	light_strength = 0.3f;
 
-	t_light led;
+	t_light	led;
 	led.position = vector3(3, 2, 0);
 	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
-	t_light led2;
+	t_light	led2;
 	led2.position = vector3(0, 4.5f, 0);
 	led2.color = vector3(1.0f, 1.0f, 1.0f);
 	led2.brightness = light_strength;
 	scene.light[1] = led2;
 
-	t_light led3;
+	t_light	led3;
 	led3.position = vector3(3, 2, 0);
 	led3.color = vector3(0.0f, 0.0f, 1.0f);
 	led3.brightness = light_strength;
 	scene.light[2] = led3;
 
-	t_light led4;
+	t_light	led4;
 	led4.position = vector3(-3, 2, 0);
 	led4.color = vector3(1.0f, 0.0f, 1.0f);
 	led4.brightness = light_strength;
 	scene.light[3] = led4;
 
-	t_light led5;
+	t_light	led5;
 	led5.position = vector3(0, 2, 3);
 	led5.color = vector3(1.0f, 1.0f, 0.0f);
 	led5.brightness = light_strength;
@@ -364,7 +364,7 @@ t_scene	create_scene2(void)
 	t_material	white;
 	t_material	light;
 
-	float emission_strength = 0.0f;
+	float	emission_strength = 0.0f;
 
 	red = return_material();
 	red.color = vector3(1.0f, 0.0f, 0.0f);
@@ -401,35 +401,35 @@ t_scene	create_scene2(void)
 	light.emission = vector3_multiply_float(light.emission_color, \
 		light.emission_strength);
 
-	t_triangle triangle;
+	t_triangle	triangle;
 	triangle.p[0] = vector3(-1, 4, 0);
 	triangle.p[1] = vector3(1, 4, 0);
 	triangle.p[2] = vector3(0, 4, 1);
 	triangle.material = light;
 	scene.triangle[0] = triangle;
 
-	t_sphere sphere;
+	t_sphere	sphere;
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
 	sphere.material = blue;
 	sphere.material.specular_probability = 1.0f;
 	scene.sphere[0] = sphere;
 
-	t_sphere sphere2;
+	t_sphere	sphere2;
 	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
 	sphere2.material = white;
 	sphere2.material.specular_probability = 1.0f;
 	scene.sphere[1] = sphere2;
 
-	/*t_sphere sphere3;
+	/*t_sphere	sphere3;
 	sphere3.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere3.radius = 1.0f;
 	sphere3.material = white;
 	sphere3.material.specular_probability = 1.0f;
 	scene.sphere[0] = sphere3;*/
 
-	t_plane plane;
+	t_plane	plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3_normalize(plane.normal);
@@ -437,35 +437,35 @@ t_scene	create_scene2(void)
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
-	t_plane plane2;
+	t_plane	plane2;
 	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
 	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
 	plane2.normal = vector3_normalize(plane2.normal);
 	plane2.material = light;
 	scene.plane[1] = plane2;
 
-	t_plane plane3;
+	t_plane	plane3;
 	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
 	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
 	plane3.normal = vector3_normalize(plane3.normal);
 	plane3.material = white;
 	scene.plane[2] = plane3;
 
-	t_plane plane4;
+	t_plane	plane4;
 	plane4.point_on_plane = vector3(0.0f, 0.0f, 5.0f);
 	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
 	plane4.normal = vector3_normalize(plane4.normal);
 	plane4.material = white;
 	scene.plane[3] = plane4;
 
-	t_plane plane5;
+	t_plane	plane5;
 	plane5.point_on_plane = vector3(-5.0f, 0.0f, 0.0f);
 	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
 	plane5.normal = vector3_normalize(plane5.normal);
 	plane5.material = red;
 	scene.plane[4] = plane5;
 
-	t_plane plane6;
+	t_plane	plane6;
 	plane6.point_on_plane = vector3(5.0f, 0.0f, 0.0f);
 	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
 	plane6.normal = vector3_normalize(plane6.normal);
@@ -474,13 +474,13 @@ t_scene	create_scene2(void)
 
 	float light_strength = 5.0f;
 
-	t_light led;
+	t_light	led;
 	led.position = vector3(0, 3, 0);
 	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
-	t_light led2;
+	t_light	led2;
 	led2.position = vector3(0, 4, 0);
 	led2.color = vector3(1.0f, 1.0f, 1.0f);
 	led2.brightness = light_strength;
@@ -505,8 +505,8 @@ t_scene	create_scene2(void)
 
 static int	init_minirt(t_minirt *minirt)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	minirt->width = WIDTH;
 	minirt->height = HEIGHT;
@@ -537,10 +537,10 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->y = 1;
 	minirt->z = 0;
 
-	t_ambient ambient;
+	t_ambient	ambient;
 	ambient.intensity = 1.0f;
 	ambient.color = vector3(1.0f, 0.0f, 1.0f);
-	t_vector3 tmp = vector3_multiply_float(ambient.color, ambient.intensity);
+	t_vector3	tmp = vector3_multiply_float(ambient.color, ambient.intensity);
 	ambient.ambient = vector4(tmp.x, tmp.y, tmp.z, 1.0f);
 	minirt->scene.ambient = ambient;
 	return (SUCCESS);
@@ -548,10 +548,10 @@ static int	init_minirt(t_minirt *minirt)
 
 int	main(int argc, char *argv[])
 {
-	t_minirt minirt;
+	t_minirt	minirt;
 
 	// minirt.model = get_model();
-	int fd;
+	int	fd;
 
 	// if (argc == 2  && !check_file(argv[1]))
 	// fd = open(argv[1], O_RDONLY);
@@ -576,7 +576,7 @@ int	main(int argc, char *argv[])
 	if (minirt.camera.ray_dir)
 		free(minirt.camera.ray_dir);
 	close(fd);
-	// int i = -100;
+	// int	i = -100;
 	// while (++i < 100)
 	// printf("%f\n", ((random_float()) ));
 

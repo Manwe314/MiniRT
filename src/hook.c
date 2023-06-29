@@ -167,6 +167,7 @@ void	hook(void *param)
 	float			aspect_ratio;
 
 	aspect_ratio = (float)minirt->width / (float)minirt->height;
+	return ;
 	minirt = (t_minirt *)param;
 	print_fps(minirt);
 	// print_time(minirt);
@@ -196,12 +197,9 @@ void	hook(void *param)
 		y = -1;
 		while (++y < minirt->height)
 		{
-			ray.direction = create_ray((float)x * x_aspect_ratio - \
-			aspect_ratio, 1.0f - y * y_aspect_ratio, minirt);
-			color[x][y] = vector3_add(color[x][y], perpixel(ray, \
-			 &minirt->scene, x * minirt->height + y + i * 719393));
-			accumulated_color = vector3_multiply_float(color[x][y], \
-			1.0f / (float)i);
+			ray.direction = create_ray((float)x * x_aspect_ratio - aspect_ratio, 1.0f - y * y_aspect_ratio, minirt);
+			color[x][y] = vector3_add(color[x][y], Perpixel(ray, &minirt->scene, x * minirt->height + y + i * 719393));
+			accumulated_color = vector3_multiply_float(color[x][y], 1.0f / (float)i);
 			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
 		}
