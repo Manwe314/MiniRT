@@ -152,30 +152,29 @@ t_vector3	blurred(t_vector3 **color, int x, int y, t_minirt *minirt)
 2 * aspect * x / width  -   width * aspect / width
 2 * aspect * x / width  -   aspect
 */
-void	hook(void *param)
+void hook(void *param)
 {
-	t_minirt		*minirt;
-	t_ray			ray;
-	t_scene			scene;
-	int				x;
-	int				y;
-	static int		i;
-	static			t_vector3 color[10000][10000];
-	t_vector3		accumulated_color;
-	static float	x_aspect_ratio;
-	static float	y_aspect_ratio;
-	float			aspect_ratio;
+	t_minirt			*minirt;
+	t_ray				ray;
+	t_scene				scene;
+	int					x;
+	int					y;
+	static int			i;
+	static t_vector3	color[10000][10000];
+	t_vector3			accumulated_color;
+	static float		x_aspect_ratio;
+	static float		y_aspect_ratio;
+	float				aspect_ratio;
 
-	aspect_ratio = (float)minirt->width / (float)minirt->height;
-	return ;
 	minirt = (t_minirt *)param;
+	aspect_ratio = (float)minirt->width / (float)minirt->height;
 	print_fps(minirt);
-	// print_time(minirt);
+	//print_time(minirt);
 
 	if (minirt->moved == true || minirt->resized == true)
 	{
 		x = -1;
-		x_aspect_ratio = 2.0f * aspect_ratio / minirt->width;
+		x_aspect_ratio =2.0f * aspect_ratio / minirt->width;
 		y_aspect_ratio = 2.0f / (float)minirt->height;
 		while (++x < minirt->width)
 		{
@@ -189,18 +188,19 @@ void	hook(void *param)
 	minirt->moved = false;
 	minirt->resized = false;
 	ray.origin = minirt->camera.pos;
-	// minirt->model = get_model();
-	// minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
+	//minirt->model = get_model();
+	//minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
 	x = -1;
 	while (++x < minirt->width)
 	{
 		y = -1;
 		while (++y < minirt->height)
 		{
-			ray.direction = create_ray((float)x * x_aspect_ratio - aspect_ratio, 1.0f - y * y_aspect_ratio, minirt);
-			color[x][y] = vector3_add(color[x][y], Perpixel(ray, &minirt->scene, x * minirt->height + y + i * 719393));
-			accumulated_color = vector3_multiply_float(color[x][y], 1.0f / (float)i);
-			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);
+			ray.direction = create_ray( (float) x * x_aspect_ratio - aspect_ratio,\
+			 1.0f - y * y_aspect_ratio, minirt);
+			color[x][y] = vector3_add(color[x][y] , perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
+			accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
+			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);			
 			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
 		}
 	}
@@ -212,7 +212,7 @@ void	hook(void *param)
 	t_ray ray;
 	t_scene scene;
 	t_vector3 color;
-	int x;
+	int				x;
 	int y;
 
 	print_fps(minirt);
