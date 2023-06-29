@@ -554,6 +554,7 @@ static int	init_minirt(t_minirt *minirt)
 		rotation_x(to_radian(minirt->camera.yaw)));
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
+	minirt->stop = false;
 	minirt->x = 0;
 	minirt->y = 1;
 	minirt->z = 0;

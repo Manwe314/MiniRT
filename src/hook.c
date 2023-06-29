@@ -118,7 +118,7 @@ void hook(void *param)
 	if (minirt->moved == true || minirt->resized == true)
 	{
 		x = -1;
-		x_aspect_ratio =2.0f * aspect_ratio / minirt->width;
+		x_aspect_ratio = 2.0f * aspect_ratio / minirt->width;
 		y_aspect_ratio = 2.0f / (float)minirt->height;
 		while (++x < minirt->width)
 		{
@@ -140,13 +140,47 @@ void hook(void *param)
 		{
 			ray.direction = create_ray((float) x * x_aspect_ratio - aspect_ratio, \
 			 1.0f - y * y_aspect_ratio, minirt);
-			color[x][y] = vector3_add(color[x][y] , perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
-			accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
+			color[x][y] = vector3_add(color[x][y], perpixel(ray, &minirt->scene, x * minirt->height + y + i * 719393));
+			accumulated_color = vector3_multiply_float(color[x][y], 1.0f / (float)i);
 			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
 		}
 	}
 }
+
+/*bool	something_changed(t_minirt *minirt)
+{
+	if (minirt->moved == true || minirt->resized == true)
+		return (true);
+	return (false);
+}
+
+bool	should_stop(t_minirt *minirt)
+{
+	if (minirt->stop == true)
+		return (true);
+	return (false);
+}
+
+void	hook(void *param)
+{
+	t_minirt			*minirt;
+	t_ray				*ray;
+	t_vector3			*color;
+	t_vector3			*accumulated_color;
+	static int			frames;
+	
+	minirt = (t_minirt *)param;
+	print_fps(minirt); // need to remove.
+	if (should_stop(minirt))
+	{
+		free_param(minirt);
+		exit(0);
+	}
+	if (something_changed(minirt))
+		reset_param();
+	for_each_pixel();
+}*/
 
 /*void	hook(void *param)
 {
