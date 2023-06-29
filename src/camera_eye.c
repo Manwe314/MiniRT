@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 void	calculateprojection(t_minirt *minirt)
 {
 	// minirt->camera.inv_perspective = matrixInverse(

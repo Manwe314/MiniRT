@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	jump_spaces(const char *line, int i)
 {
 	while (line[i] == ' ' && line[i] != '\0')

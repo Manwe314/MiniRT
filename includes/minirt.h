@@ -322,12 +322,17 @@ t_vector3 vector3_multiply_float(t_vector3 a, float b);
 t_vector3 vector3_add_float(t_vector3 a, float b);
 t_vector3 vector3_reflect(t_vector3 a, t_vector3 n);
 t_vector3	vector3_clamp(t_vector3 color, float min, float max);
+t_vector3	vector3_mod(t_vector3 a, int b);
+t_vector3	vector3_floor(t_vector3 a);
+t_vector3	lerp(t_vector3 a, t_vector3 b, float t);
 t_vector4 vector4_multiply_float(t_vector4 a, float b);
 t_vector4 vector4_add(t_vector4 a, t_vector4 b);
+
 
 t_vector3 vector3_random(float x, float y);
 float	random_float(void);
 float randomvalue(uint state);
+float	randomvalu(uint state);
 t_vector3 random_direction(uint state);
 
 void calculateraydirections(t_minirt *minirt);
@@ -369,6 +374,8 @@ float	max(float a, float b);
 float mult(float a, float b, float c);
 void print_mat(t_matrix4x4 mat);
 t_matrix4x4 matrixInverse(t_matrix4x4 matrix, int size);
+
+t_info	calculate_ray_collision(t_ray ray, const t_scene *scene);
 
 t_vector3 Perpixel(t_ray ray, const t_scene *scene, uint rng_seed);
 t_vector3 perpixel(t_ray ray, const t_scene *scene, uint rng_seed);

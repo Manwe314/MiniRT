@@ -13,9 +13,8 @@
 #include "../lib/libft/includes/libft.h"
 #include "minirt.h"
 
-#define WIDTH 500
-#define HEIGHT 500
-
+#define WIDTH 150
+#define HEIGHT 150
 
 float	min(float a, float b)
 {
@@ -124,13 +123,12 @@ t_material	return_material(void)
 	material.emission = vector3_multiply_float(material.emission_color, \
 		material.emission_strength);
 	material.smoothness = 1.0f;
-	material.specular_probability = 1.0f;
+	material.specular_probability = 0.0f;
 	material.flag = 0;
 	return (material);
 }
 
-t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top,
-		t_minirt *minirt)
+t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top)
 {
 	t_circle	circle;
 	static int	i;
@@ -239,17 +237,17 @@ t_scene	create_scene(void)
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
 	sphere.material = white;
-	sphere.material.specular_probability = 1.0f;
+	sphere.material.specular_probability = 0.0f;
 	sphere.material.smoothness = 1.0f;
 	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
 
 	t_sphere	sphere2;
-	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
+	sphere2.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
 	sphere2.material = blue;
 	sphere2.material.smoothness = 0.9f;
-	sphere2.material.specular_probability = 1.0f;
+	sphere2.material.specular_probability = 0.0f;
 	sphere2.material.specular_color = vector3(0.0f, 0.0f, 1.0f);
 	scene.sphere[1] = sphere2;
 
@@ -306,10 +304,10 @@ t_scene	create_scene(void)
 	plane6.material = white;
 	scene.plane[5] = plane6;
 
-	float	light_strength = 0.3f;
+	float	light_strength = 0.8f;
 
 	t_light	led;
-	led.position = vector3(3, 2, 0);
+	led.position = vector3(3, 1.9f, 0);
 	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
@@ -338,6 +336,28 @@ t_scene	create_scene(void)
 	led5.brightness = light_strength;
 	scene.light[4] = led5;
 
+	t_cylinder	cylinder;
+	cylinder.center = vector3(0.0f, 0.0f, 0.0f);
+	cylinder.radius = 1.0f;
+	cylinder.height = 2.0f;
+	cylinder.normal = vector3(0.0f, 1.0f, 0.0f);
+	cylinder.normal = vector3_normalize(cylinder.normal);
+	cylinder.material = yellow;
+	cylinder.circle_bottom = get_circle_from_cylinder(cylinder, 0);
+	cylinder.circle_top = get_circle_from_cylinder(cylinder, 1);
+	scene.cylinder[0] = cylinder;
+
+	t_cylinder	cylinder2;
+	cylinder.center = vector3(0.0f, 0.5f, 0.0f);
+	cylinder.radius = 1.0f;
+	cylinder.height = 2.0f;
+	cylinder.normal = vector3(0.0f, 0.0f, 1.0f);
+	cylinder.normal = vector3_normalize(cylinder.normal);
+	cylinder.material = blue;
+	cylinder.circle_bottom = get_circle_from_cylinder(cylinder, 0);
+	cylinder.circle_top = get_circle_from_cylinder(cylinder, 1);
+	scene.cylinder[1] = cylinder;
+
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -349,9 +369,10 @@ t_scene	create_scene(void)
 	scene.nb_obj = 0;
 
 	scene.nb_plane = 6;
-	scene.nb_sphere = 3;
+	scene.nb_sphere = 2;
 	scene.nb_light = 1;
 	scene.nb_triangle = 0;
+	scene.nb_cylinder = 0;
 	return (scene);
 }
 
@@ -583,25 +604,3 @@ int	main(int argc, char *argv[])
 	// system("leaks minirt");
 	return (SUCCESS);
 }
-/*
-
-float	random_float(float min, float max)
-{
-	float	random;
-
-	min = -0.5f;
-	max = 0.5f;
-	random = (float)rand() / (float)RAND_MAX;
-	return (min + (max - min) * random);
-}
-
-t_vector3	vector3_random(float min, float max)
-{
-	t_vector3 vec;
-
-	vec.x = random_float(min, max);
-	vec.y = random_float(min, max);
-	vec.z = random_float(min, max);
-	return (vec);
-}
-*/

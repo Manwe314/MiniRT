@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	has_invalid_input(t_input_list *input)
 {
 	t_input_list	*traverse;
@@ -40,11 +39,9 @@ void	check_esentials(t_minirt *minirt)
 	traverse = minirt->input_head;
 	while (traverse != 0)
 	{
-		if (ft_strncmp(traverse->name, "Ambient", 7) == 0)
-			has_esentials++;
-		else if (ft_strncmp(traverse->name, "Camera", 6) == 0)
-			has_esentials++;
-		else if (ft_strncmp(traverse->name, "Light", 5) == 0)
+		if (ft_strncmp(traverse->name, "Ambient", 7) == 0
+			|| (ft_strncmp(traverse->name, "Camera", 6) == 0)
+			|| (ft_strncmp(traverse->name, "Light", 5) == 0))
 			has_esentials++;
 		else
 			has_an_object++;

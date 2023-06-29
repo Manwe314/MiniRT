@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	is_all_space(char *input)
 {
 	int	i;
@@ -34,11 +33,11 @@ int	is_all_space(char *input)
 float	ft_atof(const char *str)
 {
 	float	result;
-	float	fractionFactor;
+	float	fractionfactor;
 	int		sign;
 
 	result = 0.0;
-	fractionFactor = 0.1;
+	fractionfactor = 0.1;
 	sign = 1;
 	while (ft_isspace(*str))
 		str++;
@@ -51,8 +50,8 @@ float	ft_atof(const char *str)
 		str++;
 		while (ft_isdigit(*str))
 		{
-			result += (*str++ - '0') * fractionFactor;
-			fractionFactor *= 0.1;
+			result += (*str++ - '0') * fractionfactor;
+			fractionfactor *= 0.1;
 		}
 	}
 	return (result * sign);
@@ -98,7 +97,6 @@ t_vector3	get_vector3(const char *line, int i, t_input_list *input)
 	t_vector3	output;
 
 	j = i;
-
 	while (line[j] != ' ' && line[j] != '\0')
 		j++;
 	param = ft_substr(line, i, j - i);

@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	nextrandom(uint state)
 {
 	static uint	seed;
@@ -28,15 +27,20 @@ int	nextrandom(uint state)
 	return (result);
 }
 
-// float randomvalue(uint state)
-// {
-// return (nextrandom(state) / (float)RAND_MAX); // 2^32 - 1
-// }
-//
 float	randomvalue(uint state)
 {
-	return (rand() / (float)RAND_MAX);
+	int		rand;
+
+	rand = nextrandom(state);
+	if (rand < 0)
+		rand = -rand;
+	return (rand / (float)RAND_MAX);
 }
+
+// float	randomvalue(uint state)
+// {
+	// return (rand() / (float)RAND_MAX);
+// }
 
 // Random value in normal distribution
 float	randomvaluevormaldistribution(uint state)
@@ -46,7 +50,7 @@ float	randomvaluevormaldistribution(uint state)
 
 	if (RANDOM != 1)
 		return (0.0f);
-	theta = 2 * 3.1415926 * randomvalue(state);
+	theta = 2 * M_PI * randomvalue(state);
 	rho = sqrt(-2 * log(randomvalue(state)));
 	return (rho * cos(theta));
 }

@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 t_vector3	create_ray(float x, float y, t_minirt *minirt)
 {
 	t_vector3	direction;

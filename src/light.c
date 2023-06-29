@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	validate_line_light(const char *line)
 {
 	char	**inputs;
@@ -25,8 +24,8 @@ int	validate_line_light(const char *line)
 	i = 1;
 	while (inputs[i] != 0)
 	{
-		j = 0;
-		while (inputs[i][j] != '\0')
+		j = -1;
+		while (inputs[i][++j] != '\0')
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
@@ -35,7 +34,6 @@ int	validate_line_light(const char *line)
 				free_split(inputs);
 				return (0);
 			}
-			j++;
 		}
 		i++;
 	}

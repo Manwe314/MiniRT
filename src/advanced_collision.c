@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 t_info	triangle_collision(t_ray ray, const t_triangle *triangle)
 {
 	t_info		hit_info;

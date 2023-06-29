@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 float	mult(float a, float b, float c)
 {
 	return (a * b * c);

@@ -12,26 +12,8 @@
 
 #include "minirt.h"
 
-
-void	print_fps(t_minirt *minirt)
-{
-	static int	frames;
-	static int	last_time;
-	static int	i;
-	int current_time = time(NULL);
-
-	frames++;
-	i++;
-
-	if (current_time - last_time >= 1)
-	{
-		printf("FPS: %d   frames = %d\n", frames, i);
-		frames = 0;
-		last_time = current_time;
-	}
-}
 // used struc timeval to print the time between each frame
-void	print_time(t_minirt *minirt)
+float	print_time(t_minirt *minirt)
 {
 	static struct timeval last_time;
 	struct timeval current_time;
@@ -45,10 +27,33 @@ void	print_time(t_minirt *minirt)
 		+ (current_time.tv_usec - last_time.tv_usec) / 1000.0f;
 	if (time > 10.0f)
 		last_time = current_time;
+	if (i < 20)
+		return (0);
 	moyenne += time;
 	moyenne /= i;
-	printf("time: %f\n", moyenne);
+	return (moyenne);
 }
+
+void	print_fps(t_minirt *minirt)
+{
+	static int	frames;
+	static int	last_time;
+	static int	i;
+	int current_time = time(NULL);
+	float moyenne;
+	frames++;
+	i++;
+
+	moyenne = print_time(minirt);
+	if (current_time - last_time >= 1)
+	{
+		printf("FPS: %d   frames = %d, moyenne = %f\n", frames, i, moyenne);
+		frames = 0;
+		last_time = current_time;
+	}
+
+}
+
 
 t_vector3	**init_0(t_minirt *minirt)
 {
@@ -92,66 +97,6 @@ t_vector3	**set_0(t_vector3 **color, t_minirt *minirt)
 	return (color);
 }
 
-t_vector3	blurred(t_vector3 **color, int x, int y, t_minirt *minirt)
-{
-	t_vector3	blurred_color;
-	float		i;
-
-	i = 0.0f;
-
-	blurred_color = color[x][y];
-	// if (x - 1 >= 0)
-	// {
-	// blurred_color = vector4_add(blurred_color, color[x - 1][y - 1]);
-	// i++;
-	// }
-	// if (x + 1 < minirt->width)
-	// {
-	// blurred_color = vector4_add(blurred_color, color[x + 1][y - 1]);
-	// i++;
-	// }
-	// if (y - 1 >= 0)
-	// {
-	// blurred_color = vector4_add(blurred_color, color[x][y - 1]);
-	// i++;
-	// }
-	// if (y + 1 < minirt->height)
-	// {
-	// blurred_color = vector4_add(blurred_color, color[x][y + 1]);
-	// i++;
-	// }
-	//
-	// blurred_color = vector4_multiply_float(blurred_color, 1.0f / i);
-	return (blurred_color);
-}
-
-/*t_vector4 saturate(t_vector4 color, int frame, int x, int y,
-	t_minirt *minirt)
-{
-	static t_vector4 **previous;
-	t_vector4 accumulatedcol;
-	if (frame == 1)
-	{
-		previous = init_0(minirt);
-		if (!previous)
-			exit(EXIT_FAILURE);
-	}
-
-	float weight = 1.0 / (frame);
-	// Combine prev frame with current frame. Weight the contributions to result in an average over all frames.
-	accumulatedcol = vector4_clamp(vector4_add(vector4_multiply_float(previous[x][y],
-				1 - weight), vector4_multiply_float(color, weight)), 0.0f,
-		1.0f);
-	previous[x][y] = accumulatedcol;
-	return (accumulatedcol);
-}*/
-
-/*
-((2.0f * x) / ((float)minirt->width) - 1.0f) * aspect_ratio
-((2 * x - width) / width ) * aspect
-2 * aspect * x / width  -   width * aspect / width
-2 * aspect * x / width  -   aspect
-*/
 void hook(void *param)
 {
 	t_minirt			*minirt;
@@ -169,7 +114,6 @@ void hook(void *param)
 	minirt = (t_minirt *)param;
 	aspect_ratio = (float)minirt->width / (float)minirt->height;
 	print_fps(minirt);
-	//print_time(minirt);
 
 	if (minirt->moved == true || minirt->resized == true)
 	{
@@ -188,19 +132,17 @@ void hook(void *param)
 	minirt->moved = false;
 	minirt->resized = false;
 	ray.origin = minirt->camera.pos;
-	//minirt->model = get_model();
-	//minirt->camera.inv_lookat = mult_mat4x4(minirt->camera.inv_perspective, minirt->camera.inv_lookat);
 	x = -1;
 	while (++x < minirt->width)
 	{
 		y = -1;
 		while (++y < minirt->height)
 		{
-			ray.direction = create_ray( (float) x * x_aspect_ratio - aspect_ratio,\
+			ray.direction = create_ray((float) x * x_aspect_ratio - aspect_ratio, \
 			 1.0f - y * y_aspect_ratio, minirt);
 			color[x][y] = vector3_add(color[x][y] , perpixel(ray, &minirt->scene,  x * minirt->height + y + i * 719393));
 			accumulated_color = vector3_multiply_float(color[x][y] , 1.0f / (float)i);
-			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);			
+			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
 		}
 	}
@@ -356,8 +298,8 @@ void	keyhook(mlx_key_data_t keydata, void *param)
 		minirt->error = ERROR;
 	}
 	updirection = vector3(0.0f, 1.0f, 0.0f);
-	rightdirection = vector3_cross(minirt->camera.forward,\
-	 vector3(0.0f, 1.0f, 0.0f));
+	rightdirection = vector3_cross(minirt->camera.forward, \
+	vector3(0.0f, 1.0f, 0.0f));
 	// if (keydata.key == MLX_KEY_A && keydata.action != MLX_RELEASE)
 	// 	minirt->camera.pos = vector3_add(minirt->camera.pos,vector3_multiply_float(rightdirection, speed));
 	// if (keydata.key == MLX_KEY_D && keydata.action != MLX_RELEASE)
@@ -418,12 +360,7 @@ void	keyhook(mlx_key_data_t keydata, void *param)
 		|| keydata.key == MLX_KEY_SPACE || keydata.key == MLX_KEY_LEFT_CONTROL
 		|| keydata.key == MLX_KEY_W || keydata.key == MLX_KEY_S
 		|| keydata.key == MLX_KEY_Q)
-
-	{
 		minirt->moved = true;
-		// calculateraydirections(minirt);
-		// calculateview(minirt);
-	}
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
 	{
 		mlx_close_hook(minirt->mlx, &close_function, minirt);

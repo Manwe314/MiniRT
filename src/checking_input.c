@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 int	is_non_valid_character(char a)
 {
 	if (a >= '0' && a <= '9')
@@ -39,6 +38,7 @@ int	check_file(char *file_name)
 	close(len);
 	return (0);
 }
+
 int	vector3_checker(t_vector3 vector3, float range_min, float range_max)
 {
 	if (vector3.x < range_min || vector3.x > range_max)

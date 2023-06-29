@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 t_model	get_model(void)
 {
 	t_model model;

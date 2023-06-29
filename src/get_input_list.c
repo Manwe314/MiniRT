@@ -12,7 +12,6 @@
 
 #include "minirt.h"
 
-
 char	*remove_new_line(char *line)
 {
 	int		size;
