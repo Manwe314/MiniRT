@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minirt.h"
-
+/*
 t_model	get_model(void)
 {
 	t_model model;
@@ -94,7 +94,7 @@ t_model	get_model(void)
 	}
 
 	close(fd);
-	free_split(split);
+	free_split(split);*/
 	/*k = -1;
 	while (++k <= j)
 	{
@@ -111,8 +111,8 @@ t_model	get_model(void)
 					model.planes[k].plane[l].z);
 		}
 	}*/
-
+/*
 	free(coord);
 	free(ordre);
 	return (model);
-}
+}*/

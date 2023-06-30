@@ -104,8 +104,7 @@ void	ray_tracing(t_ray *ray, t_info *hit_info, uint rng_seed,
 	bool		is_specular_bounce;
 
 	if (hit_info->material.flag == CHECKER_PATTERN)
-				hit_info->material.color = checker(&hit_info->hit_point,
-				hit_info);
+		hit_info->material.color = checker(&hit_info->hit_point, hit_info);
 	ray->origin = hit_info->hit_point;
 	ray->origin = vector3_add(ray->origin,
 			vector3_multiply_float(hit_info->normal, 0.0001f));

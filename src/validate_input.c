@@ -115,7 +115,7 @@ void	final_prepare_input(t_minirt *minirt)
 			traverse = traverse->next;
 		}
 	}
-	print_input(minirt);
+	//print_input(minirt);
 	minirt->input_head = first_valid;
 	check_esentials(minirt);
 }

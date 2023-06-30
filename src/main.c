@@ -165,6 +165,24 @@ t_scene	create_scene(void)
 	t_material	light;
 
 	float emission_strength = 0.0f;
+	
+	scene.nb_sphere = 0;
+	scene.nb_plane = 0;
+	scene.nb_triangle = 0;
+	scene.nb_cylinder = 0;
+	scene.nb_cone = 0;
+	scene.nb_circle = 0;
+	scene.nb_hyperboloid = 0;
+	scene.nb_light = 0;
+
+	scene.sphere = malloc(sizeof(t_sphere) * 20);
+	scene.plane = malloc(sizeof(t_plane) * 20);
+	scene.triangle = malloc(sizeof(t_triangle) * 20);
+	scene.cylinder = malloc(sizeof(t_cylinder) * 20);
+	scene.cone = malloc(sizeof(t_cone) * 20);
+	scene.circle = malloc(sizeof(t_circle) * 20);
+	scene.hyperboloid = malloc(sizeof(t_hyperboloid) * 20);
+	scene.light = malloc(sizeof(t_light) * 20);
 
 	red = return_material();
 	red.color = vector3(1.0f, 0.0f, 0.0f);
@@ -537,7 +555,6 @@ static int	init_minirt(t_minirt *minirt)
 
 	minirt->camera.fov = 90.0f;
 	minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
-	minirt->camera.forward = vector3(0.0f, 0.0f, 1.0f);
 
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
@@ -549,39 +566,195 @@ static int	init_minirt(t_minirt *minirt)
 
 	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)), \
 		rotation_x(to_radian(minirt->camera.yaw)));
+
 	minirt->moved = true;
 	minirt->camera.is_clicked = false;
 	minirt->stop = false;
 	minirt->x = 0;
 	minirt->y = 1;
 	minirt->z = 0;
+	return (SUCCESS);
+}
 
-	t_ambient	ambient;
-	ambient.intensity = 1.0f;
-	ambient.color = vector3(1.0f, 0.0f, 1.0f);
-	t_vector3	tmp = vector3_multiply_float(ambient.color, ambient.intensity);
-	ambient.ambient = vector4(tmp.x, tmp.y, tmp.z, 1.0f);
+void	get_camera(t_minirt *minirt, t_camera camera)
+{
+	t_matrix4x4	rotation;
+
+	minirt->camera.fov = camera.fov;
+	minirt->camera.pos = camera.position;
+	minirt->camera.angle = camera.orientation;
+	minirt->camera.angle.y *= 90;
+	minirt->camera.angle.x *= 180;
+	minirt->camera.angle.z *= 180;
+	minirt->camera.pitch = minirt->camera.angle.y;
+	minirt->camera.yaw = minirt->camera.angle.x;
+	minirt->camera.is_clicked = false;
+	rotation = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
+			rotation_x(to_radian(minirt->camera.yaw)));
+	rotation = mult_mat4x4(rotation,
+			rotation_z(to_radian(minirt->camera.angle.z)));
+	minirt->camera.inv_lookat = rotation;
+}
+
+void	get_ambient(t_minirt *minirt, t_ambient ambient)
+{
+	t_vector3	tmp;
+
 	minirt->scene.ambient = ambient;
+	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
+	tmp = vector3_multiply_float(ambient.color, ambient.intensity);
+	minirt->scene.ambient.ambient = tmp;
+}
+
+void	get_light(t_minirt *minirt, t_light light)
+{
+	t_vector3	tmp;
+
+	light.color = vector3_multiply_float(light.color, 1 / 255.0f);
+	tmp = vector3_multiply_float(light.color, light.brightness);
+	light.color = tmp;
+	minirt->scene.light[minirt->scene.nb_light] = light;
+	minirt->scene.nb_light++;
+}
+
+void	get_sphere(t_minirt *minirt, t_sphere sphere)
+{
+	minirt->scene.sphere[minirt->scene.nb_sphere] = sphere;
+	minirt->scene.sphere->material = return_material();
+	minirt->scene.sphere->material.color = vector3_multiply_float(
+			sphere.color, 1 / 255.0f);
+	minirt->scene.nb_sphere++;
+}
+
+void	get_plane(t_minirt *minirt, t_plane plane)
+{
+	minirt->scene.plane[minirt->scene.nb_plane] = plane;
+	minirt->scene.plane->material = return_material();
+	minirt->scene.plane->material.color = vector3_multiply_float(
+			plane.color, 1 / 255.0f);
+	minirt->scene.nb_plane++;
+}
+
+void	get_triangle(t_minirt *minirt, t_triangle triangle)
+{
+	minirt->scene.triangle[minirt->scene.nb_triangle] = triangle;
+	minirt->scene.triangle->material = return_material();
+	minirt->scene.triangle->material.color = vector3_multiply_float(
+			triangle.color, 1 / 255.0f);
+	minirt->scene.nb_triangle++;
+}
+
+void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
+{
+	minirt->scene.cylinder[minirt->scene.nb_cylinder] = cylinder;
+	minirt->scene.cylinder->material = return_material();
+	minirt->scene.cylinder->material.color = vector3_multiply_float(
+			cylinder.color, 1 / 255.0f);
+	minirt->scene.nb_cylinder++;
+}
+
+void	get_cone(t_minirt *minirt, t_cone cone)
+{
+	minirt->scene.cone[minirt->scene.nb_cone] = cone;
+	minirt->scene.cone->material = return_material();
+	minirt->scene.cone->material.color = vector3_multiply_float(
+			cone.color, 1 / 255.0f);
+	minirt->scene.nb_cone++;
+}
+
+void	get_circle(t_minirt *minirt, t_circle circle)
+{
+	minirt->scene.circle[minirt->scene.nb_circle] = circle;
+	minirt->scene.circle->material = return_material();
+	minirt->scene.circle->material.color = vector3_multiply_float(
+			circle.color, 1 / 255.0f);
+	minirt->scene.nb_circle++;
+}
+
+void	get_hyperboloid(t_minirt *minirt, t_hyperboloid hyperboloid)
+{
+	minirt->scene.hyperboloid[minirt->scene.nb_hyperboloid] = hyperboloid;
+	minirt->scene.hyperboloid->material = return_material();
+	minirt->scene.hyperboloid->material.color = vector3_multiply_float(
+			hyperboloid.color, 1 / 255.0f);
+	minirt->scene.nb_hyperboloid++;
+}
+
+
+static int	get_scene(t_minirt *minirt)
+{
+	int	i;
+	int	j;
+
+	minirt->scene.nb_sphere = 0;
+	minirt->scene.nb_plane = 0;
+	minirt->scene.nb_triangle = 0;
+	minirt->scene.nb_cylinder = 0;
+	minirt->scene.nb_cone = 0;
+	minirt->scene.nb_circle = 0;
+	minirt->scene.nb_hyperboloid = 0;
+	minirt->scene.nb_light = 0;
+
+	minirt->scene.sphere = malloc(sizeof(t_sphere) * 20);
+	minirt->scene.plane = malloc(sizeof(t_plane) * 20);
+	minirt->scene.triangle = malloc(sizeof(t_triangle) * 20);
+	minirt->scene.cylinder = malloc(sizeof(t_cylinder) * 20);
+	minirt->scene.cone = malloc(sizeof(t_cone) * 20);
+	minirt->scene.circle = malloc(sizeof(t_circle) * 20);
+	minirt->scene.hyperboloid = malloc(sizeof(t_hyperboloid) * 20);
+	minirt->scene.light = malloc(sizeof(t_light) * 20);
+
+
+	while (minirt->input_head)
+	{
+		if (ft_strncmp("Ambient", minirt->input_head->name, 7) == 0)
+			get_ambient(minirt, *(t_ambient *)minirt->input_head->object);
+		else if (ft_strncmp("Camera", minirt->input_head->name, 6) == 0)
+			get_camera(minirt, *(t_camera *)minirt->input_head->object);
+		else if (ft_strncmp("Light", minirt->input_head->name, 5) == 0)
+			get_light(minirt, *(t_light *)minirt->input_head->object);
+		else if (ft_strncmp("Sphere", minirt->input_head->name, 6) == 0)
+			get_sphere(minirt, *(t_sphere *)minirt->input_head->object);
+		else if (ft_strncmp("Plane", minirt->input_head->name, 5) == 0)
+			get_plane(minirt, *(t_plane *)minirt->input_head->object);
+		else if (ft_strncmp("Cylinder", minirt->input_head->name, 8) == 0)
+			get_cylinder(minirt, *(t_cylinder *)minirt->input_head->object);
+		/*
+		else if (ft_strncmp("Triangle", minirt->input_head->name, 8) == 0)
+			get_triangle(minirt, *(t_triangle *)minirt->input_head->object);
+		else if (ft_strncmp("Circle", minirt->input_head->name, 6) == 0)
+			get_circle(minirt, *(t_circle *)minirt->input_head->object);
+		else if (ft_strncmp("Cone", minirt->input_head->name, 4) == 0)
+			get_cone(minirt, *(t_cone *)minirt->input_head->object);
+		else if (ft_strncmp("Hyperboloid", minirt->input_head->name, 11) == 0)
+			get_hyperboloid(minirt, *(t_hyperboloid *)minirt->input_head->object);
+		else if (ft_strncmp("Paraboloid", minirt->input_head->name, 10) == 0)
+			get_paraboloid(minirt, *(t_paraboloid *)minirt->input_head->object);
+		*/
+		else
+			return (ERROR);
+		
+		minirt->input_head = minirt->input_head->next;
+	}
 	return (SUCCESS);
 }
 
 int	main(int argc, char *argv[])
 {
 	t_minirt	minirt;
+	int			fd;
 
-	// minirt.model = get_model();
-	int	fd;
-
-	// if (argc == 2  && !check_file(argv[1]))
-	// fd = open(argv[1], O_RDONLY);
-	// else
-	// return (0);
-	// get_input_list(&minirt, fd);
-	// validate_input(&minirt);
-	// minirt.scene = create the 3d world
+	if (argc == 2 && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		return (0);
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
 
 	if (init_minirt(&minirt) == ERROR)
 		return (ERROR);
+	
+	// get_scene(&minirt);
 	minirt.scene = create_scene();
 
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
@@ -589,12 +762,10 @@ int	main(int argc, char *argv[])
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
 	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
 	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
-	if (minirt.error != ERROR && !minirt.stop)
-		mlx_loop(minirt.mlx);
+	mlx_loop(minirt.mlx);
 	mlx_delete_image(minirt.mlx, minirt.img);
 	mlx_terminate(minirt.mlx);
 	close(fd);
-
 	// system("leaks minirt");
 	return (SUCCESS);
 }

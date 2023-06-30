@@ -15,11 +15,11 @@
 // used struc timeval to print the time between each frames
 float	print_time(t_minirt *minirt)
 {
-	static struct timeval last_time;
-	struct timeval current_time;
-	float time;
-	static float moyenne;
-	static int i;
+	static struct timeval	last_time;
+	struct timeval			current_time;
+	float					time;
+	static float			moyenne;
+	static int				i;
 
 	(void)minirt;
 	i++;
@@ -40,11 +40,12 @@ void	print_fps(t_minirt *minirt)
 	static int	frames;
 	static int	last_time;
 	static int	i;
-	int current_time = time(NULL);
-	float moyenne;
+	int			current_time;
+	float		moyenne;
+
 	frames++;
 	i++;
-
+	current_time = time(NULL);
 	moyenne = print_time(minirt);
 	if (current_time - last_time >= 1)
 	{
@@ -52,61 +53,7 @@ void	print_fps(t_minirt *minirt)
 		frames = 0;
 		last_time = current_time;
 	}
-
 }
-
-/*void	hook(void *param)
-{
-	t_minirt			*minirt;
-	t_ray				ray;
-	t_scene				scene;
-	int					x;
-	int					y;
-	static int			i;
-	static t_vector3	color[10000][10000];
-	t_vector3			accumulated_color;
-	static float		x_aspect_ratio;
-	static float		y_aspect_ratio;
-	float				aspect_ratio;
-
-	minirt = (t_minirt *)param;
-	aspect_ratio = (float)minirt->width / (float)minirt->height;
-	print_fps(minirt);
-
-	if (minirt->moved == true || minirt->resized == true)
-	{
-		x = -1;
-		x_aspect_ratio = 2.0f * aspect_ratio / minirt->width;
-		y_aspect_ratio = 2.0f / (float)minirt->height;
-		while (++x < minirt->width)
-		{
-			y = -1;
-			while (++y < minirt->height)
-				color[x][y] = vector3(0, 0, 0);
-		}
-		i = 0;
-	}
-	i++;
-	minirt->moved = false;
-	minirt->resized = false;
-	ray.origin = minirt->camera.pos;
-	x = -1;
-	while (++x < minirt->width)
-	{
-		y = -1;
-		while (++y < minirt->height)
-		{
-			ray.direction = create_ray((float) x * x_aspect_ratio - aspect_ratio, \
-			1.0f - y * y_aspect_ratio, minirt);
-			
-			color[x][y] = vector3_add(color[x][y], perpixel(ray, &minirt->scene, x * minirt->height + y + i * 719393));
-			accumulated_color = vector3_multiply_float(color[x][y], 1.0f / (float)i);
-			accumulated_color = vector3_clamp(accumulated_color, 0.0f, 1.0f);
-			mlx_put_pixel(minirt->img, x, y, get_rgba(accumulated_color));
-		}
-	}
-}*/
-
 
 bool	something_changed(t_minirt *minirt)
 {
@@ -155,9 +102,9 @@ void	set_param(t_param *param, t_minirt *minirt)
 			param->accumulated_color[x * minirt->height + y] = vector3(0, 0, 0);
 			param->ray[x * minirt->height + y].origin = minirt->camera.pos;
 
-			param->ray[x * minirt->height + y].direction =
-					create_ray((float)x * x_aspect_ratio - aspect_ratio,
-							1.0f - y * y_aspect_ratio, minirt);
+			param->ray[x * minirt->height + y].direction
+				= create_ray((float)x * x_aspect_ratio - aspect_ratio,
+					1.0f - y * y_aspect_ratio, minirt);
 		}
 	}
 }
@@ -169,7 +116,7 @@ void	reset_param(t_param *param, t_minirt *minirt)
 	minirt->moved = false;
 	minirt->resized = false;
 	param->frames = 0;
-	if (++i == 0)
+	if (i++ == 0)
 	{
 		malloc_param(param, minirt);
 		set_param(param, minirt);
@@ -182,10 +129,10 @@ void	reset_param(t_param *param, t_minirt *minirt)
 
 void	for_each_pixel(t_param *param, const t_minirt *minirt)
 {
-	int x;
-	int y;
-	int i;
-	t_vector3 color;
+	int			x;
+	int			y;
+	int			i;
+	t_vector3	color;
 
 	x = -1;
 	param->frames++;
@@ -196,10 +143,10 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		{
 			i = x * minirt->height + y;
 			color = perpixel(param->ray[i], &minirt->scene, i + param->frames);
-			param->accumulated_color[i] = vector3_add(param->accumulated_color[i],
-					color);
-			color = vector3_multiply_float(param->accumulated_color[i], 1.0f /
-					(float)(param->frames));
+			param->accumulated_color[i] = \
+				vector3_add(param->accumulated_color[i], color);
+			color = vector3_multiply_float(param->accumulated_color[i],
+					1.0f / (float)(param->frames));
 			color = vector3_clamp(color, 0.0f, 1.0f);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
 		}
@@ -210,9 +157,10 @@ void	hook(void *mini)
 {
 	t_minirt		*minirt;
 	static t_param	param;
-	
+
 	minirt = (t_minirt *)mini;
-	print_fps(minirt); // need to remove
+
+	print_fps(minirt);
 	if (should_stop(minirt))
 	{
 		free_param(&param);
@@ -226,33 +174,7 @@ void	hook(void *mini)
 	for_each_pixel(&param, minirt);
 }
 
-/*void	hook(void *param)
-{
-	t_minirt *minirt = (t_minirt *)param;
-	t_ray ray;
-	t_scene scene;
-	t_vector3 color;
-	int				x;
-	int y;
 
-	print_fps(minirt);
-	x = -1;
-	ray.origin = minirt->camera.pos;
-	while (++x < minirt->width)
-	{
-		y = -1;
-		while (++y < minirt->height)
-		{
-			t_vector3 coord = vector3((float)x / (float)minirt->width,
-				(float)(y) / (float)minirt->height,0);
-			coord = vector3(coord.x * 2.0f - 1.0f, coord.y * 2.0f - 1.0f,0);
-			ray.direction = create_ray(coord.x, coord.y, minirt);
-			color = PerPixel(ray, &minirt->scene,  x * minirt->height + y);
-			mlx_put_pixel(minirt->img,minirt->width - x - 1, minirt->height - y
-				- 1, get_rgba(color));
-		}
-	}
-}*/
 
 void	resize(int32_t width, int32_t height, void *param)
 {
@@ -283,9 +205,9 @@ void	cursor(double xpos, double ypos, void *param)
 	ypos = (ypos / minirt->height) * 2.0f - 1.0f;
 	minirt->camera.pitch += xpos * 1.5f;
 	minirt->camera.yaw += ypos * 1.5f;
-	if ( minirt->camera.yaw > 90)
+	if (minirt->camera.yaw > 90)
 		minirt->camera.yaw = 90;
-	if ( minirt->camera.yaw < -90)
+	if (minirt->camera.yaw < -90)
 		minirt->camera.yaw = -90;
 	mat[0] = rotation_y(to_radian(minirt->camera.pitch));
 	mat[1] = rotation_x(to_radian(minirt->camera.yaw));

@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-void	calculateprojection(t_minirt *minirt)
+/*void	calculateprojection(t_minirt *minirt)
 {
 	// minirt->camera.inv_perspective = matrixInverse(
 	// createperspectivematrix(minirt->camera.fov, minirt->width / minirt->height,
@@ -32,4 +32,4 @@ void	calculatelookat(t_minirt *minirt)
 	// minirt->camera.inv_lookat = FPSViewRH(minirt->camera.pos, minirt->camera.pitch, minirt->camera.yaw);
 	// minirt->camera.inv_lookat = matrixInverse(
 	// lookat(minirt->camera.pos, target, vector3(0, 1, 0)), 4);
-}
+}*/

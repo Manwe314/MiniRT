@@ -68,6 +68,7 @@ typedef struct s_material
 typedef struct s_triangle
 {
 	t_vector3 p[3];
+	t_vector3 color;
 	t_material material;
 } t_triangle;
 
@@ -155,7 +156,7 @@ typedef struct s_ambient
 {
     t_vector3 color;
     float intensity;
-	t_vector4 ambient;
+	t_vector3 ambient;
 } t_ambient;
 
 typedef struct s_sphere
@@ -199,8 +200,6 @@ typedef struct s_camera_eye
 	t_vector3 angle;
 	float fov;
 	bool is_clicked;
-	t_vector3 forward;
-	t_matrix4x4 inv_perspective;
 	t_matrix4x4 inv_lookat;
 	float pitch;
 	float yaw;
@@ -225,16 +224,16 @@ typedef struct s_info
 
 typedef struct s_scene
 {
-	t_sphere sphere[100];
-	t_plane plane[100];
-	t_cylinder cylinder[100];
-	t_cone cone[100];
-	t_hyperboloid hyperboloid[100];
-	t_paraboloid paraboloid[100];
-	t_triangle triangle[100];
-	t_circle circle[100];
+	t_sphere *sphere;
+	t_plane *plane;
+	t_cylinder *cylinder;
+	t_cone *cone;
+	t_hyperboloid *hyperboloid;
+	t_paraboloid *paraboloid;
+	t_triangle *triangle;
+	t_circle *circle;
 	//t_cuboid *cuboid;
-	t_light light[100];
+	t_light *light;
 	t_ambient ambient;
 	t_obj obj;
 	int nb_light;
@@ -299,6 +298,9 @@ typedef struct s_minirt
 	t_model			model;
 	t_scene			scene;
 }	t_minirt;
+
+void	hooki(t_minirt *minirt);
+
 
 void close_function(void *param);
 float to_radian(float angle);
