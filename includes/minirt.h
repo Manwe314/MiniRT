@@ -196,7 +196,6 @@ typedef struct s_obj
 typedef struct s_camera_eye
 {
 	t_vector3 pos;
-	t_vector3 *ray_dir;
 	t_vector3 angle;
 	float fov;
 	bool is_clicked;
@@ -272,6 +271,13 @@ typedef struct s_model
 	t_obj *obj;
 	int nb_obj;
 }	t_model;
+
+typedef struct s_param
+{
+	t_ray		*ray;
+	t_vector3	*accumulated_color;
+	int			frames;
+}	t_param;
 
 typedef struct s_minirt
 {

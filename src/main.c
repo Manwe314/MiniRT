@@ -243,7 +243,7 @@ t_scene	create_scene(void)
 	scene.sphere[0] = sphere;
 
 	t_sphere	sphere2;
-	sphere2.center = vector3(-1.0f, 1.5f, 0.0f);
+	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
 	sphere2.radius = 1.0f;
 	sphere2.material = blue;
 	sphere2.material.smoothness = 0.9f;
@@ -266,6 +266,7 @@ t_scene	create_scene(void)
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3_normalize(plane.normal);
 	plane.material = white;
+	plane.material.specular_color = vector3(0.3f, 0.6f, 0.2f);
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
@@ -541,10 +542,6 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		exit(ERROR);
-	minirt->camera.ray_dir = malloc(sizeof(t_vector3) * minirt->width \
-		* minirt->height);
-	if (!minirt->camera.ray_dir)
-		exit(ERROR);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 	minirt->camera.pitch = 0.0f;
@@ -592,15 +589,11 @@ int	main(int argc, char *argv[])
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
 	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
 	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
-	if (minirt.error != ERROR)
+	if (minirt.error != ERROR && !minirt.stop)
 		mlx_loop(minirt.mlx);
+	mlx_delete_image(minirt.mlx, minirt.img);
 	mlx_terminate(minirt.mlx);
-	if (minirt.camera.ray_dir)
-		free(minirt.camera.ray_dir);
 	close(fd);
-	// int	i = -100;
-	// while (++i < 100)
-	// printf("%f\n", ((random_float()) ));
 
 	// system("leaks minirt");
 	return (SUCCESS);

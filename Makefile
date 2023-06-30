@@ -1,6 +1,7 @@
 NAME	:= minirt
 USER	= beaudibe
-CFLAGS	:=# -Wextra -Wall -Werror -Wunreachable-code -Ofast
+#CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast -g
+CFLAGS	:= -Ofast -g
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 HEADERS	:= -I ../include -I $(LIBMLX)/include
@@ -19,7 +20,7 @@ libmlx:
 
 $(NAME): $(OBJS)
 	make -C ${LIBFT}
-	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -g -o $(NAME)
 
 clean:
 	@rm -f $(OBJS)
