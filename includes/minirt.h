@@ -32,8 +32,6 @@
 # endif
 
 # define PI 3.14159265358979323846
-# define ERROR 0
-# define SUCCESS 1
 
 
 # define CHECKER_PATTERN 1
@@ -191,9 +189,6 @@ typedef struct s_obj
 	int index;
 } t_obj;
 
-
-
-
 typedef struct s_camera_eye
 {
 	t_vector3 pos;
@@ -236,6 +231,7 @@ typedef struct s_scene
 	t_light *light;
 	t_ambient ambient;
 	t_obj obj;
+	t_camera_eye camera;
 	int nb_light;
 	int nb_sphere;
 	int nb_plane;
@@ -245,10 +241,10 @@ typedef struct s_scene
 	int nb_cone;
 	int nb_hyperboloid;
 	int nb_paraboloid;
-	//int nb_cuboid;
+	int nb_camera;
+	int nb_ambient;
 	int nb_obj;
 	t_material material[20];
-	//t_light *light;
 
 }	t_scene;
 
@@ -301,6 +297,23 @@ typedef struct s_minirt
 
 void	hooki(t_minirt *minirt);
 
+bool	add_input(t_scene *scene, char *input);
+bool	add_ambient(t_scene *scene, char *input);
+bool	add_camera(t_scene *scene, char *input);
+bool	add_light(t_scene *scene, char *input);
+bool	add_plane(t_scene *scene, char *input);
+bool	add_cylinder(t_scene *scene, char *input);
+bool	add_sphere(t_scene *scene, char *input);
+bool	a_not_finished(char c);
+bool	c_not_finished(char c);
+bool	l_not_finished(char c);
+bool	pl_not_finished(char c);
+bool	sp_not_finished(char c);
+bool	cy_not_finished(char c);
+bool	get_input(t_scene *scene, int a, char **b);
+
+t_material	return_material(void);
+
 
 void close_function(void *param);
 float to_radian(float angle);
@@ -347,14 +360,6 @@ t_vector3 random_direction(uint state);
 void calculateraydirections(t_minirt *minirt);
 void calculateview(t_minirt *minirt);
 void calculateprojection(t_minirt *minirt);
-
-t_plane add_plane(t_vector3 pos, t_vector3 pos2, t_vector3 pos3, t_vector3 pos4);
-t_vector3 add_point(float x, float y, float z);
-t_vector3 add_center(float x, float y, float z);
-t_triangle add_triangle(t_vector3 pos, t_vector3 pos1, t_vector3 pos2);
-t_sphere add_sphere(t_vector3 pos, float radius, t_vector3 color);
-t_material add_material(t_vector3 color, float roughness, float mettalic);
-
 
 void keyhook(mlx_key_data_t keydata, void *param);
 void mousehook(mouse_key_t button, action_t action, modifier_key_t mods, void *param);
@@ -409,6 +414,9 @@ t_info paraboloid_collision(t_ray ray, const t_paraboloid *paraboloid);
 t_info hyperboloid_collision(t_ray ray, const t_hyperboloid *hyperboloid);
 t_info cone_collision(t_ray ray, const t_cone *cone);
 
+void* ft_realloc(void* ptr, size_t size);
+
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 float to_radian(float angle);
@@ -420,7 +428,7 @@ void	hook(void *param);
 void print_input(t_minirt *minirt);
 
 int vector3_checker(t_vector3 vector3, float range_min, float range_max);
-int check_file(char *file_name);
+//int check_file(char *file_name);
 int is_non_valid_character(char a);
 int	is_all_space(char *input);
 float ft_atof(const char* str);

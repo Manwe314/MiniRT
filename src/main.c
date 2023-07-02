@@ -543,7 +543,7 @@ t_scene	create_scene2(void)
 	return (scene);
 }
 
-static int	init_minirt(t_minirt *minirt)
+static bool	init_minirt(t_minirt *minirt)
 {
 	int	i;
 	int	j;
@@ -558,7 +558,7 @@ static int	init_minirt(t_minirt *minirt)
 
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
-		exit(ERROR);
+		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
 	minirt->camera.pitch = 0.0f;
@@ -573,7 +573,7 @@ static int	init_minirt(t_minirt *minirt)
 	minirt->x = 0;
 	minirt->y = 1;
 	minirt->z = 0;
-	return (SUCCESS);
+	return (true);
 }
 
 void	get_camera(t_minirt *minirt, t_camera camera)
@@ -681,7 +681,7 @@ void	get_hyperboloid(t_minirt *minirt, t_hyperboloid hyperboloid)
 }
 
 
-static int	get_scene(t_minirt *minirt)
+static bool	get_scene(t_minirt *minirt)
 {
 	int	i;
 	int	j;
@@ -732,28 +732,100 @@ static int	get_scene(t_minirt *minirt)
 			get_paraboloid(minirt, *(t_paraboloid *)minirt->input_head->object);
 		*/
 		else
-			return (ERROR);
+			return (false);
 		
 		minirt->input_head = minirt->input_head->next;
 	}
-	return (SUCCESS);
+	return (true);
+}
+
+void	print_scene(t_scene scene)
+{
+	int	i;
+
+	i = -1;
+	printf("scene\n");
+	printf("nb_sphere %d\n", scene.nb_sphere);
+	printf("nb_plane %d\n", scene.nb_plane);
+	printf("nb_cylinder %d\n", scene.nb_cylinder);
+	printf("nb_light %d\n", scene.nb_light);
+	printf("nb_camera %d\n", scene.nb_camera);
+	printf("nb_ambient %d\n", scene.nb_ambient);
+
+	while (++i < scene.nb_cylinder)
+	{
+		printf("cylinder %d\n", i);
+		printf("color %f %f %f\n", scene.cylinder[i].material.color.x, scene.cylinder[i].material.color.y, scene.cylinder[i].material.color.z);
+		printf("position %f %f %f\n", scene.cylinder[i].center.x, scene.cylinder[i].center.y, scene.cylinder[i].center.z);
+		printf("normal %f %f %f\n", scene.cylinder[i].normal.x, scene.cylinder[i].normal.y, scene.cylinder[i].normal.z);
+		printf("diameter %f\n", scene.cylinder[i].radius);
+		printf("height %f\n", scene.cylinder[i].height);
+	}
+	i = -1;
+	while (++i < scene.nb_sphere)
+	{
+		printf("\nsphere %d\n", i);
+		printf("color %f %f %f\n", scene.sphere[i].material.color.x, scene.sphere[i].material.color.y, scene.sphere[i].material.color.z);
+		printf("position %f %f %f\n", scene.sphere[i].center.x, scene.sphere[i].center.y, scene.sphere[i].center.z);
+		printf("diameter %f\n", scene.sphere[i].radius);
+	}
+	
+	i = -1;
+	while (++i < scene.nb_plane)
+	{
+		printf("\nplane %d\n", i);
+		printf("color %f %f %f\n", scene.plane[i].material.color.x, scene.plane[i].material.color.y, scene.plane[i].material.color.z);
+		printf("position %f %f %f\n", scene.plane[i].point_on_plane.x, scene.plane[i].point_on_plane.y, scene.plane[i].point_on_plane.z);
+		printf("normal %f %f %f\n", scene.plane[i].normal.x, scene.plane[i].normal.y, scene.plane[i].normal.z);
+	}
+	i = -1;
+	while (++i < scene.nb_light)
+	{
+		printf("\nlight %d\n", i);
+		printf("color %f %f %f\n", scene.light[i].color.x, scene.light[i].color.y, scene.light[i].color.z);
+		printf("position %f %f %f\n", scene.light[i].position.x, scene.light[i].position.y, scene.light[i].position.z);
+		printf("brightness %f\n", scene.light[i].brightness);
+	}
+	i = -1;
+	while (++i < scene.nb_camera)
+	{
+		printf("\ncamera %d\n", i);
+		printf("position %f %f %f\n", scene.camera.pos.x, scene.camera.pos.y, scene.camera.pos.z);
+		printf("normal %f %f %f\n", scene.camera.angle.x, scene.camera.angle.y, scene.camera.angle.z);
+		printf("fov %f\n", scene.camera.fov);
+	}
+	i = -1;
+	while (++i < scene.nb_ambient)
+	{
+		printf("\nambient %d\n", i);
+		printf("color %f %f %f\n", scene.ambient.color.x, scene.ambient.color.y, scene.ambient.color.z);
+		printf("brightness %f\n", scene.ambient.intensity);
+	}
 }
 
 int	main(int argc, char *argv[])
 {
 	t_minirt	minirt;
-	int			fd;
 
-	if (argc == 2 && !check_file(argv[1]))
-		fd = open(argv[1], O_RDONLY);
-	else
-		return (0);
-	get_input_list(&minirt, fd);
-	validate_input(&minirt);
+	minirt.scene.nb_sphere = 0;
+	minirt.scene.nb_plane = 0;
+	minirt.scene.nb_triangle = 0;
+	minirt.scene.nb_cylinder = 0;
+	minirt.scene.nb_circle = 0;
+	minirt.scene.nb_cone = 0;
+	minirt.scene.nb_hyperboloid = 0;
+	minirt.scene.nb_paraboloid = 0;
+	minirt.scene.nb_obj = 0;
+	minirt.scene.nb_light = 0;
+	minirt.scene.nb_camera = 0;
+	minirt.scene.nb_ambient = 0;
 
-	if (init_minirt(&minirt) == ERROR)
-		return (ERROR);
-	
+	get_input(&minirt.scene, argc, argv);
+	print_scene(minirt.scene);
+	return (0);
+	if (init_minirt(&minirt) && get_input(&minirt.scene, argc, argv))
+		return (false);
+
 	// get_scene(&minirt);
 	minirt.scene = create_scene();
 
@@ -765,7 +837,6 @@ int	main(int argc, char *argv[])
 	mlx_loop(minirt.mlx);
 	mlx_delete_image(minirt.mlx, minirt.img);
 	mlx_terminate(minirt.mlx);
-	close(fd);
 	// system("leaks minirt");
-	return (SUCCESS);
+	return (true);
 }
