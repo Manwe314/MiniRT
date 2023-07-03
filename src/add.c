@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minirt.h"
-
+/*
 bool	is_normal(float x)
 {
 	if (x < -1 || x > 1)
@@ -389,4 +389,4 @@ bool	add_input(t_scene *scene, char *input)
 		&& cy_not_finished(input[i]) && add_cylinder(scene, input + ++i + 1))
 		return (true);
 	return (false);
-}
+}*/

@@ -428,7 +428,7 @@ void	hook(void *param);
 void print_input(t_minirt *minirt);
 
 int vector3_checker(t_vector3 vector3, float range_min, float range_max);
-//int check_file(char *file_name);
+int check_file(char *file_name);
 int is_non_valid_character(char a);
 int	is_all_space(char *input);
 float ft_atof(const char* str);

@@ -116,3 +116,23 @@ t_vector3	get_vector3(const char *line, int i, t_input_list *input)
 	free(param);
 	return (output);
 }
+
+void	*ft_realloc(void* ptr, size_t size)
+{
+	void	*new_ptr;
+
+	if (size == 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	new_ptr = malloc(size);
+	if (new_ptr == NULL)
+		return (NULL);
+	if (ptr != NULL)
+	{
+		ft_memcpy(new_ptr, ptr, size);
+		free(ptr);
+	}
+	return (new_ptr);
+}

@@ -116,3 +116,40 @@ t_model	get_model(void)
 	free(ordre);
 	return (model);
 }*/
+
+void	get_triangle(t_minirt *minirt, t_triangle triangle)
+{
+	minirt->scene.triangle[minirt->scene.nb_triangle] = triangle;
+	minirt->scene.triangle->material = return_material();
+	minirt->scene.triangle->material.color = vector3_multiply_float(
+			triangle.color, 1 / 255.0f);
+	minirt->scene.nb_triangle++;
+}
+
+
+void	get_cone(t_minirt *minirt, t_cone cone)
+{
+	minirt->scene.cone[minirt->scene.nb_cone] = cone;
+	minirt->scene.cone->material = return_material();
+	minirt->scene.cone->material.color = vector3_multiply_float(
+			cone.color, 1 / 255.0f);
+	minirt->scene.nb_cone++;
+}
+
+void	get_circle(t_minirt *minirt, t_circle circle)
+{
+	minirt->scene.circle[minirt->scene.nb_circle] = circle;
+	minirt->scene.circle->material = return_material();
+	minirt->scene.circle->material.color = vector3_multiply_float(
+			circle.color, 1 / 255.0f);
+	minirt->scene.nb_circle++;
+}
+
+void	get_hyperboloid(t_minirt *minirt, t_hyperboloid hyperboloid)
+{
+	minirt->scene.hyperboloid[minirt->scene.nb_hyperboloid] = hyperboloid;
+	minirt->scene.hyperboloid->material = return_material();
+	minirt->scene.hyperboloid->material.color = vector3_multiply_float(
+			hyperboloid.color, 1 / 255.0f);
+	minirt->scene.nb_hyperboloid++;
+}

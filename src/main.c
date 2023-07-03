@@ -589,11 +589,13 @@ void	get_camera(t_minirt *minirt, t_camera camera)
 	minirt->camera.pitch = minirt->camera.angle.y;
 	minirt->camera.yaw = minirt->camera.angle.x;
 	minirt->camera.is_clicked = false;
+	minirt->scene.nb_camera++;
 	rotation = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
 			rotation_x(to_radian(minirt->camera.yaw)));
 	rotation = mult_mat4x4(rotation,
 			rotation_z(to_radian(minirt->camera.angle.z)));
 	minirt->camera.inv_lookat = rotation;
+	minirt->scene.camera = minirt->camera;
 }
 
 void	get_ambient(t_minirt *minirt, t_ambient ambient)
@@ -608,76 +610,85 @@ void	get_ambient(t_minirt *minirt, t_ambient ambient)
 
 void	get_light(t_minirt *minirt, t_light light)
 {
-	t_vector3	tmp;
+	int	i;
 
-	light.color = vector3_multiply_float(light.color, 1 / 255.0f);
-	tmp = vector3_multiply_float(light.color, light.brightness);
-	light.color = tmp;
-	minirt->scene.light[minirt->scene.nb_light] = light;
-	minirt->scene.nb_light++;
+	if (minirt->scene.nb_light == 0)
+		minirt->scene.light = malloc(sizeof(t_light));
+	else
+		minirt->scene.light = ft_realloc(minirt->scene.light, sizeof(t_light) * (minirt->scene.nb_light + 1));
+	if (!minirt->scene.light)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_light++;
+	minirt->scene.light[i] = light;
+	minirt->scene.light[i].color = vector3_multiply_float(light.color, 1 / 255.0f);
 }
 
 void	get_sphere(t_minirt *minirt, t_sphere sphere)
 {
-	minirt->scene.sphere[minirt->scene.nb_sphere] = sphere;
-	minirt->scene.sphere->material = return_material();
-	minirt->scene.sphere->material.color = vector3_multiply_float(
-			sphere.color, 1 / 255.0f);
-	minirt->scene.nb_sphere++;
-}
+	int	i;
 
-void	get_plane(t_minirt *minirt, t_plane plane)
-{
-	minirt->scene.plane[minirt->scene.nb_plane] = plane;
-	minirt->scene.plane->material = return_material();
-	minirt->scene.plane->material.color = vector3_multiply_float(
-			plane.color, 1 / 255.0f);
-	minirt->scene.nb_plane++;
-}
-
-void	get_triangle(t_minirt *minirt, t_triangle triangle)
-{
-	minirt->scene.triangle[minirt->scene.nb_triangle] = triangle;
-	minirt->scene.triangle->material = return_material();
-	minirt->scene.triangle->material.color = vector3_multiply_float(
-			triangle.color, 1 / 255.0f);
-	minirt->scene.nb_triangle++;
+	if (minirt->scene.nb_sphere == 0)
+		minirt->scene.sphere = malloc(sizeof(t_sphere));
+	else
+		minirt->scene.sphere = ft_realloc(minirt->scene.sphere, sizeof(t_sphere) * (minirt->scene.nb_sphere + 1));
+	if (!minirt->scene.sphere)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_sphere++;
+	minirt->scene.sphere[i] = sphere;
+	minirt->scene.sphere[i].material = return_material();
+	minirt->scene.sphere[i].material.color = vector3_multiply_float(minirt->scene.sphere[i].material.color, 1 / 255.0f);
 }
 
 void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
 {
-	minirt->scene.cylinder[minirt->scene.nb_cylinder] = cylinder;
-	minirt->scene.cylinder->material = return_material();
-	minirt->scene.cylinder->material.color = vector3_multiply_float(
+	int	i;
+
+	if (minirt->scene.nb_cylinder == 0)
+		minirt->scene.cylinder = malloc(sizeof(t_cylinder));
+	else
+		minirt->scene.cylinder = ft_realloc(minirt->scene.cylinder, sizeof(t_cylinder) * (minirt->scene.nb_cylinder + 1));
+	if (!minirt->scene.cylinder)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_cylinder++;
+	minirt->scene.cylinder[i] = cylinder;
+	minirt->scene.cylinder[i].material = return_material();
+	minirt->scene.cylinder[i].material.color = vector3_multiply_float(
 			cylinder.color, 1 / 255.0f);
 	minirt->scene.nb_cylinder++;
 }
 
-void	get_cone(t_minirt *minirt, t_cone cone)
-{
-	minirt->scene.cone[minirt->scene.nb_cone] = cone;
-	minirt->scene.cone->material = return_material();
-	minirt->scene.cone->material.color = vector3_multiply_float(
-			cone.color, 1 / 255.0f);
-	minirt->scene.nb_cone++;
-}
 
-void	get_circle(t_minirt *minirt, t_circle circle)
+void	get_plane(t_minirt *minirt, t_plane plane)
 {
-	minirt->scene.circle[minirt->scene.nb_circle] = circle;
-	minirt->scene.circle->material = return_material();
-	minirt->scene.circle->material.color = vector3_multiply_float(
-			circle.color, 1 / 255.0f);
-	minirt->scene.nb_circle++;
-}
+	int	i;
 
-void	get_hyperboloid(t_minirt *minirt, t_hyperboloid hyperboloid)
-{
-	minirt->scene.hyperboloid[minirt->scene.nb_hyperboloid] = hyperboloid;
-	minirt->scene.hyperboloid->material = return_material();
-	minirt->scene.hyperboloid->material.color = vector3_multiply_float(
-			hyperboloid.color, 1 / 255.0f);
-	minirt->scene.nb_hyperboloid++;
+	if (minirt->scene.nb_plane == 0)
+		minirt->scene.plane = malloc(sizeof(t_plane));
+	else
+		minirt->scene.plane = ft_realloc(minirt->scene.plane, sizeof(t_plane) * (minirt->scene.nb_plane + 1));
+	if (!minirt->scene.plane)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_plane++;
+	minirt->scene.plane[i] = plane;
+	minirt->scene.plane[i].material = return_material();
+	minirt->scene.plane[i].material.color = vector3_multiply_float(
+			plane.color, 1 / 255.0f);
 }
 
 
@@ -694,19 +705,12 @@ static bool	get_scene(t_minirt *minirt)
 	minirt->scene.nb_circle = 0;
 	minirt->scene.nb_hyperboloid = 0;
 	minirt->scene.nb_light = 0;
-
-	minirt->scene.sphere = malloc(sizeof(t_sphere) * 20);
-	minirt->scene.plane = malloc(sizeof(t_plane) * 20);
-	minirt->scene.triangle = malloc(sizeof(t_triangle) * 20);
-	minirt->scene.cylinder = malloc(sizeof(t_cylinder) * 20);
-	minirt->scene.cone = malloc(sizeof(t_cone) * 20);
-	minirt->scene.circle = malloc(sizeof(t_circle) * 20);
-	minirt->scene.hyperboloid = malloc(sizeof(t_hyperboloid) * 20);
-	minirt->scene.light = malloc(sizeof(t_light) * 20);
-
+	minirt->scene.nb_camera = 0;
+	minirt->scene.nb_ambient = 0;
 
 	while (minirt->input_head)
 	{
+		printf("name:%s\n", minirt->input_head->name);
 		if (ft_strncmp("Ambient", minirt->input_head->name, 7) == 0)
 			get_ambient(minirt, *(t_ambient *)minirt->input_head->object);
 		else if (ft_strncmp("Camera", minirt->input_head->name, 6) == 0)
@@ -719,6 +723,7 @@ static bool	get_scene(t_minirt *minirt)
 			get_plane(minirt, *(t_plane *)minirt->input_head->object);
 		else if (ft_strncmp("Cylinder", minirt->input_head->name, 8) == 0)
 			get_cylinder(minirt, *(t_cylinder *)minirt->input_head->object);
+
 		/*
 		else if (ft_strncmp("Triangle", minirt->input_head->name, 8) == 0)
 			get_triangle(minirt, *(t_triangle *)minirt->input_head->object);
@@ -750,7 +755,8 @@ void	print_scene(t_scene scene)
 	printf("nb_cylinder %d\n", scene.nb_cylinder);
 	printf("nb_light %d\n", scene.nb_light);
 	printf("nb_camera %d\n", scene.nb_camera);
-	printf("nb_ambient %d\n", scene.nb_ambient);
+	printf("nb_ambient %d\n\n", scene.nb_ambient);
+
 
 	while (++i < scene.nb_cylinder)
 	{
@@ -759,7 +765,7 @@ void	print_scene(t_scene scene)
 		printf("position %f %f %f\n", scene.cylinder[i].center.x, scene.cylinder[i].center.y, scene.cylinder[i].center.z);
 		printf("normal %f %f %f\n", scene.cylinder[i].normal.x, scene.cylinder[i].normal.y, scene.cylinder[i].normal.z);
 		printf("diameter %f\n", scene.cylinder[i].radius);
-		printf("height %f\n", scene.cylinder[i].height);
+		printf("height %f\n\n", scene.cylinder[i].height);
 	}
 	i = -1;
 	while (++i < scene.nb_sphere)
@@ -767,7 +773,7 @@ void	print_scene(t_scene scene)
 		printf("\nsphere %d\n", i);
 		printf("color %f %f %f\n", scene.sphere[i].material.color.x, scene.sphere[i].material.color.y, scene.sphere[i].material.color.z);
 		printf("position %f %f %f\n", scene.sphere[i].center.x, scene.sphere[i].center.y, scene.sphere[i].center.z);
-		printf("diameter %f\n", scene.sphere[i].radius);
+		printf("diameter %f\n\n", scene.sphere[i].radius);
 	}
 	
 	i = -1;
@@ -776,7 +782,7 @@ void	print_scene(t_scene scene)
 		printf("\nplane %d\n", i);
 		printf("color %f %f %f\n", scene.plane[i].material.color.x, scene.plane[i].material.color.y, scene.plane[i].material.color.z);
 		printf("position %f %f %f\n", scene.plane[i].point_on_plane.x, scene.plane[i].point_on_plane.y, scene.plane[i].point_on_plane.z);
-		printf("normal %f %f %f\n", scene.plane[i].normal.x, scene.plane[i].normal.y, scene.plane[i].normal.z);
+		printf("normal %f %f %f\n\n", scene.plane[i].normal.x, scene.plane[i].normal.y, scene.plane[i].normal.z);
 	}
 	i = -1;
 	while (++i < scene.nb_light)
@@ -784,16 +790,13 @@ void	print_scene(t_scene scene)
 		printf("\nlight %d\n", i);
 		printf("color %f %f %f\n", scene.light[i].color.x, scene.light[i].color.y, scene.light[i].color.z);
 		printf("position %f %f %f\n", scene.light[i].position.x, scene.light[i].position.y, scene.light[i].position.z);
-		printf("brightness %f\n", scene.light[i].brightness);
+		printf("brightness %f\n\n", scene.light[i].brightness);
 	}
-	i = -1;
-	while (++i < scene.nb_camera)
-	{
-		printf("\ncamera %d\n", i);
-		printf("position %f %f %f\n", scene.camera.pos.x, scene.camera.pos.y, scene.camera.pos.z);
-		printf("normal %f %f %f\n", scene.camera.angle.x, scene.camera.angle.y, scene.camera.angle.z);
-		printf("fov %f\n", scene.camera.fov);
-	}
+	printf("\ncamera %d\n", i);
+	printf("position %f %f %f\n", scene.camera.pos.x, scene.camera.pos.y, scene.camera.pos.z);
+	printf("normal %f %f %f\n", scene.camera.angle.x, scene.camera.angle.y, scene.camera.angle.z);
+	printf("fov %f\n\n", scene.camera.fov);
+
 	i = -1;
 	while (++i < scene.nb_ambient)
 	{
@@ -806,25 +809,25 @@ void	print_scene(t_scene scene)
 int	main(int argc, char *argv[])
 {
 	t_minirt	minirt;
+	int			fd;
 
-	minirt.scene.nb_sphere = 0;
-	minirt.scene.nb_plane = 0;
-	minirt.scene.nb_triangle = 0;
-	minirt.scene.nb_cylinder = 0;
-	minirt.scene.nb_circle = 0;
-	minirt.scene.nb_cone = 0;
-	minirt.scene.nb_hyperboloid = 0;
-	minirt.scene.nb_paraboloid = 0;
-	minirt.scene.nb_obj = 0;
-	minirt.scene.nb_light = 0;
-	minirt.scene.nb_camera = 0;
-	minirt.scene.nb_ambient = 0;
+	if (argc == 2 && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		return (0);
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
+	print_input(&minirt);
 
-	get_input(&minirt.scene, argc, argv);
+	if (get_scene(&minirt) == false)
+		printf("error\n");
 	print_scene(minirt.scene);
 	return (0);
-	if (init_minirt(&minirt) && get_input(&minirt.scene, argc, argv))
-		return (false);
+	// get_input(&minirt.scene, argc, argv);
+	// print_scene(minirt.scene);
+	// return (0);
+	// if (init_minirt(&minirt) && get_input(&minirt.scene, argc, argv))
+		// return (false);
 
 	// get_scene(&minirt);
 	minirt.scene = create_scene();
