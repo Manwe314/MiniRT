@@ -23,10 +23,17 @@ $(NAME): $(OBJS)
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
 clean:
+	@make -C $(LIBFT) clean 
 	@rm -f $(OBJS)
 
 fclean: clean
+	@make -C $(LIBFT) fclean
 	@rm -f $(NAME)
+
+git: fclean
+	git add .
+	git commit -m "auto commit"
+	git push
 
 re: clean all
 

@@ -184,6 +184,8 @@ t_scene	create_scene(void)
 	scene.hyperboloid = malloc(sizeof(t_hyperboloid) * 20);
 	scene.light = malloc(sizeof(t_light) * 20);
 
+
+
 	red = return_material();
 	red.color = vector3(1.0f, 0.0f, 0.0f);
 	red.emission_strength = emission_strength;
@@ -386,6 +388,9 @@ t_scene	create_scene(void)
 	scene.nb_hyperboloid = 0;
 	scene.nb_paraboloid = 0;
 	scene.nb_obj = 0;
+	scene.nb_ambient = 0;
+	scene.nb_light = 0;
+	scene.nb_camera = 0;
 
 	scene.nb_plane = 6;
 	scene.nb_sphere = 2;
@@ -553,22 +558,22 @@ static bool	init_minirt(t_minirt *minirt)
 
 	minirt->error = 1;
 
-	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
+	// minirt->camera.fov = 90.0f;
+	// minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
-	minirt->camera.pitch = 0.0f;
-	minirt->camera.yaw = 0.0f;
-
-	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)), \
-		rotation_x(to_radian(minirt->camera.yaw)));
+	// minirt->camera.pitch = 0.0f;
+	// minirt->camera.yaw = 0.0f;
+// 
+	// minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
+		// rotation_x(to_radian(minirt->camera.yaw)));
 
 	minirt->moved = true;
-	minirt->camera.is_clicked = false;
+	//minirt->camera.is_clicked = false;
 	minirt->stop = false;
 	minirt->x = 0;
 	minirt->y = 1;
@@ -606,6 +611,7 @@ void	get_ambient(t_minirt *minirt, t_ambient ambient)
 	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
 	tmp = vector3_multiply_float(ambient.color, ambient.intensity);
 	minirt->scene.ambient.ambient = tmp;
+	minirt->scene.nb_ambient = 1;
 }
 
 void	get_light(t_minirt *minirt, t_light light)
@@ -666,7 +672,6 @@ void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
 	minirt->scene.cylinder[i].material = return_material();
 	minirt->scene.cylinder[i].material.color = vector3_multiply_float(
 			cylinder.color, 1 / 255.0f);
-	minirt->scene.nb_cylinder++;
 }
 
 
@@ -696,6 +701,7 @@ static bool	get_scene(t_minirt *minirt)
 {
 	int	i;
 	int	j;
+	t_input_list	*tmp;
 
 	minirt->scene.nb_sphere = 0;
 	minirt->scene.nb_plane = 0;
@@ -710,7 +716,6 @@ static bool	get_scene(t_minirt *minirt)
 
 	while (minirt->input_head)
 	{
-		printf("name:%s\n", minirt->input_head->name);
 		if (ft_strncmp("Ambient", minirt->input_head->name, 7) == 0)
 			get_ambient(minirt, *(t_ambient *)minirt->input_head->object);
 		else if (ft_strncmp("Camera", minirt->input_head->name, 6) == 0)
@@ -736,11 +741,14 @@ static bool	get_scene(t_minirt *minirt)
 		else if (ft_strncmp("Paraboloid", minirt->input_head->name, 10) == 0)
 			get_paraboloid(minirt, *(t_paraboloid *)minirt->input_head->object);
 		*/
-		else
-			return (false);
-		
+		tmp = minirt->input_head;
 		minirt->input_head = minirt->input_head->next;
+		free(tmp->name);
+		free(tmp->object);
+		free(tmp);
 	}
+	free(minirt->input_head);
+	printf("nb_ambient HAHAHAHHAHAHAHAHAAH %d\n", minirt->scene.nb_ambient);
 	return (true);
 }
 
@@ -797,13 +805,9 @@ void	print_scene(t_scene scene)
 	printf("normal %f %f %f\n", scene.camera.angle.x, scene.camera.angle.y, scene.camera.angle.z);
 	printf("fov %f\n\n", scene.camera.fov);
 
-	i = -1;
-	while (++i < scene.nb_ambient)
-	{
-		printf("\nambient %d\n", i);
-		printf("color %f %f %f\n", scene.ambient.color.x, scene.ambient.color.y, scene.ambient.color.z);
-		printf("brightness %f\n", scene.ambient.intensity);
-	}
+	printf("\nambient %d\n", i);
+	printf("color %f %f %f\n", scene.ambient.color.x, scene.ambient.color.y, scene.ambient.color.z);
+	printf("brightness %f\n", scene.ambient.intensity);
 }
 
 int	main(int argc, char *argv[])
@@ -817,21 +821,17 @@ int	main(int argc, char *argv[])
 		return (0);
 	get_input_list(&minirt, fd);
 	validate_input(&minirt);
-	print_input(&minirt);
 
-	if (get_scene(&minirt) == false)
-		printf("error\n");
-	print_scene(minirt.scene);
-	return (0);
 	// get_input(&minirt.scene, argc, argv);
 	// print_scene(minirt.scene);
 	// return (0);
-	// if (init_minirt(&minirt) && get_input(&minirt.scene, argc, argv))
-		// return (false);
-
 	// get_scene(&minirt);
+	if (init_minirt(&minirt) == false)
+		return (false);
+	// if (get_scene(&minirt) == false)
+		// printf("error\n");
 	minirt.scene = create_scene();
-
+	print_scene(minirt.scene);
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);

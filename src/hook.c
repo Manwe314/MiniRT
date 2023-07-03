@@ -142,7 +142,7 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		while (++y < minirt->height)
 		{
 			i = x * minirt->height + y;
-			color = perpixel(param->ray[i], &minirt->scene, i + param->frames);
+			color = Perpixel(param->ray[i], &minirt->scene, i + param->frames);
 			param->accumulated_color[i] = \
 				vector3_add(param->accumulated_color[i], color);
 			color = vector3_multiply_float(param->accumulated_color[i],
@@ -159,12 +159,10 @@ void	hook(void *mini)
 	static t_param	param;
 
 	minirt = (t_minirt *)mini;
-
 	print_fps(minirt);
 	if (should_stop(minirt))
 	{
 		free_param(&param);
-		printf("free param\n");
 		mlx_close_hook(minirt->mlx, &close_function, minirt);
 		mlx_close_window(minirt->mlx);
 		return ;
