@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-/*t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
+t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 {
 	t_info	hit_info;
 	t_info	closest_hit;
@@ -83,7 +83,7 @@
 	}
 
 	return (closest_hit);
-}*/
+}
 
 t_vector3	checker(const t_vector3 *point, const t_info *hit_info)
 {

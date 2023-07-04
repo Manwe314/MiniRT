@@ -4,5 +4,11 @@
 		"typeinfo": "c",
 		"stdint.h": "c",
 		"algorithm": "c"
-	}
+	},
+	"workbench.colorCustomizations": {
+		"activityBar.background": "#4C2111",
+		"titleBar.activeBackground": "#6A2E17",
+		"titleBar.activeForeground": "#FEFCFB"
+	},
+	"cmake.configureOnOpen": false
 }
