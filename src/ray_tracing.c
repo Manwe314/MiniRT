@@ -214,6 +214,8 @@ t_vector3	Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 	t_vector3	incoming_light;
 	t_info		hit_info;
 
+	// print_scene(*scene);
+	// exit(EXIT_SUCCESS) ;
 	raycolor = vector3(0.0f, 0.0f, 0.0f);
 	hit_info = calculate_ray_collision(ray, scene);
 	if (hit_info.hit_distance != FLT_MAX)

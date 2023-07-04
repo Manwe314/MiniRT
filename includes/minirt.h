@@ -295,6 +295,9 @@ typedef struct s_minirt
 	t_scene			scene;
 }	t_minirt;
 
+
+void	print_scene(t_scene scene);
+
 void	hooki(t_minirt *minirt);
 
 bool	add_input(t_scene *scene, char *input);

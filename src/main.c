@@ -600,7 +600,6 @@ void	get_camera(t_minirt *minirt, t_camera camera)
 	rotation = mult_mat4x4(rotation,
 			rotation_z(to_radian(minirt->camera.angle.z)));
 	minirt->camera.inv_lookat = rotation;
-	minirt->scene.camera = minirt->camera;
 }
 
 void	get_ambient(t_minirt *minirt, t_ambient ambient)
@@ -800,14 +799,6 @@ void	print_scene(t_scene scene)
 		printf("position %f %f %f\n", scene.light[i].position.x, scene.light[i].position.y, scene.light[i].position.z);
 		printf("brightness %f\n\n", scene.light[i].brightness);
 	}
-	printf("\ncamera %d\n", i);
-	printf("position %f %f %f\n", scene.camera.pos.x, scene.camera.pos.y, scene.camera.pos.z);
-	printf("normal %f %f %f\n", scene.camera.angle.x, scene.camera.angle.y, scene.camera.angle.z);
-	printf("fov %f\n\n", scene.camera.fov);
-
-	printf("\nambient %d\n", i);
-	printf("color %f %f %f\n", scene.ambient.color.x, scene.ambient.color.y, scene.ambient.color.z);
-	printf("brightness %f\n", scene.ambient.intensity);
 }
 
 int	main(int argc, char *argv[])
@@ -828,10 +819,10 @@ int	main(int argc, char *argv[])
 	// get_scene(&minirt);
 	if (init_minirt(&minirt) == false)
 		return (false);
-	// if (get_scene(&minirt) == false)
-		// printf("error\n");
+	if (get_scene(&minirt) == false)
+		printf("error\n");
 	minirt.scene = create_scene();
-	print_scene(minirt.scene);
+	//print_scene(minirt.scene);
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
