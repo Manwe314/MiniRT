@@ -10,5 +10,6 @@
 		"titleBar.activeBackground": "#6A2E17",
 		"titleBar.activeForeground": "#FEFCFB"
 	},
-	"cmake.configureOnOpen": false
+	"cmake.configureOnOpen": false,
+	"cmake.sourceDirectory": "/root/MiniRT/lib/MLX42"
 }

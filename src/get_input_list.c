@@ -21,13 +21,14 @@ char	*remove_new_line(char *line)
 	if (line == 0)
 		return (0);
 	size = ft_strlen(line);
+	if (line[size - 1] != '\n')
+		return (line);
 	new = malloc(sizeof(char) * size);
-	i = 0;
-	while (i < size - 1)
-	{
+	if (new == 0)
+		return (0);
+	i = -1;
+	while (++i < size - 1)
 		new[i] = line[i];
-		i++;
-	}
 	new[i] = '\0';
 	free(line);
 	return (new);

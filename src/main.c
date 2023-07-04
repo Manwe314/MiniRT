@@ -60,35 +60,35 @@ void	print_input(t_minirt *minirt)
 		if (ft_strncmp(input->name, "Ambient", 7) == 0)
 		{
 			t_ambient *amb = input->object;
-			printf("intense: %f\ncolor: %f , %f, %f.\n", amb->intensity,
+			printf("intense: %f\ncolor: %f , %f, %f\n", amb->intensity,
 				amb->color.x, amb->color.y, amb->color.z);
 		}
 		if (ft_strncmp(input->name, "Camera", 6) == 0)
 		{
 			t_camera *cam = input->object;
-			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f.\n",
+			printf("fov: %f\ncoords: %f , %f, %f.\nnormal: %f , %f, %f\n",
 				cam->fov, cam->position.x, cam->position.y, cam->position.z,
 				cam->orientation.x, cam->orientation.y, cam->orientation.z);
 		}
 		if (ft_strncmp(input->name, "Light", 5) == 0)
 		{
 			t_light	*cam = input->object;
-			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, \
-				%f.\n", cam->brightness, cam->position.x, cam->position.y, \
+			printf("brightness: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n",
+				cam->brightness, cam->position.x, cam->position.y, \
 				cam->position.z, cam->color.x, cam->color.y, cam->color.z);
 		}
 		if (ft_strncmp(input->name, "Sphere", 6) == 0)
 		{
 			t_sphere *cam = input->object;
-			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f.\n", \
+			printf("radious: %f\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n", \
 				cam->radius, cam->center.x, cam->center.y, cam->center.z, \
 				cam->color.x, cam->color.y, cam->color.z);
 		}
 		if (ft_strncmp(input->name, "Plane", 5) == 0)
 		{
 			t_plane	*cam = input->object;
-			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, \
-				%f.\n", cam->normal.x, cam->normal.y, cam->normal.z, \
+			printf("normal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n",
+				cam->normal.x, cam->normal.y, cam->normal.z, \
 				cam->point_on_plane.x, cam->point_on_plane.y, \
 				cam->point_on_plane.z, cam->color.x, cam->color.y, \
 				cam->color.z);
@@ -96,13 +96,13 @@ void	print_input(t_minirt *minirt)
 		if (ft_strncmp(input->name, "Cylinder", 8) == 0)
 		{
 			t_cylinder *cam = input->object;
-			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , \
-				%f, %f.\ncolor: %f , %f, %f.\n", cam->height, cam->radius, \
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n",
+				cam->height, cam->radius, \
 				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \
 				cam->center.y, cam->center.z, cam->color.x, cam->color.y, \
 				cam->color.z);
-			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , \
-				%f, %f.\ncolor: %f , %f, %f.\n", cam->height, cam->radius, \
+			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n",
+				cam->height, cam->radius, \
 				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \
 				cam->center.y, cam->center.z, cam->color.x, cam->color.y, \
 				cam->color.z);
@@ -407,9 +407,41 @@ t_scene	create_scene2(void)
 	t_material	green;
 	t_material	blue;
 	t_material	white;
+	t_material	yellow;
+	t_material	purple;
+	t_material	black;
 	t_material	light;
 
-	float	emission_strength = 0.0f;
+
+	scene.camera.fov = 90.0f;
+	scene.camera.pos = vector3(0.0f, 1.0f, 2.5f);
+	scene.camera.pitch = 0.0f;
+	scene.camera.yaw = 0.0f;
+	scene.camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(scene.camera.pitch)),
+			rotation_x(to_radian(scene.camera.yaw)));
+	scene.camera.is_clicked = false;
+
+	float emission_strength = 0.0f;
+	
+	scene.nb_sphere = 0;
+	scene.nb_plane = 0;
+	scene.nb_triangle = 0;
+	scene.nb_cylinder = 0;
+	scene.nb_cone = 0;
+	scene.nb_circle = 0;
+	scene.nb_hyperboloid = 0;
+	scene.nb_light = 0;
+
+	scene.sphere = malloc(sizeof(t_sphere) * 10);
+	scene.plane = malloc(sizeof(t_plane) * 10);
+	scene.triangle = malloc(sizeof(t_triangle) * 10);
+	scene.cylinder = malloc(sizeof(t_cylinder) * 10);
+	scene.cone = malloc(sizeof(t_cone) * 10);
+	scene.circle = malloc(sizeof(t_circle) * 10);
+	scene.hyperboloid = malloc(sizeof(t_hyperboloid) * 10);
+	scene.light = malloc(sizeof(t_light) * 10);
+
+
 
 	red = return_material();
 	red.color = vector3(1.0f, 0.0f, 0.0f);
@@ -439,97 +471,59 @@ t_scene	create_scene2(void)
 	white.emission = vector3_multiply_float(white.emission_color, \
 		white.emission_strength);
 
+	yellow = return_material();
+	yellow.color = vector3(1.0f, 1.0f, 0.0f);
+	yellow.emission_strength = emission_strength;
+	yellow.emission_color = vector3(1.0f, 1.0f, 0.0f);
+	yellow.emission = vector3_multiply_float(yellow.emission_color, \
+		yellow.emission_strength);
+
+	purple = return_material();
+	purple.color = vector3(1.0f, 0.0f, 1.0f);
+	purple.emission_strength = emission_strength;
+	purple.emission_color = vector3(1.0f, 0.0f, 1.0f);
+	purple.emission = vector3_multiply_float(purple.emission_color, \
+		purple.emission_strength);
+
+	black = return_material();
+	black.color = vector3(0.0f, 0.0f, 0.0f);
+	black.emission_strength = emission_strength;
+	black.emission_color = vector3(0.0f, 0.0f, 0.0f);
+	black.emission = vector3_multiply_float(black.emission_color, \
+		black.emission_strength);
+
 	light = return_material();
 	light.color = vector3(1.0f, 1.0f, 1.0f);
-	light.emission_strength = 1.0f;
+	light.emission_strength = 0.6f;
 	light.emission_color = vector3(1.0f, 1.0f, 1.0f);
 	light.emission = vector3_multiply_float(light.emission_color, \
 		light.emission_strength);
 
-	t_triangle	triangle;
-	triangle.p[0] = vector3(-1, 4, 0);
-	triangle.p[1] = vector3(1, 4, 0);
-	triangle.p[2] = vector3(0, 4, 1);
-	triangle.material = light;
-	scene.triangle[0] = triangle;
-
 	t_sphere	sphere;
 	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
 	sphere.radius = 1.0f;
-	sphere.material = blue;
-	sphere.material.specular_probability = 1.0f;
+	sphere.material = white;
+	sphere.material.specular_probability = 0.0f;
+	sphere.material.smoothness = 1.0f;
+	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
-
-	t_sphere	sphere2;
-	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
-	sphere2.radius = 1.0f;
-	sphere2.material = white;
-	sphere2.material.specular_probability = 1.0f;
-	scene.sphere[1] = sphere2;
-
-	/*t_sphere	sphere3;
-	sphere3.center = vector3(1.0f, 1.5f, 0.0f);
-	sphere3.radius = 1.0f;
-	sphere3.material = white;
-	sphere3.material.specular_probability = 1.0f;
-	scene.sphere[0] = sphere3;*/
 
 	t_plane	plane;
 	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3_normalize(plane.normal);
-	plane.material = red;
+	plane.material = white;
+	plane.material.specular_color = vector3(0.3f, 0.6f, 0.2f);
 	plane.material.flag = CHECKER_PATTERN;
 	scene.plane[0] = plane;
 
-	t_plane	plane2;
-	plane2.point_on_plane = vector3(0.0f, 5.0f, 0.0f);
-	plane2.normal = vector3(0.0f, -1.0f, 0.0f);
-	plane2.normal = vector3_normalize(plane2.normal);
-	plane2.material = light;
-	scene.plane[1] = plane2;
-
-	t_plane	plane3;
-	plane3.point_on_plane = vector3(0.0f, 0.0f, -5.0f);
-	plane3.normal = vector3(0.0f, 0.0f, 1.0f);
-	plane3.normal = vector3_normalize(plane3.normal);
-	plane3.material = white;
-	scene.plane[2] = plane3;
-
-	t_plane	plane4;
-	plane4.point_on_plane = vector3(0.0f, 0.0f, 5.0f);
-	plane4.normal = vector3(0.0f, 0.0f, -1.0f);
-	plane4.normal = vector3_normalize(plane4.normal);
-	plane4.material = white;
-	scene.plane[3] = plane4;
-
-	t_plane	plane5;
-	plane5.point_on_plane = vector3(-5.0f, 0.0f, 0.0f);
-	plane5.normal = vector3(1.0f, 0.0f, 0.0f);
-	plane5.normal = vector3_normalize(plane5.normal);
-	plane5.material = red;
-	scene.plane[4] = plane5;
-
-	t_plane	plane6;
-	plane6.point_on_plane = vector3(5.0f, 0.0f, 0.0f);
-	plane6.normal = vector3(-1.0f, 0.0f, 0.0f);
-	plane6.normal = vector3_normalize(plane6.normal);
-	plane6.material = green;
-	scene.plane[5] = plane6;
-
-	float light_strength = 5.0f;
+	float	light_strength = 0.8f;
 
 	t_light	led;
-	led.position = vector3(0, 3, 0);
+	led.position = vector3(3, 1.9f, 0);
 	led.color = vector3(1.0f, 1.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
-
-	t_light	led2;
-	led2.position = vector3(0, 4, 0);
-	led2.color = vector3(1.0f, 1.0f, 1.0f);
-	led2.brightness = light_strength;
-	scene.light[1] = led2;
 
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
@@ -540,11 +534,16 @@ t_scene	create_scene2(void)
 	scene.nb_hyperboloid = 0;
 	scene.nb_paraboloid = 0;
 	scene.nb_obj = 0;
+	scene.nb_ambient = 0;
+	scene.nb_light = 0;
+	scene.nb_camera = 0;
 
 	scene.nb_plane = 1;
 	scene.nb_sphere = 1;
 	scene.nb_light = 1;
 	scene.nb_triangle = 0;
+	scene.nb_cylinder = 0;
+	scene.nb_camera = 1;
 	return (scene);
 }
 
@@ -558,22 +557,22 @@ static bool	init_minirt(t_minirt *minirt)
 
 	minirt->error = 1;
 
-	// minirt->camera.fov = 90.0f;
-	// minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
+	
+	// minirt->camera.fov = 90.0f;
+	// minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 	// minirt->camera.pitch = 0.0f;
 	// minirt->camera.yaw = 0.0f;
-// 
 	// minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
 		// rotation_x(to_radian(minirt->camera.yaw)));
+	// minirt->camera.is_clicked = false;
 
 	minirt->moved = true;
-	//minirt->camera.is_clicked = false;
 	minirt->stop = false;
 	minirt->x = 0;
 	minirt->y = 1;
@@ -600,6 +599,7 @@ void	get_camera(t_minirt *minirt, t_camera camera)
 	rotation = mult_mat4x4(rotation,
 			rotation_z(to_radian(minirt->camera.angle.z)));
 	minirt->camera.inv_lookat = rotation;
+	minirt->scene.camera = minirt->camera;
 }
 
 void	get_ambient(t_minirt *minirt, t_ambient ambient)
@@ -608,8 +608,7 @@ void	get_ambient(t_minirt *minirt, t_ambient ambient)
 
 	minirt->scene.ambient = ambient;
 	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
-	tmp = vector3_multiply_float(ambient.color, ambient.intensity);
-	minirt->scene.ambient.ambient = tmp;
+	minirt->scene.ambient.ambient = vector3_multiply_float(ambient.color, ambient.intensity);
 	minirt->scene.nb_ambient = 1;
 }
 
@@ -649,7 +648,7 @@ void	get_sphere(t_minirt *minirt, t_sphere sphere)
 	i = minirt->scene.nb_sphere++;
 	minirt->scene.sphere[i] = sphere;
 	minirt->scene.sphere[i].material = return_material();
-	minirt->scene.sphere[i].material.color = vector3_multiply_float(minirt->scene.sphere[i].material.color, 1 / 255.0f);
+	minirt->scene.sphere[i].material.color = vector3_multiply_float(sphere.color, 1 / 255.0f);
 }
 
 void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
@@ -671,6 +670,8 @@ void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
 	minirt->scene.cylinder[i].material = return_material();
 	minirt->scene.cylinder[i].material.color = vector3_multiply_float(
 			cylinder.color, 1 / 255.0f);
+	cylinder.circle_bottom = get_circle_from_cylinder(cylinder, 0);
+	cylinder.circle_top = get_circle_from_cylinder(cylinder, 1);
 }
 
 
@@ -706,12 +707,14 @@ static bool	get_scene(t_minirt *minirt)
 	minirt->scene.nb_plane = 0;
 	minirt->scene.nb_triangle = 0;
 	minirt->scene.nb_cylinder = 0;
-	minirt->scene.nb_cone = 0;
 	minirt->scene.nb_circle = 0;
+	minirt->scene.nb_cone = 0;
 	minirt->scene.nb_hyperboloid = 0;
+	minirt->scene.nb_paraboloid = 0;
+	minirt->scene.nb_obj = 0;
+	minirt->scene.nb_ambient = 0;
 	minirt->scene.nb_light = 0;
 	minirt->scene.nb_camera = 0;
-	minirt->scene.nb_ambient = 0;
 
 	while (minirt->input_head)
 	{
@@ -782,7 +785,7 @@ void	print_scene(t_scene scene)
 		printf("position %f %f %f\n", scene.sphere[i].center.x, scene.sphere[i].center.y, scene.sphere[i].center.z);
 		printf("diameter %f\n\n", scene.sphere[i].radius);
 	}
-	
+
 	i = -1;
 	while (++i < scene.nb_plane)
 	{
@@ -799,6 +802,10 @@ void	print_scene(t_scene scene)
 		printf("position %f %f %f\n", scene.light[i].position.x, scene.light[i].position.y, scene.light[i].position.z);
 		printf("brightness %f\n\n", scene.light[i].brightness);
 	}
+	printf("Camera\n");
+	printf("position %f %f %f\n", scene.camera.pos.x, scene.camera.pos.y, scene.camera.pos.z);
+	printf("normal %f %f %f\n", scene.camera.pitch, scene.camera.yaw, scene.camera.angle.z);
+	printf("fov %f\n", scene.camera.fov);
 }
 
 int	main(int argc, char *argv[])
@@ -813,16 +820,16 @@ int	main(int argc, char *argv[])
 	get_input_list(&minirt, fd);
 	validate_input(&minirt);
 
-	// get_input(&minirt.scene, argc, argv);
-	// print_scene(minirt.scene);
-	// return (0);
-	// get_scene(&minirt);
 	if (init_minirt(&minirt) == false)
 		return (false);
 	if (get_scene(&minirt) == false)
 		printf("error\n");
-	minirt.scene = create_scene();
-	//print_scene(minirt.scene);
+
+
+	print_scene(minirt.scene);
+	// minirt.scene = create_scene2();
+	// print_scene(minirt.scene);
+
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
 	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
