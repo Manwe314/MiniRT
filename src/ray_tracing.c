@@ -190,6 +190,14 @@ t_vector3	color_lights(t_ray ray, const t_scene *scene, uint rng_seed,
 	return (color);
 }
 
+t_vector3	add_ambient_light(const t_scene *scene, t_vector3 color_obj)
+{
+	if (scene->nb_ambient == 0)
+		return (color_obj);
+	color_obj = vector3_multiply(color_obj, scene->ambient.ambient);
+	return (color_obj);
+}
+
 t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 		uint rng_seed)
 {
@@ -202,7 +210,7 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 	brightness = 0.0f;
 	color = color_lights(ray, scene, rng_seed, &nb_light);
 	if (nb_light == 0)
-		return (vector3(0.0f, 0.0f, 0.0f));
+		return (add_ambient_light(scene, color_obj));
 	color_obj = vector3_multiply(color_obj, color);
 	color_obj = vector3_multiply_float(color_obj, 1.0f / (nb_light));
 	return (color_obj);

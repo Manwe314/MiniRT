@@ -609,6 +609,7 @@ void	get_ambient(t_minirt *minirt, t_ambient ambient)
 	minirt->scene.ambient = ambient;
 	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
 	minirt->scene.ambient.ambient = vector3_multiply_float(ambient.color, ambient.intensity);
+	printf("ambient : %f %f %f\n", minirt->scene.ambient.ambient.x, minirt->scene.ambient.ambient.y, minirt->scene.ambient.ambient.z);
 	minirt->scene.nb_ambient = 1;
 }
 
@@ -750,7 +751,11 @@ static bool	get_scene(t_minirt *minirt)
 		free(tmp);
 	}
 	free(minirt->input_head);
-	printf("nb_ambient HAHAHAHHAHAHAHAHAAH %d\n", minirt->scene.nb_ambient);
+	// minirt->scene.sphere[0].material.emission = vector3(1, 1, 1);
+	// minirt->scene.sphere[0].material.emission_strength = 50;
+	// minirt->scene.sphere[0].material.emission = vector3_multiply_float(
+			// minirt->scene.sphere[0].material.emission,
+			// minirt->scene.sphere[0].material.emission_strength);
 	return (true);
 }
 
@@ -819,14 +824,11 @@ int	main(int argc, char *argv[])
 		return (0);
 	get_input_list(&minirt, fd);
 	validate_input(&minirt);
-
 	if (init_minirt(&minirt) == false)
 		return (false);
 	if (get_scene(&minirt) == false)
 		printf("error\n");
-
-
-	print_scene(minirt.scene);
+	minirt.scene = create_scene();
 	// minirt.scene = create_scene2();
 	// print_scene(minirt.scene);
 
