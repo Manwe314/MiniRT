@@ -165,7 +165,7 @@ t_scene	create_scene(void)
 	t_material	light;
 
 	float emission_strength = 0.0f;
-	
+
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -422,7 +422,7 @@ t_scene	create_scene2(void)
 	scene.camera.is_clicked = false;
 
 	float emission_strength = 0.0f;
-	
+
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
 	scene.nb_triangle = 0;
@@ -563,7 +563,7 @@ static bool	init_minirt(t_minirt *minirt)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
-	
+
 	// minirt->camera.fov = 90.0f;
 	// minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 	// minirt->camera.pitch = 0.0f;
@@ -824,6 +824,7 @@ int	main(int argc, char *argv[])
 		return (0);
 	get_input_list(&minirt, fd);
 	validate_input(&minirt);
+
 	if (init_minirt(&minirt) == false)
 		return (false);
 	if (get_scene(&minirt) == false)

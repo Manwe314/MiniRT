@@ -1,5 +1,5 @@
 NAME	:= minirt
-USER	= beaudibe
+USER	= lkukhale
 #CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast -g
 CFLAGS	:= -g
 LIBMLX	:= ./lib/MLX42
@@ -23,7 +23,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
 clean:
-	@make -C $(LIBFT) clean 
+	@make -C $(LIBFT) clean
 	@rm -f $(OBJS)
 
 

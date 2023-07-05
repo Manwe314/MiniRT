@@ -61,9 +61,9 @@ typedef struct s_vec4d
 
 typedef struct s_material
 {
-	t_vector3	emission_color; // 0 255 -> convert to 0.0f to 1.0f 
+	t_vector3	emission_color; // 0 255 -> convert to 0.0f to 1.0f
 	t_vector3	color; //don't use but set it to 0
-	t_vector3	specular_color;//0 255 -> convert to 0.0f to 1.0f 
+	t_vector3	specular_color;//0 255 -> convert to 0.0f to 1.0f
 	float		emission_strength;// 0.0f to 1.0f
 	t_vector3	emission; //don't use but set it to 0
 	float		smoothness;// 0.0f to 1.0f
@@ -444,6 +444,8 @@ char			*remove_new_line(char *line);
 char			*get_name(const char *line);
 void			*get_object(t_input_list *input, const char *line);
 void			get_input_list(t_minirt *minirt, int fd);
+t_material		get_material_rt(const char *line, t_input_list *input);
+int				material_checker(t_material mat);
 
 int				validate_line_cylinder(const char *line);
 t_cylinder		*init_cylinder(const char *line, t_input_list *input);

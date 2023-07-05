@@ -47,13 +47,14 @@ void	check_esentials(t_minirt *minirt)
 			has_an_object++;
 		traverse = traverse->next;
 	}
-	if (has_esentials != 3 && has_an_object == 0)
+	if (has_esentials != 3 || has_an_object == 0)
 	{
 		printf("Error\nCritical error nothing will be rendered\n");
 		minirt->input_validity = -1;
 	}
 	else
 		minirt->input_validity = 1;
+
 }
 
 t_input_list	*get_first_valid_node(t_input_list *lst)
