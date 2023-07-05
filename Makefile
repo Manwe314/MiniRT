@@ -26,6 +26,7 @@ clean:
 	@make -C $(LIBFT) clean 
 	@rm -f $(OBJS)
 
+
 fclean: clean
 	@make -C $(LIBFT) fclean
 	@rm -f $(NAME)

@@ -142,7 +142,10 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		while (++y < minirt->height)
 		{
 			i = x * minirt->height + y;
-			color = perpixel(param->ray[i], &minirt->scene, i + param->frames);
+			if (BONUS == 1)
+				color = Perpixel(param->ray[i], &minirt->scene, i + param->frames);
+			else
+				color = perpixel(param->ray[i], &minirt->scene, i + param->frames);
 			param->accumulated_color[i] = \
 				vector3_add(param->accumulated_color[i], color);
 			color = vector3_multiply_float(param->accumulated_color[i],

@@ -31,6 +31,10 @@
 #  define RANDOM 1
 # endif
 
+# ifndef BONUS
+#  define BONUS 0
+# endif
+
 # define PI 3.14159265358979323846
 
 # define CHECKER_PATTERN 1
@@ -57,14 +61,14 @@ typedef struct s_vec4d
 
 typedef struct s_material
 {
-	t_vector3	emission_color;
-	t_vector3	color;
-	t_vector3	specular_color;
-	float		emission_strength;
-	t_vector3	emission;
-	float		smoothness;
-	float		specular_probability;
-	int			flag;
+	t_vector3	emission_color; // 0 255 -> convert to 0.0f to 1.0f 
+	t_vector3	color; //don't use but set it to 0
+	t_vector3	specular_color;//0 255 -> convert to 0.0f to 1.0f 
+	float		emission_strength;// 0.0f to 1.0f
+	t_vector3	emission; //don't use but set it to 0
+	float		smoothness;// 0.0f to 1.0f
+	float		specular_probability;// 0.0f to 1.0f
+	int			flag; // 0 or 1
 }	t_material;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
