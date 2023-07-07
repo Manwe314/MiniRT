@@ -101,6 +101,10 @@ void	print_input(t_minirt *minirt)
 				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \
 				cam->center.y, cam->center.z, cam->color.x, cam->color.y, \
 				cam->color.z);
+		}
+		if (ft_strncmp(input->name, "Cone", 4) == 0)
+		{
+			t_cone *cam = input->object;
 			printf("height: %f\ndiametre: %f\nnormal: %f , %f, %f.\ncoords: %f , %f, %f.\ncolor: %f , %f, %f\n",
 				cam->height, cam->radius, \
 				cam->normal.x, cam->normal.y, cam->normal.z, cam->center.x, \

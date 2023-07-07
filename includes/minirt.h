@@ -464,6 +464,10 @@ void			get_input_list(t_minirt *minirt, int fd);
 t_material		get_material_rt(const char *line, t_input_list *input);
 int				material_checker(t_material mat);
 
+int				validate_line_cone(const char *line);
+t_cone			*init_cone(const char *line, t_input_list *input);
+void			validate_values_cone(t_input_list *input);
+
 int				validate_line_cylinder(const char *line);
 t_cylinder		*init_cylinder(const char *line, t_input_list *input);
 void			validate_values_cylinder(t_input_list *input);

@@ -25,7 +25,6 @@ int	validate_line_sp4(char **inputs, const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("SP HI\n");
 				printf(\
 	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				return (0);
@@ -53,7 +52,6 @@ int	validate_line_sp11(char **inputs, const char *line)
 		{
 			if (is_non_valid_character(inputs[i][j]))
 			{
-				printf("SP HI\n");
 				printf(\
 	"Non valid character on line: \n%s\nObject will not be rendered\n", line);
 				return (0);
@@ -89,7 +87,6 @@ t_sphere	*init_sphere(const char *line, t_input_list *input)
 	obj = (t_sphere *)malloc(sizeof(t_sphere));
 	if (!validate_line_sphere(line))
 	{
-		printf("~SP~ HI\n");
 		free(input->name);
 		input->name = ft_strdup("inv");
 		return (obj);

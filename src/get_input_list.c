@@ -57,6 +57,8 @@ char	*get_name(const char *line)
 		name = ft_strdup("Plane");
 	if (line[i] == 'c' && line[i + 1] == 'y' && line[i + 2] == ' ')
 		name = ft_strdup("Cylinder");
+	if (line[i] == 'c' && line[i + 1] == 'o' && line[i + 2] == ' ')
+		name = ft_strdup("Cone");
 	return (name);
 }
 
@@ -78,6 +80,8 @@ void	*get_object(t_input_list *input, const char *line)
 		object = init_plane(line, input);
 	if (ft_strncmp(input->name, "Cylinder", 8) == 0)
 		object = init_cylinder(line, input);
+	if (ft_strncmp(input->name, "Cone", 4) == 0)
+		object = init_cone(line, input);
 	return (object);
 }
 
@@ -97,7 +101,6 @@ void	get_input_list(t_minirt *minirt, int fd)
 		{
 			temp->name = get_name(line);
 			temp->object = get_object(temp, line);
-				// need to fix errored edge casees
 			temp->next = (t_input_list *)malloc(sizeof(t_input_list));
 			save = temp;
 			temp = temp->next;

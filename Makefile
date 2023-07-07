@@ -1,5 +1,5 @@
 NAME	:= miniRT
-USER	= beaudibe
+USER	= lkukhale
 CFLAGS	:= -Wextra -Wall -Werror -Ofast -g
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
