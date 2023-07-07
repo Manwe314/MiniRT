@@ -391,6 +391,8 @@ t_info			calculate_ray_collision(t_ray ray, const t_scene *scene);
 
 t_vector3		shoot_bonus(t_ray ray, const t_scene *scene, uint rng_seed);
 t_vector3		shoot_ray(t_ray ray, const t_scene *scene, uint rng_seed);
+t_vector3		add_ambient_light(const t_scene *scene, t_vector3 color_obj);
+
 
 void			hook(void *param);
 void			resize(int32_t width, int32_t height, void *param);

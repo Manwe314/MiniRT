@@ -16,7 +16,8 @@ t_vector3	create_ray(float x, float y, t_minirt *minirt)
 {
 	t_vector3	direction;
 
-	direction = vector3(x * minirt->camera.fov / 90.0, y * minirt->camera.fov / 90.0, -1);
+	direction = vector3(x * minirt->camera.fov / 90.0,
+			y * minirt->camera.fov / 90.0, -1);
 	direction = multiplymatrixvector(direction, minirt->camera.inv_lookat);
 	return (direction);
 }

@@ -829,7 +829,7 @@ int	main(int argc, char *argv[])
 		return (false);
 	if (get_scene(&minirt) == false)
 		printf("error\n");
-	minirt.scene = create_scene();
+	//minirt.scene = create_scene();
 	// minirt.scene = create_scene2();
 	// print_scene(minirt.scene);
 

@@ -84,7 +84,6 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 	t_vector3	color;
 
 	x = -1;
-	param->frames++;
 	while (++x < minirt->width)
 	{
 		y = -1;
@@ -92,14 +91,15 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		{
 			i = x * minirt->height + y;
 			if (BONUS == 1)
-				color = shoot_ray(param->ray[i], &minirt->scene, i + param->frames);
+				color = shoot_ray(param->ray[i],
+						&minirt->scene, i + ++param->frames);
 			else
-				color = shoot_bonus(param->ray[i], &minirt->scene, i + param->frames);
+				color = shoot_bonus(param->ray[i],
+						&minirt->scene, i + ++param->frames);
 			param->accumulated_color[i] = \
 				vector3_add(param->accumulated_color[i], color);
-			color = vector3_multiply_float(param->accumulated_color[i],
-					1.0f / (float)(param->frames));
-			color = vector3_clamp(color, 0.0f, 1.0f);
+			color = vector3_clamp(vector3_multiply_float(\
+			param->accumulated_color[i], 1.0f / (float)(param->frames)), 0, 1);
 			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
 		}
 	}
