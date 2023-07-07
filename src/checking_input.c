@@ -31,8 +31,8 @@ int	material_checker(t_material mat)
 
 t_material	get_material_rt(const char *line, t_input_list *input)
 {
-	int i;
-	t_material mat;
+	int			i;
+	t_material	mat;
 
 	i = 0;
 	while (line[i] != 'm' && line[i] != '\0')

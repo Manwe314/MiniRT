@@ -389,10 +389,25 @@ t_matrix4x4		matrixInverse(t_matrix4x4 matrix, int size);
 
 t_info			calculate_ray_collision(t_ray ray, const t_scene *scene);
 
-t_vector3		Perpixel(t_ray ray, const t_scene *scene, uint rng_seed);
-t_vector3		perpixel(t_ray ray, const t_scene *scene, uint rng_seed);
+t_vector3		shoot_bonus(t_ray ray, const t_scene *scene, uint rng_seed);
+t_vector3		shoot_ray(t_ray ray, const t_scene *scene, uint rng_seed);
 
 void			hook(void *param);
+void			resize(int32_t width, int32_t height, void *param);
+void			cursor(double xpos, double ypos, void *param);
+void			mousehook(mouse_key_t button, action_t action,
+					modifier_key_t mods, void *param);
+void			keyhook(mlx_key_data_t keydata, void *param);
+float			print_time(t_minirt *minirt);
+
+t_info			miss(void);
+t_info			return_hit_info(t_ray ray, float t, t_material material,
+					t_vector3 normal);
+bool			something_changed(t_minirt *minirt);
+bool			should_stop(t_minirt *minirt);
+void			free_param(t_param *param);
+void			malloc_param(t_param *param, t_minirt *minirt);
+
 void			resize(int32_t width, int32_t height, void *param);
 void			cursor(double xpos, double ypos, void *param);
 t_model			get_model(void);

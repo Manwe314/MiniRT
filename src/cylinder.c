@@ -12,10 +12,10 @@
 
 #include "minirt.h"
 
-int validate_line_cy6(char **inputs, const char *line)
+int	validate_line_cy6(char **inputs, const char *line)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 1;
 	while (inputs[i] != 0)
@@ -35,10 +35,10 @@ int validate_line_cy6(char **inputs, const char *line)
 	return (1);
 }
 
-int validate_line_cy13(char **inputs, const char *line)
+int	validate_line_cy13(char **inputs, const char *line)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 1;
 	while (inputs[i] != 0)

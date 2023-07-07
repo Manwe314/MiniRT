@@ -12,10 +12,10 @@
 
 #include "minirt.h"
 
-int validate_line_sp4(char **inputs, const char *line)
+int	validate_line_sp4(char **inputs, const char *line)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 1;
 	while (inputs[i] != 0)
@@ -36,10 +36,10 @@ int validate_line_sp4(char **inputs, const char *line)
 	return (1);
 }
 
-int validate_line_sp11(char **inputs, const char *line)
+int	validate_line_sp11(char **inputs, const char *line)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 1;
 	while (inputs[i] != 0)

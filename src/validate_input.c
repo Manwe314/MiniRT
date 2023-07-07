@@ -54,7 +54,6 @@ void	check_esentials(t_minirt *minirt)
 	}
 	else
 		minirt->input_validity = 1;
-
 }
 
 t_input_list	*get_first_valid_node(t_input_list *lst)

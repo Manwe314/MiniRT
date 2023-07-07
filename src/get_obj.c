@@ -82,13 +82,17 @@ t_model	get_model(void)
 		{
 			model.triangles[k] = add_triangle(coord[(int)ordre[k + l].x],
 				coord[(int)ordre[k + l].y], coord[(int)ordre[k + l].z]);
-			// printf("triangle[%d] = %f %f %f \n",k, model.triangles[k].p[0].x, model.triangles[k].p[0].y, model.triangles[k].p[0].z);
+			// printf("triangle[%d] = %f %f %f \n",k, 
+			model.triangles[k].p[0].x, model.triangles[k].p[0].y, 
+			model.triangles[k].p[0].z);
 
 			k++;
 		}
 		else
 		{
-			// model.planes[l] = add_plane(coord[(int)ordre[k + l].x], bcoord[(int)ordre[k + l].y], coord[(int)ordre[k].z],coord[(int)ordre[k + l].w]);
+			// model.planes[l] = add_plane(coord[(int)ordre[k + l].x], 
+			bcoord[(int)ordre[k + l].y], coord[(int)ordre[k].z],
+			coord[(int)ordre[k + l].w]);
 			l++;
 		}
 	}
@@ -125,7 +129,6 @@ void	get_triangle(t_minirt *minirt, t_triangle triangle)
 			triangle.color, 1 / 255.0f);
 	minirt->scene.nb_triangle++;
 }
-
 
 void	get_cone(t_minirt *minirt, t_cone cone)
 {

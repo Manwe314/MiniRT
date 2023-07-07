@@ -205,7 +205,8 @@ bool	add_cylinder(t_scene *scene, char *input)
 	scene->cylinder[scene->nb_cylinder].material = return_material();
 	scene->cylinder[scene->nb_cylinder].material.color = get_color(input, &i);
 	scene->nb_cylinder++;
-	if (i == -1 || is_normal_vec(scene->cylinder[scene->nb_cylinder - 1].normal) == false)
+	if (i == -1 || 
+	is_normal_vec(scene->cylinder[scene->nb_cylinder - 1].normal) == false)
 	{
 		ft_putstr_fd("Error\nWrong cylinder format\n", 2);
 		return (false);
@@ -240,7 +241,8 @@ bool	add_plane(t_scene *scene, char *input)
 	scene->plane[scene->nb_plane].material = return_material();
 	scene->plane[scene->nb_plane].material.color = get_color(input, &i);
 	scene->nb_plane++;
-	if (i == -1 || is_normal_vec(scene->plane[scene->nb_plane - 1].normal) == false)
+	if (i == -1 || 
+	is_normal_vec(scene->plane[scene->nb_plane - 1].normal) == false)
 	{
 		ft_putstr_fd("Error\nWrong plane format\n", 2);
 		return (false);
@@ -274,7 +276,8 @@ bool	add_light(t_scene *scene, char *input)
 	i++;
 	scene->light[scene->nb_light].color = get_color(input, &i);
 	scene->nb_light++;
-	if (i == -1 || is_norm(scene->light[scene->nb_light - 1].brightness) == false)
+	if (i == -1 || 
+	is_norm(scene->light[scene->nb_light - 1].brightness) == false)
 	{
 		ft_putstr_fd("Error\nWrong light format\n", 2);
 		return (false);

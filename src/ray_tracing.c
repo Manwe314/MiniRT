@@ -81,7 +81,6 @@ t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 		if (hit_info.hit_distance < closest_hit.hit_distance)
 			closest_hit = hit_info;
 	}
-
 	return (closest_hit);
 }
 
@@ -135,7 +134,15 @@ bool	is_too_little(t_vector3 *raycolor, t_vector3 *incoming_light,
 	return (false);
 }
 
-t_vector3	perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
+t_vector3	add_ambient_light(const t_scene *scene, t_vector3 color_obj)
+{
+	if (scene->nb_ambient == 0)
+		return (color_obj);
+	color_obj = vector3_multiply(color_obj, scene->ambient.ambient);
+	return (color_obj);
+}
+
+t_vector3	shoot_bonus(t_ray ray, const t_scene *scene, uint rng_seed)
 {
 	t_vector3	raycolor;
 	t_vector3	incoming_light;
@@ -157,7 +164,7 @@ t_vector3	perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
 		}
 		else
 		{
-			// incoming_light = vector3_add(incoming_light, vector3(0.6f, 0.7f,0.8f));
+			add_ambient_light(scene, incoming_light);
 			break ;
 		}
 	}
@@ -190,14 +197,6 @@ t_vector3	color_lights(t_ray ray, const t_scene *scene, uint rng_seed,
 	return (color);
 }
 
-t_vector3	add_ambient_light(const t_scene *scene, t_vector3 color_obj)
-{
-	if (scene->nb_ambient == 0)
-		return (color_obj);
-	color_obj = vector3_multiply(color_obj, scene->ambient.ambient);
-	return (color_obj);
-}
-
 t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 		uint rng_seed)
 {
@@ -216,14 +215,12 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 	return (color_obj);
 }
 
-t_vector3	Perpixel(t_ray ray, const t_scene *scene, uint rng_seed)
+t_vector3	shoot_ray(t_ray ray, const t_scene *scene, uint rng_seed)
 {
 	t_vector3	raycolor;
 	t_vector3	incoming_light;
 	t_info		hit_info;
 
-	// print_scene(*scene);
-	// exit(EXIT_SUCCESS) ;
 	raycolor = vector3(0.0f, 0.0f, 0.0f);
 	hit_info = calculate_ray_collision(ray, scene);
 	if (hit_info.hit_distance != FLT_MAX)
