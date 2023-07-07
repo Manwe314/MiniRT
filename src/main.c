@@ -641,7 +641,7 @@ void	get_sphere(t_minirt *minirt, t_sphere sphere)
 	}
 	i = minirt->scene.nb_sphere++;
 	minirt->scene.sphere[i] = sphere;
-	minirt->scene.sphere[i].material = return_material();
+	//minirt->scene.sphere[i].material = return_material();
 	minirt->scene.sphere[i].material.color = vector3_multiply_float(sphere.color, 1 / 255.0f);
 }
 
@@ -661,7 +661,6 @@ void	get_cylinder(t_minirt *minirt, t_cylinder cylinder)
 	}
 	i = minirt->scene.nb_cylinder++;
 	minirt->scene.cylinder[i] = cylinder;
-	minirt->scene.cylinder[i].material = return_material();
 	minirt->scene.cylinder[i].material.color = vector3_multiply_float(
 			cylinder.color, 1 / 255.0f);
 	cylinder.circle_bottom = get_circle_from_cylinder(cylinder, 0);
@@ -685,7 +684,7 @@ void	get_plane(t_minirt *minirt, t_plane plane)
 	}
 	i = minirt->scene.nb_plane++;
 	minirt->scene.plane[i] = plane;
-	minirt->scene.plane[i].material = return_material();
+	//minirt->scene.plane[i].material = return_material();
 	minirt->scene.plane[i].material.color = vector3_multiply_float(
 			plane.color, 1 / 255.0f);
 }
@@ -820,7 +819,7 @@ int	main(int argc, char *argv[])
 		return (false);
 	if (get_scene(&minirt) == false)
 		printf("error\n");
-	minirt.scene = create_scene();
+	//minirt.scene = create_scene();
 	// minirt.scene = create_scene2();
 	// print_scene(minirt.scene);
 

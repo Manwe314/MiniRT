@@ -71,7 +71,7 @@ typedef struct s_material
 	int			flag; // 0 or 1
 }	t_material;
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 typedef struct s_triangle
 {
 	t_vector3	p[3];
@@ -120,7 +120,7 @@ typedef struct s_world
 	t_vector3	angle_world;
 	t_matrix4x4	rotation_world;
 }	t_world;
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 typedef struct s_circle
 {
@@ -180,7 +180,7 @@ typedef struct s_camera
 	float		fov;
 }	t_camera;
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 typedef struct s_input_list
 {
 	char				*name;
@@ -231,7 +231,6 @@ typedef struct s_scene
 	t_paraboloid	*paraboloid;
 	t_triangle		*triangle;
 	t_circle		*circle;
-	// t_cuboid		*cuboid;
 	t_light			*light;
 	t_ambient		ambient;
 	t_obj			obj;
@@ -256,7 +255,6 @@ typedef struct s_model
 	t_sphere	sphere;
 	t_plane		*planes;
 	t_triangle	*triangles;
-	// t_cuboid cuboid;
 	t_obj		*obj;
 	int			nb_obj;
 }	t_model;
@@ -430,7 +428,7 @@ t_info			cone_collision(t_ray ray, const t_cone *cone);
 
 void			*ft_realloc(void *ptr, size_t size);
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 float			to_radian(float angle);
 void			keyhook(mlx_key_data_t keydata, void *param);
