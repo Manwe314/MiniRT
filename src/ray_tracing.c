@@ -126,7 +126,6 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 	int			nb_light;
 	float		brightness;
 	t_vector3	color;
-	t_vector3	length;
 
 	nb_light = 0;
 	brightness = 0.0f;
@@ -141,7 +140,6 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 t_vector3	shoot_ray(t_ray ray, const t_scene *scene, uint rng_seed)
 {
 	t_vector3	raycolor;
-	t_vector3	incoming_light;
 	t_info		hit_info;
 
 	raycolor = vector3(0.0f, 0.0f, 0.0f);

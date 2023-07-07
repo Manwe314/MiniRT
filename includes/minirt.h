@@ -264,7 +264,7 @@ typedef struct s_model
 typedef struct s_param
 {
 	t_ray		*ray;
-	t_vector3	*accumulated_color;
+	t_vector3	*accum_c;
 	int			frames;
 }	t_param;
 

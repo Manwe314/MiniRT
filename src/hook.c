@@ -49,7 +49,7 @@ void	set_param(t_param *param, t_minirt *minirt)
 		y = -1;
 		while (++y < minirt->height)
 		{
-			param->accumulated_color[x * minirt->height + y] = vector3(0, 0, 0);
+			param->accum_c[x * minirt->height + y] = vector3(0, 0, 0);
 			param->ray[x * minirt->height + y].origin = minirt->camera.pos;
 			param->ray[x * minirt->height + y].direction
 				= create_ray((float)x * x_aspect_ratio - aspect_ratio,
@@ -76,33 +76,48 @@ void	reset_param(t_param *param, t_minirt *minirt)
 	set_param(param, minirt);
 }
 
+void	ft_draw_pixel(uint8_t *pixel, uint32_t color)
+{
+	*(pixel++) = (uint8_t)(color >> 24);
+	*(pixel++) = (uint8_t)(color >> 16);
+	*(pixel++) = (uint8_t)(color >> 8);
+	*(pixel++) = (uint8_t)(color & 0xFF);
+}
+
+//= Public =//
+
+void	ft_put_pixel(mlx_image_t *image, uint32_t x, uint32_t y, uint32_t color)
+{
+	uint8_t	*pixelstart;
+
+	pixelstart = &image->pixels[(y * image->width + x) * sizeof(uint32_t)];
+	ft_draw_pixel(pixelstart, color);
+}
+
 void	for_each_pixel(t_param *param, const t_minirt *minirt)
 {
-	int			x;
-	int			y;
+	t_vector2	pixel;
 	int			i;
 	t_vector3	color;
 
-	x = -1;
-	while (++x < minirt->width)
+	pixel.x = -1;
+	param->frames++;
+	while (++pixel.x < minirt->width)
 	{
-		y = -1;
-		while (++y < minirt->height)
+		pixel.y = -1;
+		while (++pixel.y < minirt->height)
 		{
-			i = x * minirt->height + y;
+			i = pixel.x * minirt->height + pixel.y;
 			if (BONUS == 1)
 				color = shoot_ray(param->ray[i],
-						&minirt->scene, i + ++param->frames);
+						&minirt->scene, i + param->frames);
 			else
-			{
 				color = shoot_bonus(param->ray[i],
-						&minirt->scene, i + ++param->frames);
-			}
-			param->accumulated_color[i] = \
-				vector3_add(param->accumulated_color[i], color);
-			color = vector3_multiply_float(param->accumulated_color[i], 1.0f / (float)(param->frames));
-			color = vector3_clamp(color, 0.0f, 1.0f);
-			mlx_put_pixel(minirt->img, x, y, get_rgba(color));
+						&minirt->scene, i + param->frames);
+			param->accum_c[i] = vector3_add(param->accum_c[i], color);
+			color = vector3_clamp(vector3_multiply_float(\
+			param->accum_c[i], 1.0f / (float)(param->frames)), 0, 1);
+			ft_put_pixel(minirt->img, pixel.x, pixel.y, get_rgba(color));
 		}
 	}
 }

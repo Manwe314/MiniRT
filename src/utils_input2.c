@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_input2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:58:46 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 11:59:05 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/07 18:21:31 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ t_vector3	get_vector3(const char *line, int i, t_input_list *input)
 	{
 		free(input->name);
 		input->name = ft_strdup("inv");
+		output = vector3(0, 0, 0);
 	}
 	else
 	{

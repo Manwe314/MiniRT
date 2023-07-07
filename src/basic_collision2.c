@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   basic_collision2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:56:02 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 11:56:36 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/07 17:40:14 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 t_info	circle_collision(t_ray ray, const t_circle *cirle)
 {
-	t_info	hit_info;
 	float	t;
 	float	distance_to_center;
 
@@ -67,7 +66,6 @@ t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
 
 t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
 {
-	t_info		hit_info;
 	t_vector3	oc;
 	float		abc[3];
 	float		discriminant;

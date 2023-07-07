@@ -131,7 +131,6 @@ t_material	return_material(void)
 t_circle	get_circle_from_cylinder(t_cylinder cylinder, bool is_top)
 {
 	t_circle	circle;
-	static int	i;
 
 	circle.radius = cylinder.radius;
 	circle.material = cylinder.material;
@@ -369,15 +368,15 @@ t_scene	create_scene(void)
 	scene.cylinder[0] = cylinder;
 
 	t_cylinder	cylinder2;
-	cylinder.center = vector3(0.0f, 0.5f, 0.0f);
-	cylinder.radius = 1.0f;
-	cylinder.height = 2.0f;
-	cylinder.normal = vector3(0.0f, 0.0f, 1.0f);
-	cylinder.normal = vector3_normalize(cylinder.normal);
-	cylinder.material = blue;
-	cylinder.circle_bottom = get_circle_from_cylinder(cylinder, 0);
-	cylinder.circle_top = get_circle_from_cylinder(cylinder, 1);
-	scene.cylinder[1] = cylinder;
+	cylinder2.center = vector3(0.0f, 0.5f, 0.0f);
+	cylinder2.radius = 1.0f;
+	cylinder2.height = 2.0f;
+	cylinder2.normal = vector3(0.0f, 0.0f, 1.0f);
+	cylinder2.normal = vector3_normalize(cylinder2.normal);
+	cylinder2.material = blue;
+	cylinder2.circle_bottom = get_circle_from_cylinder(cylinder2, 0);
+	cylinder2.circle_top = get_circle_from_cylinder(cylinder2, 1);
+	scene.cylinder[1] = cylinder2;
 
 	scene.nb_sphere = 0;
 	scene.nb_plane = 0;
@@ -549,21 +548,14 @@ t_scene	create_scene2(void)
 
 static bool	init_minirt(t_minirt *minirt)
 {
-	int	i;
-	int	j;
-
 	minirt->width = WIDTH;
 	minirt->height = HEIGHT;
-
 	minirt->error = 1;
-
-
 	minirt->mlx = mlx_init(minirt->width, minirt->height, "minirt", true);
 	if (!minirt->mlx)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
-
 	// minirt->camera.fov = 90.0f;
 	// minirt->camera.pos = vector3(0.0f, 1.0f, 2.5f);
 	// minirt->camera.pitch = 0.0f;
@@ -571,7 +563,6 @@ static bool	init_minirt(t_minirt *minirt)
 	// minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
 		// rotation_x(to_radian(minirt->camera.yaw)));
 	// minirt->camera.is_clicked = false;
-
 	minirt->moved = true;
 	minirt->stop = false;
 	minirt->x = 0;
@@ -604,8 +595,6 @@ void	get_camera(t_minirt *minirt, t_camera camera)
 
 void	get_ambient(t_minirt *minirt, t_ambient ambient)
 {
-	t_vector3	tmp;
-
 	minirt->scene.ambient = ambient;
 	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
 	minirt->scene.ambient.ambient = vector3_multiply_float(ambient.color, ambient.intensity);
@@ -700,8 +689,6 @@ void	get_plane(t_minirt *minirt, t_plane plane)
 
 static bool	get_scene(t_minirt *minirt)
 {
-	int	i;
-	int	j;
 	t_input_list	*tmp;
 
 	minirt->scene.nb_sphere = 0;

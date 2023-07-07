@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 12:19:08 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 16:06:41 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/07 17:44:49 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	ray_tracing(t_ray *ray, t_info *hit_info, uint rng_seed,
 {
 	t_vector3	diffuse;
 	t_vector3	reflect;
-	int			bounce;
 	bool		is_specular_bounce;
 
 	if (hit_info->material.flag == CHECKER_PATTERN)
@@ -68,7 +67,6 @@ t_vector3	shoot_bonus(t_ray ray, const t_scene *scene, uint rng_seed)
 	t_vector3	incoming_light;
 	int			bounce;
 	t_info		hit_info;
-	bool		is_specular_bounce;
 
 	bounce = 0;
 	raycolor = vector3(1.0f, 1.0f, 1.0f);

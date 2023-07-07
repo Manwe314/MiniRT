@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   param_pixel.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:50:20 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 11:50:46 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/07 17:33:14 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ bool	should_stop(t_minirt *minirt)
 void	free_param(t_param *param)
 {
 	free(param->ray);
-	free(param->accumulated_color);
+	free(param->accum_c);
 }
 
 void	malloc_param(t_param *param, t_minirt *minirt)
 {
 	param->ray = malloc(sizeof(t_ray) * (minirt->width * minirt->height));
-	param->accumulated_color = malloc(sizeof(t_vector3)
+	param->accum_c = malloc(sizeof(t_vector3)
 			* (minirt->width * minirt->height));
 }

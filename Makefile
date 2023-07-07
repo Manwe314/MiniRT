@@ -1,7 +1,6 @@
-NAME	:= minirt
+NAME	:= miniRT
 USER	= beaudibe
-#CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast -g
-CFLAGS	:= -g
+CFLAGS	:= -Wextra -Wall -Werror -Ofast -g
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 HEADERS	:= -I ../include -I $(LIBMLX)/include
