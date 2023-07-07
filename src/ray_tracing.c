@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
+/*t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 {
 	t_info	hit_info;
 	t_info	closest_hit;
@@ -82,7 +82,7 @@ t_info	calculate_ray_collision(t_ray ray, const t_scene *scene)
 			closest_hit = hit_info;
 	}
 	return (closest_hit);
-}
+}*/
 
 t_vector3	add_ambient_light(const t_scene *scene, t_vector3 color_obj)
 {

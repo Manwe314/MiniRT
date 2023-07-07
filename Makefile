@@ -1,5 +1,5 @@
 NAME	:= minirt
-USER	= lkukhale
+USER	= beaudibe
 #CFLAGS	:= -Wextra -Wall -Werror -Wunreachable-code -Ofast -g
 CFLAGS	:= -g
 LIBMLX	:= ./lib/MLX42
