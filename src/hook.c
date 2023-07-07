@@ -84,8 +84,6 @@ void	ft_draw_pixel(uint8_t *pixel, uint32_t color)
 	*(pixel++) = (uint8_t)(color & 0xFF);
 }
 
-//= Public =//
-
 void	ft_put_pixel(mlx_image_t *image, uint32_t x, uint32_t y, uint32_t color)
 {
 	uint8_t	*pixelstart;
@@ -108,7 +106,7 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		while (++pixel.y < minirt->height)
 		{
 			i = pixel.x * minirt->height + pixel.y;
-			if (BONUS == 1)
+			if (BONUS == 0)
 				color = shoot_ray(param->ray[i],
 						&minirt->scene, i + param->frames);
 			else
