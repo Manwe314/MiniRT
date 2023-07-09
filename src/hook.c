@@ -76,22 +76,6 @@ void	reset_param(t_param *param, t_minirt *minirt)
 	set_param(param, minirt);
 }
 
-void	ft_draw_pixel(uint8_t *pixel, uint32_t color)
-{
-	*(pixel++) = (uint8_t)(color >> 24);
-	*(pixel++) = (uint8_t)(color >> 16);
-	*(pixel++) = (uint8_t)(color >> 8);
-	*(pixel++) = (uint8_t)(color & 0xFF);
-}
-
-void	ft_put_pixel(mlx_image_t *image, uint32_t x, uint32_t y, uint32_t color)
-{
-	uint8_t	*pixelstart;
-
-	pixelstart = &image->pixels[(y * image->width + x) * sizeof(uint32_t)];
-	ft_draw_pixel(pixelstart, color);
-}
-
 void	for_each_pixel(t_param *param, const t_minirt *minirt)
 {
 	t_vector2	pixel;
@@ -106,7 +90,7 @@ void	for_each_pixel(t_param *param, const t_minirt *minirt)
 		while (++pixel.y < minirt->height)
 		{
 			i = pixel.x * minirt->height + pixel.y;
-			if (BONUS == 0)
+			if (minirt->scene.bonus == 0)
 				color = shoot_ray(param->ray[i],
 						&minirt->scene, i + param->frames);
 			else

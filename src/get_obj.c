@@ -11,148 +11,92 @@
 /* ************************************************************************** */
 
 #include "minirt.h"
-/*
-t_model	get_model(void)
+
+void	get_camera(t_minirt *minirt, t_camera camera)
 {
-	t_model model;
-	model.triangles = malloc(sizeof(t_triangle) * 100);
-	model.planes = malloc(sizeof(t_plane) * 100);
-	char *line;
-	char **split;
-	t_vector3 *coord;
-	t_vector4 *ordre;
-	int i;
-	int j;
+	t_matrix4x4	rotation;
 
-	i = -1;
-	j = -1;
-	coord = malloc(sizeof(t_vector3) * 100);
-	if (!vector3)
-		return (model);
-	ordre = malloc(sizeof(t_vector4) * 100);
-	if (!vector3)
-	{
-		free(coord);
-		return (model);
-	}
-	int fd;
-
-	fd = open("blender/triangle.obj", O_RDONLY);
-	while (line = get_next_line(fd))
-	{
-		if ((line[0] == 'v' && line[1] == ' ') || line[0] == 'f')
-		{
-			split = ft_split(line, ' ');
-			if (!split)
-			{
-				free(line);
-				free(coord);
-				free(ordre);
-				return (model);
-			}
-			if (line[0] == 'v')
-			{
-				coord[++i].x = ft_atof(split[1]);
-				coord[i].y = ft_atof(split[2]);
-				coord[i].z = ft_atof(split[3]);
-			}
-			else if (line[0] == 'f')
-			{
-				ordre[++j].x = ft_atof(split[1]) - 1;
-				ordre[j].y = ft_atof(split[2]) - 1;
-				ordre[j].z = ft_atof(split[3]) - 1;
-				if (split[4])
-				{
-					ordre[j].w = ft_atof(split[4]) - 1;
-				}
-				else
-					ordre[j].w = -1;
-			}
-		}
-		free(line);
-	}
-	int k;
-	int l;
-
-	k = 0;
-	l = 0;
-	while (k + l <= j)
-	{
-		if (ordre[k + l].w == -1)
-		{
-			model.triangles[k] = add_triangle(coord[(int)ordre[k + l].x],
-				coord[(int)ordre[k + l].y], coord[(int)ordre[k + l].z]);
-			// printf("triangle[%d] = %f %f %f \n",k, 
-			model.triangles[k].p[0].x, model.triangles[k].p[0].y, 
-			model.triangles[k].p[0].z);
-
-			k++;
-		}
-		else
-		{
-			// model.planes[l] = add_plane(coord[(int)ordre[k + l].x], 
-			bcoord[(int)ordre[k + l].y], coord[(int)ordre[k].z],
-			coord[(int)ordre[k + l].w]);
-			l++;
-		}
-	}
-
-	close(fd);
-	free_split(split);*/
-	/*k = -1;
-	while (++k <= j)
-	{
-		l = -1;
-		while (++l <=3)
-		{
-			if (ordre[k].w == -1 && l <= 2)
-				printf("triangles[%d].p[%d] = %f %f %f \n",k, l,
-					model.triangles[k].p[l].x, model.triangles[k].p[l].y,
-					model.triangles[k].p[l].z);
-			else if (ordre[k].w != -1 && l <= 3)
-				printf("planes[%d].p[%d] = %f %f %f \n",k, l,
-					model.planes[k].plane[l].x, model.planes[k].plane[l].y,
-					model.planes[k].plane[l].z);
-		}
-	}*/
-/*
-	free(coord);
-	free(ordre);
-	return (model);
-}*/
-
-void	get_triangle(t_minirt *minirt, t_triangle triangle)
-{
-	minirt->scene.triangle[minirt->scene.nb_triangle] = triangle;
-	minirt->scene.triangle->material = return_material();
-	minirt->scene.triangle->material.color = vector3_multiply_float(
-			triangle.color, 1 / 255.0f);
-	minirt->scene.nb_triangle++;
+	minirt->camera.fov = camera.fov;
+	minirt->camera.pos = camera.position;
+	minirt->camera.angle = camera.orientation;
+	minirt->camera.angle.y *= 90;
+	minirt->camera.angle.x *= 180;
+	minirt->camera.angle.z *= 180;
+	minirt->camera.pitch = minirt->camera.angle.y;
+	minirt->camera.yaw = minirt->camera.angle.x;
+	minirt->camera.is_clicked = false;
+	minirt->scene.nb_camera++;
+	rotation = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)),
+			rotation_x(to_radian(minirt->camera.yaw)));
+	rotation = mult_mat4x4(rotation,
+			rotation_z(to_radian(minirt->camera.angle.z)));
+	minirt->camera.inv_lookat = rotation;
+	minirt->scene.camera = minirt->camera;
 }
 
-void	get_cone(t_minirt *minirt, t_cone cone)
+void	get_ambient(t_minirt *minirt, t_ambient ambient)
 {
-	minirt->scene.cone[minirt->scene.nb_cone] = cone;
-	minirt->scene.cone->material = return_material();
-	minirt->scene.cone->material.color = vector3_multiply_float(
-			cone.color, 1 / 255.0f);
-	minirt->scene.nb_cone++;
+	minirt->scene.ambient = ambient;
+	ambient.color = vector3_multiply_float(ambient.color, 1 / 255.0f);
+	minirt->scene.ambient.ambient = vector3_multiply_float(ambient.color,
+			ambient.intensity);
+	minirt->scene.nb_ambient = 1;
 }
 
-void	get_circle(t_minirt *minirt, t_circle circle)
+void	get_light(t_minirt *minirt, t_light light)
 {
-	minirt->scene.circle[minirt->scene.nb_circle] = circle;
-	minirt->scene.circle->material = return_material();
-	minirt->scene.circle->material.color = vector3_multiply_float(
-			circle.color, 1 / 255.0f);
-	minirt->scene.nb_circle++;
+	int	i;
+
+	if (minirt->scene.nb_light == 0)
+		minirt->scene.light = malloc(sizeof(t_light));
+	else
+		minirt->scene.light = ft_realloc(minirt->scene.light, sizeof(t_light)
+				* (minirt->scene.nb_light + 1));
+	if (!minirt->scene.light)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_light++;
+	minirt->scene.light[i] = light;
+	minirt->scene.light[i].color = vector3_multiply_float(
+			light.color, 1 / 255.0f);
 }
 
-void	get_hyperboloid(t_minirt *minirt, t_hyperboloid hyperboloid)
+void	get_sphere(t_minirt *minirt, t_sphere sphere)
 {
-	minirt->scene.hyperboloid[minirt->scene.nb_hyperboloid] = hyperboloid;
-	minirt->scene.hyperboloid->material = return_material();
-	minirt->scene.hyperboloid->material.color = vector3_multiply_float(
-			hyperboloid.color, 1 / 255.0f);
-	minirt->scene.nb_hyperboloid++;
+	int	i;
+
+	if (minirt->scene.nb_sphere == 0)
+		minirt->scene.sphere = malloc(sizeof(t_sphere));
+	else
+		minirt->scene.sphere = ft_realloc(minirt->scene.sphere,
+				sizeof(t_sphere) * (minirt->scene.nb_sphere + 1));
+	if (!minirt->scene.sphere)
+	{
+		ft_putstr_fd("Error\nMalloc failed\n", 2);
+		minirt->error = 1;
+		return ;
+	}
+	i = minirt->scene.nb_sphere++;
+	minirt->scene.sphere[i] = sphere;
+	minirt->scene.sphere[i].material.color = vector3_multiply_float(
+			sphere.color, 1 / 255.0f);
+}
+
+t_material	return_material(void)
+{
+	t_material	material;
+
+	material.emission_color = vector3(1.0f, 1.0f, 1.0f);
+	material.color = vector3(1.0f, 0.0f, 0.0f);
+	material.specular_color = vector3(1, 1, 1);
+	material.emission_strength = 0.0f;
+	material.emission = vector3_multiply_float(material.emission_color, \
+		material.emission_strength);
+	material.smoothness = 1.0f;
+	material.specular_probability = 0.0f;
+	material.flag = 0;
+	return (material);
 }

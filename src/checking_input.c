@@ -53,8 +53,8 @@ t_material	get_material_rt(const char *line, t_input_list *input)
 	mat.specular_probability = ft_atof(line + i);
 	i = get_to_next_param(line, i, input);
 	mat.flag = ft_atoi(line + i);
-	mat.color = vector3(0.0f, 0.0f, 0.0f);
-	mat.emission = vector3(0.0f, 0.0f, 0.0f);
+	mat.emission = vector3_multiply_float(mat.emission_color,
+			mat.emission_strength);
 	return (mat);
 }
 

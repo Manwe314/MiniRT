@@ -64,25 +64,23 @@ char	*get_name(const char *line)
 
 void	*get_object(t_input_list *input, const char *line)
 {
-	void	*object;
-
 	if (input->name == 0)
 		return (0);
 	if (ft_strncmp(input->name, "Ambient", 7) == 0)
-		object = init_ambient(line, input);
+		return (init_ambient(line, input));
 	if (ft_strncmp(input->name, "Camera", 6) == 0)
-		object = init_camera(line, input);
+		return (init_camera(line, input));
 	if (ft_strncmp(input->name, "Light", 5) == 0)
-		object = init_light(line, input);
+		return (init_light(line, input));
 	if (ft_strncmp(input->name, "Sphere", 6) == 0)
-		object = init_sphere(line, input);
+		return (init_sphere(line, input));
 	if (ft_strncmp(input->name, "Plane", 5) == 0)
-		object = init_plane(line, input);
+		return (init_plane(line, input));
 	if (ft_strncmp(input->name, "Cylinder", 8) == 0)
-		object = init_cylinder(line, input);
+		return (init_cylinder(line, input));
 	if (ft_strncmp(input->name, "Cone", 4) == 0)
-		object = init_cone(line, input);
-	return (object);
+		return (init_cone(line, input));
+	return (0);
 }
 
 void	get_input_list(t_minirt *minirt, int fd)
@@ -95,6 +93,7 @@ void	get_input_list(t_minirt *minirt, int fd)
 	line = remove_new_line(get_next_line(fd));
 	temp = (t_input_list *)malloc(sizeof(t_input_list));
 	head = temp;
+	save = 0;
 	while (line != 0)
 	{
 		if (ft_strlen(line) > 1 && !is_all_space(line))

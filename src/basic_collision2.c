@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   basic_collision2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:56:02 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 17:40:14 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/09 12:32:33 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,7 @@ t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
 		vector3_multiply_float(ray.direction, t));
 	if (check_cylinder_height(cylinder, hit_info.hit_point) == false)
 		return (miss());
-	hit_info.normal = vector3_normalize(vector3_subtract(hit_info.hit_point, \
-			cylinder->center));
+	hit_info.normal = cylinder->normal;
 	hit_info.material = cylinder->material;
 	return (hit_info);
 }

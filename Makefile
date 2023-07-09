@@ -1,10 +1,10 @@
 NAME	:= miniRT
 USER	= lkukhale
-CFLAGS	:= -Wextra -Wall -Werror -Ofast -g
+CFLAGS	:= -Wextra -Wall -Werror -Ofast -g -DDEBUG=1
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 HEADERS	:= -I ../include -I $(LIBMLX)/include
-LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm -L /Users/${USER}/.brew/lib/
+LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm
 SRCS	:= $(shell find ./src -iname "*.c")
 OBJS	:= ${SRCS:.c=.o}
 LIBFT	= ./lib/libft

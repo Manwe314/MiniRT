@@ -105,7 +105,7 @@ t_vector3	color_lights(t_ray ray, const t_scene *scene, uint rng_seed,
 	{
 		ray.direction = vector3_subtract(scene->light[i].position, ray.origin);
 		length = ray.direction;
-		if (RANDOM == 1)
+		if (scene->random == 1)
 			ray.direction = vector3_add(ray.direction,
 					random_direction(rng_seed));
 		ray.direction = vector3_normalize(ray.direction);
@@ -124,11 +124,9 @@ t_vector3	can_see_light(t_ray ray, const t_scene *scene, t_vector3 color_obj,
 		uint rng_seed)
 {
 	int			nb_light;
-	float		brightness;
 	t_vector3	color;
 
 	nb_light = 0;
-	brightness = 0.0f;
 	color = color_lights(ray, scene, rng_seed, &nb_light);
 	if (nb_light == 0)
 		return (add_ambient_light(scene, color_obj));

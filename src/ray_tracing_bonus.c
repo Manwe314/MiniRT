@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ray_tracing_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 12:19:08 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 17:44:49 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/07 20:42:47 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ t_vector3	shoot_bonus(t_ray ray, const t_scene *scene, uint rng_seed)
 	bounce = 0;
 	raycolor = vector3(1.0f, 1.0f, 1.0f);
 	incoming_light = vector3(0.0f, 0.0f, 0.0f);
-	while (bounce++ < 3)
+	while (bounce++ < 6)
 	{
 		hit_info = calculate_ray_collision(ray, scene);
 		if (hit_info.hit_distance != FLT_MAX)

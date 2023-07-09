@@ -61,14 +61,14 @@ typedef struct s_vec4d
 
 typedef struct s_material
 {
-	t_vector3	emission_color; // 0 255 -> convert to 0.0f to 1.0f
-	t_vector3	color; //don't use but set it to 0
-	t_vector3	specular_color;//0 255 -> convert to 0.0f to 1.0f
-	float		emission_strength;// 0.0f to 1.0f
-	t_vector3	emission; //don't use but set it to 0
-	float		smoothness;// 0.0f to 1.0f
-	float		specular_probability;// 0.0f to 1.0f
-	int			flag; // 0 or 1
+	t_vector3	emission_color;
+	t_vector3	color;
+	t_vector3	specular_color;
+	float		emission_strength;
+	t_vector3	emission;
+	float		smoothness;
+	float		specular_probability;
+	int			flag;
 }	t_material;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -79,6 +79,15 @@ typedef struct s_triangle
 	t_material	material;
 }	t_triangle;
 
+typedef struct s_circle
+{
+	t_vector3	center;
+	t_vector3	normal;
+	t_vector3	color;
+	float		radius;
+	t_material	material;
+}	t_circle;
+
 typedef struct s_cone
 {
 	t_vector3	center;
@@ -86,6 +95,7 @@ typedef struct s_cone
 	t_vector3	color;
 	float		height;
 	float		radius;
+	t_circle	circle;
 	t_material	material;
 }	t_cone;
 
@@ -121,15 +131,6 @@ typedef struct s_world
 	t_matrix4x4	rotation_world;
 }	t_world;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-typedef struct s_circle
-{
-	t_vector3	center;
-	t_vector3	normal;
-	t_vector3	color;
-	float		radius;
-	t_material	material;
-}	t_circle;
 
 typedef struct s_cylinder
 {
@@ -248,6 +249,8 @@ typedef struct s_scene
 	int				nb_ambient;
 	int				nb_obj;
 	t_material		material[20];
+	int				bonus;
+	int				random;
 }	t_scene;
 
 typedef struct s_model
@@ -279,9 +282,6 @@ typedef struct s_minirt
 	bool			stop;
 	bool			resized;
 	int				input_validity;
-	float			x;
-	float			y;
-	float			z;
 	float			radius;
 	t_model			model;
 	t_scene			scene;
@@ -289,7 +289,8 @@ typedef struct s_minirt
 
 void			print_scene(t_scene scene);
 
-void			hooki(t_minirt *minirt);
+void			ft_put_pixel(mlx_image_t *image, uint32_t x,
+					uint32_t y, uint32_t color);
 
 bool			add_input(t_scene *scene, char *input);
 bool			add_ambient(t_scene *scene, char *input);
@@ -307,6 +308,16 @@ bool			cy_not_finished(char c);
 bool			get_input(t_scene *scene, int a, char **b);
 
 t_material		return_material(void);
+
+void			get_camera(t_minirt *minirt, t_camera camera);
+void			get_ambient(t_minirt *minirt, t_ambient ambient);
+void			get_light(t_minirt *minirt, t_light light);
+void			get_sphere(t_minirt *minirt, t_sphere sphere);
+t_circle		get_circle_from_cylinder(t_cylinder cylinder, bool is_top);
+void			get_cylinder(t_minirt *minirt, t_cylinder cylinder);
+t_circle		get_circle_from_cone(t_cone cone);
+void			get_cone(t_minirt *minirt, t_cone cone);
+void			get_plane(t_minirt *minirt, t_plane plane);
 
 void			close_function(void *param);
 float			to_radian(float angle);
@@ -364,6 +375,8 @@ t_matrix4x4		init_mat_0(void);
 t_matrix4x4		rotation_x(float angle);
 t_matrix4x4		rotation_y(float angle);
 t_matrix4x4		rotation_z(float angle);
+t_matrix4x4		rotation(t_vector3 vec);
+
 t_matrix4x4		translation(t_vector3 vec);
 t_matrix4x4		scale(t_vector3 vec);
 
