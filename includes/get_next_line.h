@@ -12,7 +12,7 @@
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
-#include <sys/stat.h>
+# include <sys/stat.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include <sys/types.h>
