@@ -114,7 +114,7 @@ int	check_number(char *line, int i)
 	}
 	k = 0;
 	printf("line %s\n", line + i);
-	while (line[i + k] != '.' && line[i + k] != '\0' && ft_isdigit(line[j]) && k < 13)
+	while (line[i + k] != '.' && line[i + k] != ',' && line[i + k] != ' ' && line[i + k] != '\0' && ft_isdigit(line[j]) && k < 13)
 		k++;
 	printf("k = %d\n", k);
 	if (k > 11)
@@ -123,9 +123,11 @@ int	check_number(char *line, int i)
 		return (-1);
 	}
 	k = 0;
+	if (dot != 0 && line[dot + k] == '.')
+		dot++;
 	if (dot != 0)
 	{
-		while (line[dot + k] != '\0' && ft_isdigit(line[j]) && k < 13)
+		while (line[dot + k] != '\0' && ft_isdigit(line[j]) && k < 13 && line[dot + k] != ' ' && line[dot + k] != ',')
 			k++;
 		printf("k = %d\n", k);
 		if (k > 11)
@@ -178,6 +180,8 @@ void	get_input_list(t_minirt *minirt, int fd)
 	char			*line;
 
 	line = remove_new_line(get_next_line(fd));
+	if (line == 0 || ft_strlen(line) == 0)
+		return ;
 	temp = (t_input_list *)malloc(sizeof(t_input_list));
 	head = temp;
 	save = 0;

@@ -1,10 +1,11 @@
 NAME	:= miniRT
-USER	= lkukhale
+USER	= beaudibe
 CFLAGS	:= -Wextra -Wall -Werror -Ofast -g -DDEBUG=1
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
+LGLFW_PATH := $(shell brew --prefix glfw)
 HEADERS	:= -I ../include -I $(LIBMLX)/include
-LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm
+LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm -L $(LGLFW_PATH)/lib/
 SRCS	:= $(shell find ./src -iname "*.c")
 OBJS	:= ${SRCS:.c=.o}
 LIBFT	= ./lib/libft

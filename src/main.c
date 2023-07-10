@@ -116,11 +116,14 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 		ft_putstr_fd("Error\nWrong number of arguments\n", 2);
 		return (false);
 	}
-	if (argc >= 3 && (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
+	if (argc == 3 && (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
 		minirt->scene.random = argv[2][0] - '0';
-	if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1') && argv[3][1] == 0
+	else if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1') && argv[3][1] == 0
 			&& (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
+	{
+		minirt->scene.random = argv[2][0] - '0';
 		minirt->scene.bonus = argv[3][0] - '0';
+	}
 	else
 	{
 		ft_putstr_fd("Error\nWrong argument\n", 2);
@@ -131,11 +134,7 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 
 int	main(int argc, char *argv[])
 {
-
 	t_minirt	minirt;
-	// check_line(argv[1], &minirt);
-	// printf("%d\n", minirt.input_validity);
-	// return (0);
 	int			fd;
 
 	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
@@ -145,7 +144,9 @@ int	main(int argc, char *argv[])
 	get_input_list(&minirt, fd);
 	validate_input(&minirt);
 	if (minirt.input_validity != 1 || init_minirt(&minirt) == false)
+	{
 		exit (false);
+	}
 	get_scene(&minirt);
 	mlx_resize_hook(minirt.mlx, &resize, &minirt);
 	mlx_loop_hook(minirt.mlx, &hook, &minirt);
