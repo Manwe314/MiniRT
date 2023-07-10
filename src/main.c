@@ -23,7 +23,6 @@ static bool	init_minirt(t_minirt *minirt)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
-
 	minirt->scene.nb_sphere = 0;
 	minirt->scene.nb_plane = 0;
 	minirt->scene.nb_triangle = 0;
@@ -146,7 +145,6 @@ int	main(int argc, char *argv[])
 	free_scene(&minirt);
 	exit (true);
 }
-
 
 /*
 t_scene	create_scene(void)

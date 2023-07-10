@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:56:02 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/10 20:22:29 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 20:26:54 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,24 +49,28 @@ bool	check_cylinder_height(const t_cylinder *cylinder, t_vector3 hit_point)
 	return (true);
 }
 
-t_vector3 cylinder_normal(t_vector3 pointOnLine, t_vector3 directionVector)
+t_vector3	cylinder_normal(t_vector3 pointOnLine, t_vector3 directionVector)
 {
-    t_vector3	arbitrarypoint;
-    t_vector3	perpendicularvector;
+	t_vector3	arbitrarypoint;
+	t_vector3	perpendicularvector;
+	t_vector3	vectorpq;
+	double		dotproduct;
+	double		dotproductv;
 
-    arbitrarypoint.x = 1.0;
-    arbitrarypoint.y = 1.0;
-    arbitrarypoint.z = 1.0;
-    t_vector3 vectorpq;
-    vectorpq = vector3_subtract(arbitrarypoint, pointOnLine);
-    
-    double dotProduct = vectorpq.x * directionVector.x + vectorpq.y * directionVector.y + vectorpq.z * directionVector.z;
-    double dotProductV = directionVector.x * directionVector.x + directionVector.y * directionVector.y + directionVector.z * directionVector.z;
-
-    perpendicularvector.x = vectorpq.x - (dotProduct / dotProductV) * directionVector.x;
-    perpendicularvector.y = vectorpq.y - (dotProduct / dotProductV) * directionVector.y;
-    perpendicularvector.z = vectorpq.z - (dotProduct / dotProductV) * directionVector.z;
-    return perpendicularvector;
+	arbitrarypoint = vector3(1, 1, 1);
+	vectorpq = vector3_subtract(arbitrarypoint, pointOnLine);
+	dotproduct = vectorpq.x * directionVector.x + vectorpq.y 
+		* directionVector.y + vectorpq.z * directionVector.z;
+	dotproductv = directionVector.x * directionVector.x 
+		+ directionVector.y * directionVector.y 
+		+ directionVector.z * directionVector.z;
+	perpendicularvector.x = vectorpq.x - (dotproduct / dotproductv) 
+		* directionVector.x;
+	perpendicularvector.y = vectorpq.y - (dotproduct / dotproductv) 
+		* directionVector.y;
+	perpendicularvector.z = vectorpq.z - (dotproduct / dotproductv) 
+		* directionVector.z;
+	return (perpendicularvector);
 }
 
 t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
@@ -129,9 +133,6 @@ t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
 		return (miss());
 	return (cylinder_info(ray, t, cylinder));
 }
-
-
-
 
 /*
 
