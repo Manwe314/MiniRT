@@ -3,7 +3,8 @@
 		"minirt.h": "c",
 		"typeinfo": "c",
 		"stdint.h": "c",
-		"algorithm": "c"
+		"algorithm": "c",
+		"libft.h": "c"
 	},
 	"workbench.colorCustomizations": {
 		"activityBar.background": "#4C2111",
