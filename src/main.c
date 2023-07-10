@@ -23,15 +23,6 @@ static bool	init_minirt(t_minirt *minirt)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
-	minirt->camera.fov = 90.0f;
-	minirt->camera.pos = vector3(0.0f, 0.0f, 2.0f);
-	minirt->camera.pitch = 0.0f;
-	minirt->camera.yaw = 0.0f;
-
-	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)), \
-		rotation_x(to_radian(minirt->camera.yaw)));
-	minirt->moved = true;
-	minirt->camera.is_clicked = false;
 
 	minirt->scene.nb_sphere = 0;
 	minirt->scene.nb_plane = 0;
@@ -133,6 +124,34 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 
 
 
+int	main(int argc, char *argv[])
+{
+	t_minirt	minirt;
+	int			fd;
+
+	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		exit (0);
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
+	if (minirt.input_validity != 1 || init_minirt(&minirt) == false)
+		exit (false);
+	get_scene(&minirt);
+	mlx_resize_hook(minirt.mlx, &resize, &minirt);
+	mlx_loop_hook(minirt.mlx, &hook, &minirt);
+	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
+	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
+	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
+	mlx_loop(minirt.mlx);
+	mlx_delete_image(minirt.mlx, minirt.img);
+	mlx_terminate(minirt.mlx);
+	free_scene(&minirt);
+	exit (true);
+}
+
+
+/*
 t_scene	create_scene(void)
 {
 	t_scene		scene;
@@ -361,37 +380,7 @@ t_scene	create_scene(void)
 	scene.nb_cylinder = 0;
 	return (scene);
 }
-
-int	main(int argc, char *argv[])
-{
-	t_minirt	minirt;
-	int			fd;
-
-	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
-		fd = open(argv[1], O_RDONLY);
-	else
-		exit (0);
-	get_input_list(&minirt, fd);
-	validate_input(&minirt);
-	if (minirt.input_validity != 1 || init_minirt(&minirt) == false)
-	{
-		exit (false);
-	}
-	//get_scene(&minirt);
-	minirt.scene = create_scene();
-	printf("led %f %f %f\n", minirt.scene.light[0].position.x,minirt.scene.light[0].position.y,minirt.scene.light[0].position.z);
-	mlx_resize_hook(minirt.mlx, &resize, &minirt);
-	mlx_loop_hook(minirt.mlx, &hook, &minirt);
-	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
-	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
-	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
-	mlx_loop(minirt.mlx);
-	mlx_delete_image(minirt.mlx, minirt.img);
-	mlx_terminate(minirt.mlx);
-	free_scene(&minirt);
-	exit (true);
-}
-
+*/
 
 /*t_scene	create_scene2(void)
 {
