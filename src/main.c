@@ -121,9 +121,6 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 	return (true);
 }
 
-
-
-
 int	main(int argc, char *argv[])
 {
 	t_minirt	minirt;

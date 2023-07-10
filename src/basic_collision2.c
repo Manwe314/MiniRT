@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   basic_collision2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:56:02 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/09 12:32:33 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 20:20:33 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,26 @@ bool	check_cylinder_height(const t_cylinder *cylinder, t_vector3 hit_point)
 	return (true);
 }
 
+t_vector3 cylinder_normal(t_vector3 pointOnLine, t_vector3 directionVector)
+{
+    t_vector3	arbitraryPoint;
+    t_vector3	perpendicularVector;
+
+    arbitraryPoint.x = 1.0;
+    arbitraryPoint.y = 1.0;
+    arbitraryPoint.z = 1.0;
+    t_vector3 vectorPQ;
+    vectorPQ = vector3_subtract(arbitraryPoint, pointOnLine);
+    
+    double dotProduct = vectorPQ.x * directionVector.x + vectorPQ.y * directionVector.y + vectorPQ.z * directionVector.z;
+    double dotProductV = directionVector.x * directionVector.x + directionVector.y * directionVector.y + directionVector.z * directionVector.z;
+
+    perpendicularVector.x = vectorPQ.x - (dotProduct / dotProductV) * directionVector.x;
+    perpendicularVector.y = vectorPQ.y - (dotProduct / dotProductV) * directionVector.y;
+    perpendicularVector.z = vectorPQ.z - (dotProduct / dotProductV) * directionVector.z;
+    return perpendicularVector;
+}
+
 t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
 {
 	t_info	hit_info;
@@ -58,12 +78,12 @@ t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
 		vector3_multiply_float(ray.direction, t));
 	if (check_cylinder_height(cylinder, hit_info.hit_point) == false)
 		return (miss());
-	hit_info.normal = cylinder->normal;
+	hit_info.normal = cylinder_normal(cylinder->center, hit_info.hit_point);
 	hit_info.material = cylinder->material;
 	return (hit_info);
 }
 
-t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
+/*t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
 {
 	t_vector3	oc;
 	float		abc[3];
@@ -84,4 +104,38 @@ t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
 	if (t < 0.0f)
 		return (miss());
 	return (cylinder_info(ray, t, cylinder));
+}*/
+
+t_info	cylinder_collision(t_ray ray, const t_cylinder *cylinder)
+{
+	t_vector3	oc;
+	float		abc[3];
+	float		discriminant;
+	float		t;
+
+	oc = vector3_subtract(ray.origin, cylinder->center);
+	abc[0] = vector3_dot(ray.direction, ray.direction) - \
+		pow(vector3_dot(ray.direction, cylinder->normal), 2);
+	abc[1] = 2 * (vector3_dot(ray.direction, oc) - \
+		vector3_dot(ray.direction, cylinder->normal) * \
+		vector3_dot(oc, cylinder->normal));
+	abc[2] = vector3_dot(oc, oc) - pow(vector3_dot(oc, cylinder->normal), 2) - \
+		pow(cylinder->radius, 2);
+	discriminant = pow(abc[1], 2) - 4 * abc[0] * abc[2];
+	if (discriminant < 0)
+		return (miss());
+	t = (-abc[1] - sqrt(discriminant)) / (2 * abc[0]);
+	if (t < 0.0f)
+		return (miss());
+	return (cylinder_info(ray, t, cylinder));
 }
+
+
+
+
+/*
+
+t^2(xD^2+yD^2)+t(2xExD+2yEyD) +(xE^2+yE^2-1)=0
+
+x = 
+*/

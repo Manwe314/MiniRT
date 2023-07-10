@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calculate_collision.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: beaudibe <beaudibe@student.42nice.fr>      +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 14:55:36 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/09 16:04:37 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:05:52 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
