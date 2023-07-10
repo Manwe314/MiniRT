@@ -27,6 +27,7 @@ void	print_fps(t_minirt *minirt)
 	if (current_time - last_time >= 1)
 	{
 		printf("FPS: %d   frames = %d, moyenne = %f\n", frames, i, moyenne);
+		printf("pos %f %f %f\n", minirt->camera.pos.x,minirt->camera.pos.y,minirt->camera.pos.z);
 		frames = 0;
 		last_time = current_time;
 	}

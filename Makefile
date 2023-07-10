@@ -1,5 +1,7 @@
 NAME	:= miniRT
-CFLAGS	:= -Wextra -Wall -Werror -Ofast -g -DDEBUG=1
+#CFLAGS	:= -Wextra -Wall -Werror -Ofast -g -DDEBUG=1
+CFLAGS	:= -Ofast -g -DDEBUG=1
+
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 LGLFW_PATH := $(shell brew --prefix glfw)

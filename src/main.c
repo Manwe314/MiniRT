@@ -23,6 +23,16 @@ static bool	init_minirt(t_minirt *minirt)
 		return (false);
 	minirt->img = mlx_new_image(minirt->mlx, minirt->width, minirt->height);
 	mlx_image_to_window(minirt->mlx, minirt->img, 0, 0);
+	minirt->camera.fov = 90.0f;
+	minirt->camera.pos = vector3(0.0f, 0.0f, 2.0f);
+	minirt->camera.pitch = 0.0f;
+	minirt->camera.yaw = 0.0f;
+
+	minirt->camera.inv_lookat = mult_mat4x4(rotation_y(to_radian(minirt->camera.pitch)), \
+		rotation_x(to_radian(minirt->camera.yaw)));
+	minirt->moved = true;
+	minirt->camera.is_clicked = false;
+
 	minirt->scene.nb_sphere = 0;
 	minirt->scene.nb_plane = 0;
 	minirt->scene.nb_triangle = 0;
@@ -120,35 +130,8 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 	return (true);
 }
 
-int	main(int argc, char *argv[])
-{
-	t_minirt	minirt;
-	int			fd;
 
-	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
-		fd = open(argv[1], O_RDONLY);
-	else
-		exit (0);
-	get_input_list(&minirt, fd);
-	validate_input(&minirt);
-	if (minirt.input_validity != 1 || init_minirt(&minirt) == false)
-	{
-		exit (false);
-	}
-	get_scene(&minirt);
-	mlx_resize_hook(minirt.mlx, &resize, &minirt);
-	mlx_loop_hook(minirt.mlx, &hook, &minirt);
-	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
-	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
-	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
-	mlx_loop(minirt.mlx);
-	mlx_delete_image(minirt.mlx, minirt.img);
-	mlx_terminate(minirt.mlx);
-	free_scene(&minirt);
-	exit (true);
-}
 
-/*
 
 t_scene	create_scene(void)
 {
@@ -252,35 +235,16 @@ t_scene	create_scene(void)
 	scene.triangle[0] = triangle;
 
 	t_sphere	sphere;
-	sphere.center = vector3(-1.0f, 1.5f, 0.0f);
+	sphere.center = vector3(0, 0, 0.0f);
 	sphere.radius = 1.0f;
-	sphere.material = white;
+	sphere.material = red;
 	sphere.material.specular_probability = 0.0f;
 	sphere.material.smoothness = 1.0f;
 	sphere.material.specular_color = vector3(1.0f, 1.0f, 1.0f);
 	scene.sphere[0] = sphere;
 
-	t_sphere	sphere2;
-	sphere2.center = vector3(1.0f, 1.5f, 0.0f);
-	sphere2.radius = 1.0f;
-	sphere2.material = blue;
-	sphere2.material.smoothness = 0.9f;
-	sphere2.material.specular_probability = 0.0f;
-	sphere2.material.specular_color = vector3(0.0f, 0.0f, 1.0f);
-	scene.sphere[1] = sphere2;
-
-	t_sphere	sphere3;
-	sphere3.center = vector3(0.0f, 3.3f, 0.0f);
-	sphere3.radius = 1.0f;
-	sphere3.material = white;
-	sphere3.material.color = vector3(0.3f, 0.6f, 0.2f);
-	sphere3.material.specular_probability = 0.0f;
-	sphere3.material.specular_color = vector3(0.3f, 0.9f, 0.5f);
-	sphere3.material.flag = CHECKER_PATTERN;
-	scene.sphere[2] = sphere3;
-
 	t_plane	plane;
-	plane.point_on_plane = vector3(0.0f, 0.0f, 0.0f);
+	plane.point_on_plane = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3(0.0f, 1.0f, 0.0f);
 	plane.normal = vector3_normalize(plane.normal);
 	plane.material = white;
@@ -326,8 +290,8 @@ t_scene	create_scene(void)
 	float	light_strength = 0.8f;
 
 	t_light	led;
-	led.position = vector3(3, 1.9f, 0);
-	led.color = vector3(1.0f, 1.0f, 1.0f);
+	led.position = vector3(5, 3, 0);
+	led.color = vector3(1.0f, 0.0f, 1.0f);
 	led.brightness = light_strength;
 	scene.light[0] = led;
 
@@ -390,15 +354,46 @@ t_scene	create_scene(void)
 	scene.nb_light = 0;
 	scene.nb_camera = 0;
 
-	scene.nb_plane = 6;
-	scene.nb_sphere = 2;
+	scene.nb_plane = 1;
+	scene.nb_sphere = 1;
 	scene.nb_light = 1;
 	scene.nb_triangle = 0;
 	scene.nb_cylinder = 0;
 	return (scene);
 }
 
-t_scene	create_scene2(void)
+int	main(int argc, char *argv[])
+{
+	t_minirt	minirt;
+	int			fd;
+
+	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
+		fd = open(argv[1], O_RDONLY);
+	else
+		exit (0);
+	get_input_list(&minirt, fd);
+	validate_input(&minirt);
+	if (minirt.input_validity != 1 || init_minirt(&minirt) == false)
+	{
+		exit (false);
+	}
+	//get_scene(&minirt);
+	minirt.scene = create_scene();
+	printf("led %f %f %f\n", minirt.scene.light[0].position.x,minirt.scene.light[0].position.y,minirt.scene.light[0].position.z);
+	mlx_resize_hook(minirt.mlx, &resize, &minirt);
+	mlx_loop_hook(minirt.mlx, &hook, &minirt);
+	mlx_cursor_hook(minirt.mlx, &cursor, &minirt);
+	mlx_key_hook(minirt.mlx, &keyhook, &minirt);
+	mlx_mouse_hook(minirt.mlx, &mousehook, &minirt);
+	mlx_loop(minirt.mlx);
+	mlx_delete_image(minirt.mlx, minirt.img);
+	mlx_terminate(minirt.mlx);
+	free_scene(&minirt);
+	exit (true);
+}
+
+
+/*t_scene	create_scene2(void)
 {
 	t_scene		scene;
 	t_material	red;
