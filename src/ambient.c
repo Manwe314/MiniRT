@@ -47,6 +47,8 @@ t_ambient	*init_ambient(const char *line, t_input_list *input)
 	int			i;
 
 	obj = (t_ambient *)malloc(sizeof(t_ambient));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_ambient(line))
 	{
 		free(input->name);

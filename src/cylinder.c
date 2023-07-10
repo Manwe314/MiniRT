@@ -85,6 +85,8 @@ t_cylinder	*init_cylinder(const char *line, t_input_list *input)
 	int			i;
 
 	obj = (t_cylinder *)malloc(sizeof(t_cylinder));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_cylinder(line))
 	{
 		free(input->name);

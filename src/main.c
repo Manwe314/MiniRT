@@ -13,19 +13,6 @@
 #include "../lib/libft/includes/libft.h"
 #include "minirt.h"
 
-#define WIDTH 150
-#define HEIGHT 150
-
-void	close_function(void *param)
-{
-	t_minirt	*minirt;
-
-	minirt = param;
-	mlx_delete_image(minirt->mlx, minirt->img);
-	free(minirt->input_head->name);
-	free(minirt->input_head->object);
-}
-
 static bool	init_minirt(t_minirt *minirt)
 {
 	minirt->width = WIDTH;
@@ -108,7 +95,6 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 {
 	minirt->scene.bonus = 0;
 	minirt->scene.random = 0;
-	printf("argc = %d\n", argc);
 	if (argc == 2)
 		return (true);
 	else if (argc > 4 || argc == 1)
@@ -116,9 +102,11 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 		ft_putstr_fd("Error\nWrong number of arguments\n", 2);
 		return (false);
 	}
-	if (argc == 3 && (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
+	if (argc == 3 && (argv[2][0] == '0' || argv[2][0] == '1')
+			&& argv[2][1] == 0)
 		minirt->scene.random = argv[2][0] - '0';
-	else if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1') && argv[3][1] == 0
+	else if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1')
+			&& argv[3][1] == 0
 			&& (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
 	{
 		minirt->scene.random = argv[2][0] - '0';

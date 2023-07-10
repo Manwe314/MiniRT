@@ -6,11 +6,17 @@
 /*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:58:46 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 18:21:31 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 15:41:15 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
+void	error_malloc(void)
+{
+	ft_putstr_fd("Error\nMalloc failed\n", 2);
+	exit(0);
+}
 
 t_vector3	get_vector3(const char *line, int i, t_input_list *input)
 {

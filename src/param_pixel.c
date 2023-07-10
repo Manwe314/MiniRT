@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:50:20 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/07 17:33:14 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 15:45:17 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,6 @@ void	malloc_param(t_param *param, t_minirt *minirt)
 	param->ray = malloc(sizeof(t_ray) * (minirt->width * minirt->height));
 	param->accum_c = malloc(sizeof(t_vector3)
 			* (minirt->width * minirt->height));
+	if (param->ray == NULL || param->accum_c == NULL)
+		error_malloc();
 }

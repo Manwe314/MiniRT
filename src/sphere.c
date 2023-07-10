@@ -85,6 +85,8 @@ t_sphere	*init_sphere(const char *line, t_input_list *input)
 	int			i;
 
 	obj = (t_sphere *)malloc(sizeof(t_sphere));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_sphere(line))
 	{
 		free(input->name);

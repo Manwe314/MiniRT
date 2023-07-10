@@ -46,6 +46,8 @@ t_camera	*init_camera(const char *line, t_input_list *input)
 	int			i;
 
 	obj = (t_camera *)malloc(sizeof(t_camera));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_camera(line))
 	{
 		free(input->name);

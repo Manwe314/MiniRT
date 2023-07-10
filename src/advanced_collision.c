@@ -12,19 +12,11 @@
 
 #include "minirt.h"
 
-t_info	cone_collision(t_ray ray, const t_cone *cone)
+static void	get_abc(float *abc, t_ray ray, const t_cone *cone)
 {
-	t_info		hit_info;
 	t_vector3	oc;
-	float		abc[3];
-	float		discriminant;
-	float		t;
 
-	hit_info.hit_distance = FLT_MAX;
 	oc = vector3_subtract(ray.origin, cone->center);
-	// t_matrix4x4 rotation_matrix = rotation(cone->normal);
-	// oc = multiplymatrixvector(oc, rotation_matrix);
-	// ray.direction = multiplymatrixvector(ray.direction, rotation_matrix);
 	abc[0] = ray.direction.x * ray.direction.x - (cone->radius / cone->height)
 		* (cone->radius / cone->height) * ray.direction.y * ray.direction.y
 		+ ray.direction.z * ray.direction.z;
@@ -33,6 +25,17 @@ t_info	cone_collision(t_ray ray, const t_cone *cone)
 			+ ray.direction.z * oc.z);
 	abc[2] = oc.x * oc.x - (cone->radius / cone->height)
 		* (cone->radius / cone->height) * oc.y * oc.y + oc.z * oc.z;
+}
+
+t_info	cone_collision(t_ray ray, const t_cone *cone)
+{
+	t_info		hit_info;
+	float		abc[3];
+	float		discriminant;
+	float		t;
+
+	hit_info.hit_distance = FLT_MAX;
+	get_abc(abc, ray, cone);
 	discriminant = abc[1] * abc[1] - 4 * abc[0] * abc[2];
 	if (discriminant < 0)
 		return (miss());

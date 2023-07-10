@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cone.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkukhale <lkukhale@student.42.fr>          +#+  +:+       +#+        */
+/*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 19:26:26 by lkukhale          #+#    #+#             */
-/*   Updated: 2023/07/07 19:41:56 by lkukhale         ###   ########.fr       */
+/*   Updated: 2023/07/10 15:43:35 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ t_cone	*init_cone(const char *line, t_input_list *input)
 	int		i;
 
 	obj = (t_cone *)malloc(sizeof(t_cone));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_cone(line))
 	{
 		free(input->name);

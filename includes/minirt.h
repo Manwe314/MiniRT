@@ -13,8 +13,6 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-//# include "libft.h"
-
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 # include "../lib/libft/includes/libft.h"
 # include <float.h>
@@ -34,6 +32,9 @@
 # ifndef BONUS
 #  define BONUS 0
 # endif
+
+# define WIDTH 500
+# define HEIGHT 500
 
 # define PI 3.14159265358979323846
 
@@ -504,6 +505,9 @@ void			validate_values_ambient(t_input_list *input);
 int				validate_line_light(const char *line);
 t_light			*init_light(const char *line, t_input_list *input);
 void			validate_values_light(t_input_list *input);
+
+void			error_malloc(void);
+
 /*~~~~~~~~~~~~~~~~~~input stuff~~~~~~~~~~~~~~~~~~~~~~~*/
 
 #endif

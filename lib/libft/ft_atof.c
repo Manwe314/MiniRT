@@ -12,6 +12,20 @@
 
 #include "libft.h"
 
+static	void	init(int *i, float *result, float *fractionfactor, int *sign)
+{
+	*i = 0;
+	*result = 0.0;
+	*fractionfactor = 0.1;
+	*sign = 1;
+}
+
+static void	add_dot(float *result, float *fractionfactor)
+{
+	*result += (*fractionfactor * 0.1);
+	*fractionfactor *= 0.1;
+}
+
 float	ft_atof(const char *str)
 {
 	float	result;
@@ -19,10 +33,7 @@ float	ft_atof(const char *str)
 	int		sign;
 	int		i;
 
-	result = 0.0;
-	i = 0;
-	fractionfactor = 0.1;
-	sign = 1;
+	init(&i, &result, &fractionfactor, &sign);
 	while (ft_isspace(*str))
 		str++;
 	if (*str == '-' && *str++)
@@ -36,10 +47,7 @@ float	ft_atof(const char *str)
 	{
 		str++;
 		while (ft_isdigit(*str) && i++ < 11)
-		{
-			result += (*str++ - '0') * fractionfactor;
-			fractionfactor *= 0.1;
-		}
+			add_dot(&result, &fractionfactor);
 		if (i > 10)
 			return (INT_MAX - 10);
 	}

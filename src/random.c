@@ -48,8 +48,6 @@ float	randomvaluevormaldistribution(uint state)
 	float	theta;
 	float	rho;
 
-	if (RANDOM != 1)
-		return (0.0f);
 	theta = 2 * M_PI * randomvalue(state);
 	rho = sqrt(-2 * log(randomvalue(state)));
 	return (rho * cos(theta));

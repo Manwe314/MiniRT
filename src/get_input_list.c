@@ -83,93 +83,13 @@ void	*get_object(t_input_list *input, const char *line)
 	return (0);
 }
 
-int	check_number(char *line, int i)
+void	put_variable(t_input_list **temp, t_input_list **save, const char *line)
 {
-	int		j;
-	int		dot;
-	int		k;
-
-	dot = 0;
-	printf("%s\n", line + i);
-	j = i - 1;
-	while (line[++j] != '\0' && line[j] != ' ' && line[j] != '\t'
-		&& line[j] != ',' && j < i + 22)
-	{
-		if (ft_isdigit(line[j]))
-			continue ;
-		if (line[j] == '.')
-		{
-			if (dot == true)
-			{
-				printf("Error dot\n");
-				return (-1);
-			}
-			dot = j;
-		}
-		else if (((line[j] == '+' || line[j] == '-') && j != i) || ft_isalpha(line[j]))
-		{
-			printf("Error - \n");
-			return (-1);
-		}
-	}
-	k = 0;
-	printf("line %s\n", line + i);
-	while (line[i + k] != '.' && line[i + k] != ',' && line[i + k] != ' ' && line[i + k] != '\0' && ft_isdigit(line[j]) && k < 13)
-		k++;
-	printf("k = %d\n", k);
-	if (k > 11)
-	{
-		printf("Error longueur %d\n", k);
-		return (-1);
-	}
-	k = 0;
-	if (dot != 0 && line[dot + k] == '.')
-		dot++;
-	if (dot != 0)
-	{
-		while (line[dot + k] != '\0' && ft_isdigit(line[j]) && k < 13 && line[dot + k] != ' ' && line[dot + k] != ',')
-			k++;
-		printf("k = %d\n", k);
-		if (k > 11)
-		{
-			printf("Error longueur dot%d\n", k);
-			return (-1);
-		}
-	}
-	return (j);
-}
-
-bool	check_line(char *str, t_minirt *minirt)
-{
-	int	i;
-
-	i = 1;
-	while (str[++i] != '\0')
-	{
-		if (str[i] == ' ' || str[i] == '\t' || str[i] == '\0')
-			continue ;
-		else if ((str[i] == '+' || str[i] == '-' || ft_isdigit(str[i])) || str[i] == ',')
-		{
-			i = check_number(str, i);
-			printf("i = %d\n", i);
-			if (i == -1)
-			{
-				minirt->input_validity = -1;
-				printf("Error number\n");
-				return (false);
-			}
-			if (str[i] == '\0')
-				break ;
-		}
-		else
-		{
-			minirt->input_validity = -1;
-			printf("Error char\n");
-			return (false);
-		}
-	}
-	minirt->input_validity = 1;
-	return (true);
+	(*temp)->name = get_name(line);
+	(*temp)->object = get_object(*temp, line);
+	(*temp)->next = (t_input_list *)malloc(sizeof(t_input_list));
+	*save = *temp;
+	*temp = (*temp)->next;
 }
 
 void	get_input_list(t_minirt *minirt, int fd)
@@ -183,18 +103,14 @@ void	get_input_list(t_minirt *minirt, int fd)
 	if (line == 0 || ft_strlen(line) == 0)
 		return ;
 	temp = (t_input_list *)malloc(sizeof(t_input_list));
+	if (temp == 0)
+		error_malloc();
 	head = temp;
 	save = 0;
 	while (line != 0)
 	{
-		if (ft_strlen(line) > 1 && !is_all_space(line)/* && check_line(line, minirt)*/)
-		{
-			temp->name = get_name(line);
-			temp->object = get_object(temp, line);
-			temp->next = (t_input_list *)malloc(sizeof(t_input_list));
-			save = temp;
-			temp = temp->next;
-		}
+		if (ft_strlen(line) > 1 && !is_all_space(line))
+			put_variable(&temp, &save, line);
 		free(line);
 		line = remove_new_line(get_next_line(fd));
 	}
@@ -202,3 +118,45 @@ void	get_input_list(t_minirt *minirt, int fd)
 	save->next = 0;
 	minirt->input_head = head;
 }
+
+/*
+static void	put_variable(t_input_list *temp, t_input_list *save, char *line)
+{
+	temp->name = get_name(line);
+	temp->object = get_object(temp, line);
+	temp->next = (t_input_list *)malloc(sizeof(t_input_list));
+	save = temp;
+	temp = temp->next;
+}
+
+void	get_input_list(t_minirt *minirt, int fd)
+{
+	t_input_list	*head;
+	t_input_list	*temp;
+	t_input_list	*save;
+	char			*line;
+
+	line = remove_new_line(get_next_line(fd));
+	temp = (t_input_list *)malloc(sizeof(t_input_list));
+	if (temp == 0)
+		error_malloc();
+	if (line == 0 || ft_strlen(line) == 0)
+		return ;
+	printf("line = %s\n", line);
+	head = temp;
+	save = 0;
+	while (line != 0)
+	{
+		if (ft_strlen(line) > 1 && !is_all_space(line))
+			put_variable(temp, save, line);
+		if (save->next == 0)
+			return ;
+		free(line);
+		line = remove_new_line(get_next_line(fd));
+		printf("line = %s\n", line);
+	}
+	free(save->next);
+	save->next = 0;
+	minirt->input_head = head;
+}
+*/

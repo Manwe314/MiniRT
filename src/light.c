@@ -47,6 +47,8 @@ t_light	*init_light(const char *line, t_input_list *input)
 	int		i;
 
 	obj = (t_light *)malloc(sizeof(t_light));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_light(line))
 	{
 		free(input->name);

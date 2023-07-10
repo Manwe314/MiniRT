@@ -85,6 +85,8 @@ t_plane	*init_plane(const char *line, t_input_list *input)
 	int		i;
 
 	obj = (t_plane *)malloc(sizeof(t_plane));
+	if (obj == 0)
+		error_malloc();
 	if (!validate_line_plane(line))
 	{
 		free(input->name);

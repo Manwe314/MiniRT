@@ -1,16 +1,56 @@
 NAME	:= miniRT
-USER	= beaudibe
 CFLAGS	:= -Wextra -Wall -Werror -Ofast -g -DDEBUG=1
 LIBMLX	:= ./lib/MLX42
 INCDIR = includes
 LGLFW_PATH := $(shell brew --prefix glfw)
 HEADERS	:= -I ../include -I $(LIBMLX)/include
 LIBS	:= $(LIBMLX)/build/libmlx42.a ./lib/libft/libft.a -ldl -lglfw -pthread -lm -L $(LGLFW_PATH)/lib/
-SRCS	:= $(shell find ./src -iname "*.c")
-OBJS	:= ${SRCS:.c=.o}
+
+SRCS	= 	src/add.c					\
+			src/advanced_collision.c	\
+			src/checking_input.c		\
+			src/hook2.c					\
+			src/random.c				\
+			src/utils_input2.c			\
+			src/cone.c					\
+			src/light.c 				\
+			src/ray.c 					\
+			src/validate_input.c		\
+			src/ambient.c				\
+			src/cylinder.c				\
+			src/main.c					\
+			src/ray_tracing.c			\
+			src/validate_input2.c		\
+			src/basic_collision.c		\
+			src/get_input_list.c		\
+			src/math.c					\
+			src/ray_tracing_bonus.c		\
+			src/vector_math.c			\
+			src/basic_collision2.c		\
+			src/get_obj.c				\
+			src/matrice.c				\
+			src/sphere.c				\
+			src/vector_math2.c			\
+			src/calculate_collision.c	\
+			src/get_obj2.c				\
+			src/utils.c					\
+			src/vector_math3.c			\
+			src/camera.c				\
+			src/get_to_next_param.c		\
+			src/param_pixel.c			\
+			src/utils2.c				\
+			src/vector_math4.c			\
+			src/camera_eye.c			\
+			src/hook.c					\
+			src/plane.c					\
+			src/utils_input.c			\
+			src/vector_math5.c
+
+OBJS	= ${SRCS:.c=.o}
 LIBFT	= ./lib/libft
 
 all: libmlx $(NAME)
+
 
 libmlx:
 	@cmake $(LIBMLX) -B $(LIBMLX)/build && make -C $(LIBMLX)/build -j4
@@ -22,6 +62,10 @@ $(NAME): $(OBJS)
 	make -C ${LIBFT}
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
+bonus: libmlx $(OBJS)
+	make -C ${LIBFT}
+	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o miniRT_bonus
+
 clean:
 	@make -C $(LIBFT) clean
 	@rm -f $(OBJS)
@@ -30,38 +74,16 @@ clean:
 fclean: clean
 	@make -C $(LIBFT) fclean
 	@rm -f $(NAME)
+	@rm -f $(NAME)_bonus
 
 git: fclean
 	git add *
 	git commit -m "auto commit"
 	git push
 
+brew:
+	brew install glfw
+
 re: clean all
 
-.PHONY: all, clean, fclean, re, libmlx
-
-# SRCS = ${shell find ./src -iname "*.c"}
-
-# OBJS = ${SRCS:.c=.o}
-
-# CC = gcc
-# CFLAGS = -Wall -Wextra -Werror -Iincludes -lmlx -lXext -lX11
-
-# RM = rm -rf
-
-# all: ${NAME}
-# ${NAME}: ${OBJS}
-# 	@${MAKE} -C ./lib/libft
-# 	@${CC} ${CFLAGS} ${OBJS} ./lib/libft/libft.a ./lib/minilibx-linux/libmlx.a -o ${NAME}
-
-
-# clean:
-# 	@${MAKE} -C ./lib/libft fclean
-# 	@${RM} ${OBJS}
-
-# fclean: clean
-# 	@${RM} ${NAME}
-
-# re: fclean all
-
-# .PHONY: all clean fclean re
+.PHONY: all, clean, fclean, re, libmlx, git, brew, bonus
