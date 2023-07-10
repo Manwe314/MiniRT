@@ -83,6 +83,93 @@ void	*get_object(t_input_list *input, const char *line)
 	return (0);
 }
 
+int	check_number(char *line, int i)
+{
+	int		j;
+	int		dot;
+	int		k;
+
+	dot = 0;
+	printf("%s\n", line + i);
+	j = i - 1;
+	while (line[++j] != '\0' && line[j] != ' ' && line[j] != '\t'
+		&& line[j] != ',' && j < i + 22)
+	{
+		if (ft_isdigit(line[j]))
+			continue ;
+		if (line[j] == '.')
+		{
+			if (dot == true)
+			{
+				printf("Error dot\n");
+				return (-1);
+			}
+			dot = j;
+		}
+		else if (((line[j] == '+' || line[j] == '-') && j != i) || ft_isalpha(line[j]))
+		{
+			printf("Error - \n");
+			return (-1);
+		}
+	}
+	k = 0;
+	printf("line %s\n", line + i);
+	while (line[i + k] != '.' && line[i + k] != '\0' && ft_isdigit(line[j]) && k < 13)
+		k++;
+	printf("k = %d\n", k);
+	if (k > 11)
+	{
+		printf("Error longueur %d\n", k);
+		return (-1);
+	}
+	k = 0;
+	if (dot != 0)
+	{
+		while (line[dot + k] != '\0' && ft_isdigit(line[j]) && k < 13)
+			k++;
+		printf("k = %d\n", k);
+		if (k > 11)
+		{
+			printf("Error longueur dot%d\n", k);
+			return (-1);
+		}
+	}
+	return (j);
+}
+
+bool	check_line(char *str, t_minirt *minirt)
+{
+	int	i;
+
+	i = 1;
+	while (str[++i] != '\0')
+	{
+		if (str[i] == ' ' || str[i] == '\t' || str[i] == '\0')
+			continue ;
+		else if ((str[i] == '+' || str[i] == '-' || ft_isdigit(str[i])) || str[i] == ',')
+		{
+			i = check_number(str, i);
+			printf("i = %d\n", i);
+			if (i == -1)
+			{
+				minirt->input_validity = -1;
+				printf("Error number\n");
+				return (false);
+			}
+			if (str[i] == '\0')
+				break ;
+		}
+		else
+		{
+			minirt->input_validity = -1;
+			printf("Error char\n");
+			return (false);
+		}
+	}
+	minirt->input_validity = 1;
+	return (true);
+}
+
 void	get_input_list(t_minirt *minirt, int fd)
 {
 	t_input_list	*head;
@@ -96,7 +183,7 @@ void	get_input_list(t_minirt *minirt, int fd)
 	save = 0;
 	while (line != 0)
 	{
-		if (ft_strlen(line) > 1 && !is_all_space(line))
+		if (ft_strlen(line) > 1 && !is_all_space(line)/* && check_line(line, minirt)*/)
 		{
 			temp->name = get_name(line);
 			temp->object = get_object(temp, line);

@@ -116,10 +116,10 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 		ft_putstr_fd("Error\nWrong number of arguments\n", 2);
 		return (false);
 	}
-	if (argc >= 3 && (argv[2][0] == '0' || argv[2][0] == '1'))
+	if (argc >= 3 && (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
 		minirt->scene.random = argv[2][0] - '0';
-	if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1')
-			&& (argv[2][0] == '0' || argv[2][0] == '1'))
+	if (argc == 4 && (argv[3][0] == '0' || argv[3][0] == '1') && argv[3][1] == 0
+			&& (argv[2][0] == '0' || argv[2][0] == '1') && argv[2][1] == 0)
 		minirt->scene.bonus = argv[3][0] - '0';
 	else
 	{
@@ -131,7 +131,11 @@ bool	check_arg(t_minirt *minirt, int argc, char *argv[])
 
 int	main(int argc, char *argv[])
 {
+
 	t_minirt	minirt;
+	// check_line(argv[1], &minirt);
+	// printf("%d\n", minirt.input_validity);
+	// return (0);
 	int			fd;
 
 	if (check_arg(&minirt, argc, argv) && !check_file(argv[1]))
