@@ -6,7 +6,7 @@
 /*   By: beaudibe <beaudibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/07 11:56:02 by beaudibe          #+#    #+#             */
-/*   Updated: 2023/07/10 20:20:33 by beaudibe         ###   ########.fr       */
+/*   Updated: 2023/07/10 20:22:29 by beaudibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,22 +51,22 @@ bool	check_cylinder_height(const t_cylinder *cylinder, t_vector3 hit_point)
 
 t_vector3 cylinder_normal(t_vector3 pointOnLine, t_vector3 directionVector)
 {
-    t_vector3	arbitraryPoint;
-    t_vector3	perpendicularVector;
+    t_vector3	arbitrarypoint;
+    t_vector3	perpendicularvector;
 
-    arbitraryPoint.x = 1.0;
-    arbitraryPoint.y = 1.0;
-    arbitraryPoint.z = 1.0;
-    t_vector3 vectorPQ;
-    vectorPQ = vector3_subtract(arbitraryPoint, pointOnLine);
+    arbitrarypoint.x = 1.0;
+    arbitrarypoint.y = 1.0;
+    arbitrarypoint.z = 1.0;
+    t_vector3 vectorpq;
+    vectorpq = vector3_subtract(arbitrarypoint, pointOnLine);
     
-    double dotProduct = vectorPQ.x * directionVector.x + vectorPQ.y * directionVector.y + vectorPQ.z * directionVector.z;
+    double dotProduct = vectorpq.x * directionVector.x + vectorpq.y * directionVector.y + vectorpq.z * directionVector.z;
     double dotProductV = directionVector.x * directionVector.x + directionVector.y * directionVector.y + directionVector.z * directionVector.z;
 
-    perpendicularVector.x = vectorPQ.x - (dotProduct / dotProductV) * directionVector.x;
-    perpendicularVector.y = vectorPQ.y - (dotProduct / dotProductV) * directionVector.y;
-    perpendicularVector.z = vectorPQ.z - (dotProduct / dotProductV) * directionVector.z;
-    return perpendicularVector;
+    perpendicularvector.x = vectorpq.x - (dotProduct / dotProductV) * directionVector.x;
+    perpendicularvector.y = vectorpq.y - (dotProduct / dotProductV) * directionVector.y;
+    perpendicularvector.z = vectorpq.z - (dotProduct / dotProductV) * directionVector.z;
+    return perpendicularvector;
 }
 
 t_info	cylinder_info(t_ray ray, float t, const t_cylinder *cylinder)
